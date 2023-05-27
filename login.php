@@ -53,9 +53,6 @@
       padding: 5%;
       width: 90%;
     }
-    .btn {
-      width: 100%;
-    }
   </style>
 </head>
 
@@ -96,7 +93,9 @@
                 </span>
                 <input type="password" class="form-control" name="password" id="password" aria-describedby="helpId" placeholder="Escriba su contraseña">
               </div>
-              <button type="submit" class="btn btn-outline-primary">Iniciar Sesión</button>
+              <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-outline-primary ">Iniciar Sesión</button>
+              </div>
             </form>
           </div>
         </div>
