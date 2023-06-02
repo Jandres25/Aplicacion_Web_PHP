@@ -33,38 +33,21 @@
 
   <!-- Bootstrap CSS v5.2.1 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
-  <style>
-    body {
-      background-image: url("https://images.unsplash.com/photo-1579546929518-9e396f3cc809?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80");
-      background-repeat: no-repeat;
-      background-size: cover;
-    }
-    #tarjeta {
-      -webkit-borde-radius: 10px;
-      -webkit-box-shadow: 0 0 20px rgba(0,0,0,0.5);
-      -moz-border-shadow: 10px;
-      -moz-box-shadow: 0 0 20px  rgba(0,0,0,0.5);
-      -o-border-radius: 10px;
-      -o-border-shadow: 0 0 20px rgba(0,0,0,0.5);
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-      font-size: 20px;
-      margin: 0 auto;
-      padding: 5%;
-      width: 90%;
-    }
-  </style>
+  integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+  
+  <link rel="stylesheet" type="text/css" href="./estilos/style.css">
+
 </head>
 
 <body>
   <header>
-    <!-- place navbar here -->
+    
   </header>
   <main class="container">
     <div class="row">
       <div class="col-md-4">
       </div>
-      <div class="col-md-4">
+      <div class="col-md-4 login-form">
         <div style="margin-top: 50%" class="card mb-3" id="tarjeta">
           <h4 style="text-align: center;">LOGIN</h4>
           <div class="card-body">
@@ -101,10 +84,29 @@
         </div>
       </div>
     </div>
+    <div class="square"></div>
+    <div class="square"></div>
+    <div class="square"></div>
+    <div class="square"></div>
+    <div class="square"></div>
+
+    <div class="circle"></div>
+    <div class="circle"></div>
+    <div class="circle"></div>
+    <div class="circle"></div>
+    <div class="circle"></div>
+
+    <div class="triangle"></div>
+    <div class="triangle"></div>
+    <div class="triangle"></div>
+    <div class="triangle"></div>
+    <div class="triangle"></div>
   </main>
   <footer>
     <!-- place footer here -->
   </footer>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+  <script src="estilos/main.js"></script>
   <!-- Bootstrap JavaScript Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
     integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous">
