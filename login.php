@@ -36,6 +36,7 @@
   integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
   
   <link rel="stylesheet" type="text/css" href="./estilos/style.css">
+  <link rel="icon" type="image/x-icon" href="http://localhost/app/deadpool.ico">
 
 </head>
 

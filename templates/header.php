@@ -31,16 +31,13 @@
   <script src="http://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <style>
-    html, body {
-    height: 100%;
-    margin: 0;
-    }
     body {
       display: flex;
       flex-direction: column;
+      min-height: 100vh;
     }
     main {
-      flex: 1;
+      flex-grow: 1;
     }
   </style>
 </head>
