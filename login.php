@@ -1,25 +1,25 @@
-<?php 
-  session_start();
-  if ($_POST) {
-    include("./bd.php");
+<?php
+session_start();
+if ($_POST) {
+  include("./bd.php");
 
-    $sentencia = $conexion -> prepare("SELECT *, count(*) as n_usuarios FROM `tbl-usuarios` WHERE Nombreusuario = :Nombreusuario AND Password = :Password");
-    $usuario = $_POST["usuario"];
-    $password = $_POST["password"];
+  $sentencia = $conexion->prepare("SELECT *, count(*) as n_usuarios FROM `tbl-usuarios` WHERE Nombreusuario = :Nombreusuario AND Password = :Password");
+  $usuario = $_POST["usuario"];
+  $password = $_POST["password"];
 
-    $sentencia -> bindParam(":Nombreusuario",$usuario);
-    $sentencia -> bindParam(":Password",$password);
-    $sentencia -> execute();
-    $registro = $sentencia -> fetch(PDO::FETCH_LAZY);
+  $sentencia->bindParam(":Nombreusuario", $usuario);
+  $sentencia->bindParam(":Password", $password);
+  $sentencia->execute();
+  $registro = $sentencia->fetch(PDO::FETCH_LAZY);
 
-    if ($registro["n_usuarios"] > 0) {
-      $_SESSION['usuario'] = $registro["Nombreusuario"];
-      $_SESSION['logueado'] = true;
-      header("Location:index.php");
-    } else {
-      $mensaje = "Error: El usuario o contraseña son incorrectos";
-    }
+  if ($registro["n_usuarios"] > 0) {
+    $_SESSION['usuario'] = $registro["Nombreusuario"];
+    $_SESSION['logueado'] = true;
+    header("Location:index.php");
+  } else {
+    $mensaje = "Rellene los campos vacios";
   }
+}
 ?>
 
 <!doctype html>
@@ -32,48 +32,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
   <!-- Bootstrap CSS v5.2.1 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet"
-  integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
-  
-  <link rel="stylesheet" type="text/css" href="./estilos/style.css">
-  <link rel="icon" type="image/x-icon" href="http://localhost/app/deadpool.ico">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+
+  <link rel="stylesheet" type="text/css" href="estilos/style.css">
+  <link rel="icon" type="image/x-icon" href="deadpool.ico">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
 </head>
 
 <body>
-  <header>
-    
-  </header>
   <main class="container">
     <div class="row">
       <div class="col-md-4">
       </div>
       <div class="col-md-4 login-form">
         <div style="margin-top: 50%" class="card mb-3" id="tarjeta">
-          <h4 style="text-align: center;">LOGIN</h4>
+          <h1 style="text-align: center;">LOGIN</h1>
           <div class="card-body">
-            <?php if(isset($mensaje)) { ?>
+            <?php if (isset($mensaje)) { ?>
               <div class="alert alert-danger" role="alert">
-                <strong><?php echo $mensaje; ?></strong> 
+                <strong><?php echo $mensaje; ?></strong>
               </div>
             <?php } ?>
             <form action="" method="post">
               <label for="usuario" class="form-label">Usuario</label>
               <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
-                    <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
-                    <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
-                  </svg>
+                  <i class="bi bi-person-circle"></i>
                 </span>
                 <input type="text" class="form-control" name="usuario" id="usuario" aria-describedby="helpId" placeholder="Escriba su usuario">
               </div>
               <label for="password" class="form-label">Contraseña</label>
               <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-lock-fill" viewBox="0 0 16 16">
-                  <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
-                </svg>
+                  <i class="bi bi-lock-fill"></i>
                 </span>
                 <input type="password" class="form-control" name="password" id="password" aria-describedby="helpId" placeholder="Escriba su contraseña">
               </div>
@@ -109,12 +101,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
   <script src="estilos/main.js"></script>
   <!-- Bootstrap JavaScript Libraries -->
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
-    integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous">
   </script>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js"
-    integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js" integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz" crossorigin="anonymous">
   </script>
 </body>
 

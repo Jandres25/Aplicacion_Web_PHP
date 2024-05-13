@@ -1,21 +1,21 @@
-<?php 
-    include("../../bd.php");
+<?php
+include("../../bd.php");
 
-    if($_POST){
+if ($_POST) {
 
-        $nombredelpuesto = (isset($_POST["nombredelpuesto"]) ? $_POST["nombredelpuesto"] : "");
+    $nombredelpuesto = (isset($_POST["nombredelpuesto"]) ? $_POST["nombredelpuesto"] : "");
 
-        $sentencia = $conexion -> prepare("INSERT INTO `tbl-puestos`(ID,Nombredelpuesto) VALUES(null, :Nombredelpuesto)");
+    $sentencia = $conexion->prepare("INSERT INTO `tbl-puestos`(ID,Nombredelpuesto) VALUES(null, :Nombredelpuesto)");
 
-        $sentencia -> bindParam(":Nombredelpuesto",$nombredelpuesto);
-        $sentencia -> execute();
-        $mensaje = "Registro Agregado";
-        header("Location:index.php?mensaje=".$mensaje);
-    }
+    $sentencia->bindParam(":Nombredelpuesto", $nombredelpuesto);
+    $sentencia->execute();
+    $mensaje = "Registro Agregado";
+    header("Location:index.php?mensaje=" . $mensaje);
+}
 ?>
 
 <?php include("../../templates/header.php") ?>
-    </br>
+<section class="mt-5">
     <div class="card">
         <div class="card-header">
             Creación del puesto
@@ -33,4 +33,5 @@
         </div>
         <div class="card-footer text-muted"></div>
     </div>
+</section>
 <?php include("../../templates/footer.php") ?>

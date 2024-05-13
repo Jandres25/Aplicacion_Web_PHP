@@ -1,28 +1,27 @@
-<?php 
+<?php
 
-  include("../../bd.php");
+include("../../bd.php");
 
-  if ($_POST) {
+if ($_POST) {
 
-    $nombredelusuario = (isset($_POST["usuario"]) ? $_POST["usuario"] : "");
-    $passworddelusuario = (isset($_POST["password"]) ? $_POST["password"] : "");
-    $correodelusuario = (isset($_POST["correo"]) ? $_POST["correo"] : "");
+  $nombredelusuario = (isset($_POST["usuario"]) ? $_POST["usuario"] : "");
+  $passworddelusuario = (isset($_POST["password"]) ? $_POST["password"] : "");
+  $correodelusuario = (isset($_POST["correo"]) ? $_POST["correo"] : "");
 
-    $sentencia = $conexion -> prepare("INSERT INTO `tbl-usuarios`(ID,Nombreusuario,Password,Correo) VALUES(null, :Nombreusuario,:Password,:Correo)");
+  $sentencia = $conexion->prepare("INSERT INTO `tbl-usuarios`(ID,Nombreusuario,Password,Correo) VALUES(null, :Nombreusuario,:Password,:Correo)");
 
-    $sentencia -> bindParam(":Nombreusuario",$nombredelusuario);
-    $sentencia -> bindParam(":Password",$passworddelusuario);
-    $sentencia -> bindParam(":Correo",$correodelusuario);
-    $sentencia -> execute();
-    $mensaje = "Registro Agregado";
-    header("Location:index.php?mensaje=".$mensaje);
-  }
+  $sentencia->bindParam(":Nombreusuario", $nombredelusuario);
+  $sentencia->bindParam(":Password", $passworddelusuario);
+  $sentencia->bindParam(":Correo", $correodelusuario);
+  $sentencia->execute();
+  $mensaje = "Registro Agregado";
+  header("Location:index.php?mensaje=" . $mensaje);
+}
 
 ?>
 
 <?php include("../../templates/header.php") ?>
-    
-  </br>
+<section class="mt-5">
   <div class="card">
     <div class="card-header">
       Datos del usuario
@@ -50,5 +49,5 @@
     </div>
     <div class="card-footer text-muted"></div>
   </div>
-
+</section>
 <?php include("../../templates/footer.php") ?>

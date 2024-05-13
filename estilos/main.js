@@ -1,16 +1,16 @@
 function randomValues() {
     anime({
         targets: '.square, .circle, .triangle',
-        translateX: function() {
+        translateX: function () {
             return anime.random(-500, 500);
         },
-            translateY: function() {
+        translateY: function () {
             return anime.random(-300, 300);
         },
-        rotate: function() {
+        rotate: function () {
             return anime.random(0, 360);
         },
-        scale: function() {
+        scale: function () {
             return anime.random(.2, 2);
         },
         duration: 1000,
@@ -18,5 +18,5 @@ function randomValues() {
         complete: randomValues,
     });
 }
-  
+
 randomValues();
