@@ -17,9 +17,9 @@ body {
     -o-border-shadow: 0 0 20px rgba(0,0,0,0.5);
     box-shadow: 0 0 20px rgba(0,0,0,0.5);
     font-size: 20px;
-    margin: 0 auto;
-    padding: 5%;
-    width: 90%;
+	padding: 3%;
+    width: 35%;
+	max-width: 40%;
 }
 
 .container {

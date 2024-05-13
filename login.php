@@ -41,41 +41,37 @@ if ($_POST) {
 </head>
 
 <body>
-  <main class="container">
-    <div class="row">
-      <div class="col-md-4">
-      </div>
-      <div class="col-md-4 login-form">
-        <div style="margin-top: 50%" class="card mb-3" id="tarjeta">
-          <h1 style="text-align: center;">LOGIN</h1>
-          <div class="card-body">
-            <?php if (isset($mensaje)) { ?>
-              <div class="alert alert-danger" role="alert">
-                <strong><?php echo $mensaje; ?></strong>
-              </div>
-            <?php } ?>
-            <form action="" method="post">
-              <label for="usuario" class="form-label">Usuario</label>
-              <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">
-                  <i class="bi bi-person-circle"></i>
-                </span>
-                <input type="text" class="form-control" name="usuario" id="usuario" aria-describedby="helpId" placeholder="Escriba su usuario">
-              </div>
-              <label for="password" class="form-label">Contraseña</label>
-              <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">
-                  <i class="bi bi-lock-fill"></i>
-                </span>
-                <input type="password" class="form-control" name="password" id="password" aria-describedby="helpId" placeholder="Escriba su contraseña">
-              </div>
-              <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-outline-primary ">Iniciar Sesión</button>
-              </div>
-            </form>
+  <main class="container d-flex justify-content-center align-items-center">
+    <div class="login-form card mb-3" id="tarjeta">
+      <h1 class="text-center">LOGIN</h1>
+      <div class="card-body">
+        <?php if (isset($mensaje)) { ?>
+          <div class="alert alert-danger text-center" role="alert">
+            <strong><?php echo $mensaje; ?></strong>
           </div>
-        </div>
+        <?php } ?>
+        <form action="" method="post">
+          <label for="usuario" class="form-label">Usuario</label>
+          <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">
+              <i class="bi bi-person-circle"></i>
+            </span>
+            <input type="text" class="form-control" name="usuario" id="usuario" aria-describedby="helpId" placeholder="Escriba su usuario">
+          </div>
+          <label for="password" class="form-label">Contraseña</label>
+          <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">
+              <i class="bi bi-lock-fill"></i>
+            </span>
+            <input type="password" class="form-control" name="password" id="password" aria-describedby="helpId" placeholder="Escriba su contraseña">
+          </div>
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-outline-primary ">Iniciar Sesión</button>
+          </div>
+        </form>
       </div>
+    </div>
+    </div>
     </div>
     <div class="square"></div>
     <div class="square"></div>
