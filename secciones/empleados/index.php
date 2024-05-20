@@ -75,10 +75,28 @@ $lista_tbl_empleados = $sentencia->fetchAll(PDO::FETCH_ASSOC);
                                 <td><?php echo $registro["puesto"]; ?></td>
                                 <td><?php echo $registro["Fecha"]; ?></td>
                                 <td>
-                                    <a class="btn btn-outline-primary" href="carta_recomendacion.php?txtID=<?php echo $registro['ID']; ?>" role="button">Carta</a>
-                                    <a name="btneditar" id="btneditar" class="btn btn-outline-info" href="editar.php?txtID=<?php echo $registro['ID']; ?>" role="button">Editar</a>
-                                    <a name="" class="btn btn-outline-danger" href="javascript:borrar(<?php echo $registro['ID']; ?>);" role="button">Eliminar</a>
-                                </td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton<?php echo $registro['ID']; ?>" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton<?php echo $registro['ID']; ?>">
+                                            <li>
+                                                <a class="dropdown-item" href="carta_recomendacion.php?txtID=<?php echo $registro['ID']; ?>">
+                                                    <i class="fas fa-file-alt"></i> Carta
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="editar.php?txtID=<?php echo $registro['ID']; ?>">
+                                                    <i class="fas fa-edit"></i> Editar
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="javascript:borrar(<?php echo $registro['ID']; ?>);">
+                                                    <i class="fas fa-trash"></i> Eliminar
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
                             </tr>
                         <?php } ?>
                     </tbody>

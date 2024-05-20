@@ -1,23 +1,29 @@
 <?php
 session_start();
 if ($_POST) {
-  include("./bd.php");
-
-  $sentencia = $conexion->prepare("SELECT *, count(*) as n_usuarios FROM `tbl-usuarios` WHERE Nombreusuario = :Nombreusuario AND Password = :Password");
-  $usuario = $_POST["usuario"];
-  $password = $_POST["password"];
-
-  $sentencia->bindParam(":Nombreusuario", $usuario);
-  $sentencia->bindParam(":Password", $password);
-  $sentencia->execute();
-  $registro = $sentencia->fetch(PDO::FETCH_LAZY);
-
-  if ($registro["n_usuarios"] > 0) {
-    $_SESSION['usuario'] = $registro["Nombreusuario"];
-    $_SESSION['logueado'] = true;
-    header("Location:index.php");
+  // Validar si los campos están vacíos
+  if (empty($_POST["usuario"]) || empty($_POST["password"])) {
+    $mensaje = "Por favor, complete todos los campos.";
   } else {
-    $mensaje = "Rellene los campos vacios";
+    include("./bd.php");
+
+    $sentencia = $conexion->prepare("SELECT *, count(*) as n_usuarios FROM `tbl-usuarios` WHERE Nombreusuario = :Nombreusuario AND Password = :Password");
+    $usuario = $_POST["usuario"];
+    $password = $_POST["password"];
+
+    $sentencia->bindParam(":Nombreusuario", $usuario);
+    $sentencia->bindParam(":Password", $password);
+    $sentencia->execute();
+    $registro = $sentencia->fetch(PDO::FETCH_LAZY);
+
+    if ($registro["n_usuarios"] > 0) {
+      $_SESSION['usuario'] = $registro["Nombreusuario"];
+      $_SESSION['logueado'] = true;
+      header("Location:index.php");
+      exit();
+    } else {
+      $mensaje = "El usuario o la contraseña son incorrectos";
+    }
   }
 }
 ?>
@@ -59,7 +65,7 @@ if ($_POST) {
             <input type="text" class="form-control" name="usuario" id="usuario" aria-describedby="helpId" placeholder="Escriba su usuario">
           </div>
           <label for="password" class="form-label">Contraseña</label>
-          <div class="input-group mb-3">
+          <div class="input-group mb-4">
             <span class="input-group-text" id="basic-addon1">
               <i class="bi bi-lock-fill"></i>
             </span>
