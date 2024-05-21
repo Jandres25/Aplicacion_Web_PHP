@@ -62,7 +62,7 @@ $lista_tbl_empleados = $sentencia->fetchAll(PDO::FETCH_ASSOC);
                         <?php foreach ($lista_tbl_empleados as $registro) { ?>
                             <tr>
                                 <td><?php echo $registro["ID"]; ?></td>
-                                <td style="width: 20%;">
+                                <td class="w-20">
                                     <?php echo $registro["Primernombre"]; ?> <?php echo $registro["Segundonombre"]; ?>
                                     <?php echo $registro["Primerapellido"]; ?> <?php echo $registro["Segundoapellido"]; ?>
                                 </td>
@@ -76,27 +76,28 @@ $lista_tbl_empleados = $sentencia->fetchAll(PDO::FETCH_ASSOC);
                                 <td><?php echo $registro["Fecha"]; ?></td>
                                 <td>
                                     <div class="dropdown">
-                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton<?php echo $registro['ID']; ?>" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="fas fa-ellipsis-v"></i>
+                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="fad fa-ellipsis-v"></i>
                                         </button>
-                                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton<?php echo $registro['ID']; ?>">
-                                            <li>
-                                                <a class="dropdown-item" href="carta_recomendacion.php?txtID=<?php echo $registro['ID']; ?>">
-                                                    <i class="fas fa-file-alt"></i> Carta
+                                        <ul class="dropdown-menu dropdown-menu-end text-center" aria-labelledby="dropdownMenuButton">
+                                            <li class="dropdown-item">
+                                                <a href="carta_recomendacion.php?txtID=<?php echo $registro['ID']; ?>" data-bs-toggle="tooltip" data-bs-placement="right" title="Carta de recomendación">
+                                                    <i class="fad fa-envelope-open-text fa-2x"></i>
                                                 </a>
                                             </li>
-                                            <li>
-                                                <a class="dropdown-item" href="editar.php?txtID=<?php echo $registro['ID']; ?>">
-                                                    <i class="fas fa-edit"></i> Editar
+                                            <li class="dropdown-item">
+                                                <a href="editar.php?txtID=<?php echo $registro['ID']; ?>" data-bs-toggle="tooltip" data-bs-placement="right" title="Editar registro">
+                                                    <i class="fad fa-edit fa-2x"></i>
                                                 </a>
                                             </li>
-                                            <li>
-                                                <a class="dropdown-item" href="javascript:borrar(<?php echo $registro['ID']; ?>);">
-                                                    <i class="fas fa-trash"></i> Eliminar
+                                            <li class="dropdown-item">
+                                                <a href="javascript:borrar(<?php echo $registro['ID']; ?>);" data-bs-toggle="tooltip" data-bs-placement="right" title="Eliminar registro">
+                                                    <i class="fad fa-trash fa-2x"></i>
                                                 </a>
                                             </li>
                                         </ul>
                                     </div>
+                                </td>
                             </tr>
                         <?php } ?>
                     </tbody>
