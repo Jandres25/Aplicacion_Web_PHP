@@ -1,5 +1,7 @@
 <?php
 
+namespace Core;
+
 class Env
 {
     public static function load($path)

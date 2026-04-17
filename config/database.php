@@ -1,6 +1,11 @@
 <?php
 
+namespace Config;
+
 require_once __DIR__ . '/../core/Env.php';
+
+use Core\Env;
+use PDO;
 
 class Database
 {

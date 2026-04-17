@@ -3,6 +3,9 @@
 require_once __DIR__ . '/../core/Env.php';
 require_once __DIR__ . '/../core/Router.php';
 
+use Core\Env;
+use Core\Router;
+
 Env::load(__DIR__ . '/../.env');
 
 $router = new Router(__DIR__ . '/..');

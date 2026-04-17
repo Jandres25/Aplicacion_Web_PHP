@@ -1,16 +1,18 @@
 <?php
-session_start();
 require_once __DIR__ . '/../core/Env.php';
+require_once __DIR__ . '/../app/Middleware/AuthMiddleware.php';
+
+use App\Middleware\AuthMiddleware;
+use Core\Env;
+
 Env::load(__DIR__ . '/../.env');
 
 $url_base = Env::get('APP_URL', 'http://localhost/Aplicacion_Web_PHP/');
 $url_base = rtrim($url_base, '/') . '/';
 
-// Verificar si el usuario ha iniciado sesión
-$nombreUsuario = isset($_SESSION['usuario']) ? $_SESSION['usuario'] : '';
-if (!isset($_SESSION['logueado'])) {
-  header("Location:" . $url_base . "login.php");
-}
+$authMiddleware = new AuthMiddleware();
+$authMiddleware->requireLogin($url_base . 'login.php');
+$nombreUsuario = $authMiddleware->currentUser();
 ?>
 
 <!doctype html>
@@ -22,7 +24,7 @@ if (!isset($_SESSION['logueado'])) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  <link rel="icon" type="image/x-icon" href="http://localhost/Aplicacion_Web_PHP/deadpool.ico">
+  <link rel="icon" type="image/x-icon" href="<?= $url_base; ?>deadpool.ico">
   <!-- Bootstrap CSS v5.2.1 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
 
