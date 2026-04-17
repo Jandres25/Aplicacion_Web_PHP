@@ -1,72 +1,44 @@
 <?php
 
-include("../../bd.php");
+require_once __DIR__ . '/../../core/Env.php';
 require_once __DIR__ . '/../../core/Flash.php';
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../app/Repositories/UserRepository.php';
+require_once __DIR__ . '/../../app/Services/UserService.php';
+require_once __DIR__ . '/../../app/Controllers/UserController.php';
 
+use App\Controllers\UserController;
+use Core\Env;
 use Core\Flash;
 
-if (isset($_GET["txtID"])) {
-    $txtID = (isset($_GET["txtID"])) ? $_GET["txtID"] : "";
+Env::load(__DIR__ . '/../../.env');
+$controller = UserController::fromEnvironment();
 
-    $sentencia = $conexion->prepare("SELECT * FROM `tbl-usuarios` WHERE ID=:ID");
-    $sentencia->bindParam(":ID", $txtID);
-    $sentencia->execute();
+$txtID = isset($_GET["txtID"]) ? (int)$_GET["txtID"] : (isset($_POST["txtID"]) ? (int)$_POST["txtID"] : 0);
+$mensaje = null;
 
-    $registro = $sentencia->fetch(PDO::FETCH_LAZY);
-    $usuario = $registro["Nombreusuario"];
-    $password = $registro["Password"];
-    $correo = $registro["Correo"];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $resultado = $controller->updateUser($txtID, $_POST);
+    if (isset($resultado['success']) && $resultado['success'] === true) {
+        Flash::set('Registro Actualizado', 'success');
+        header("Location:index.php");
+        exit();
+    }
+    $mensaje = isset($resultado['message']) ? $resultado['message'] : 'No se pudo actualizar el registro.';
 }
 
-if ($_POST) {
-    $txtID = (isset($_POST["txtID"])) ? $_POST["txtID"] : "";
-    $usuario = (isset($_POST["usuario"]) ? $_POST["usuario"] : "");
-    $password = (isset($_POST["password"]) ? $_POST["password"] : "");
-    $correo = (isset($_POST["correo"]) ? $_POST["correo"] : "");
-
-    $sentencia = $conexion->prepare("UPDATE `tbl-usuarios` SET Nombreusuario = :usuario, Password = :password, Correo = :correo WHERE ID = :ID");
-
-    $sentencia->bindParam(":usuario", $usuario);
-    $sentencia->bindParam(":password", $password);
-    $sentencia->bindParam(":correo", $correo);
-    $sentencia->bindParam(":ID", $txtID);
-    $sentencia->execute();
-    Flash::set('Registro Actualizado', 'success');
-    header("Location:index.php");
-    exit();
+$registro = $controller->getUser($txtID);
+if ($registro === null && $txtID > 0 && $mensaje === null) {
+    $mensaje = 'No se encontró el usuario a editar.';
 }
+
+$usuario = isset($registro["Nombreusuario"]) ? $registro["Nombreusuario"] : "";
+$password = isset($registro["Password"]) ? $registro["Password"] : "";
+$correo = isset($registro["Correo"]) ? $registro["Correo"] : "";
+$formAction = 'editar.php?txtID=' . $txtID;
 
 ?>
 
 <?php include("../../templates/header.php") ?>
-<section class="mt-5">
-    <div class="card">
-        <div class="card-header">
-            Datos del usuario
-        </div>
-        <div class="card-body">
-            <form action="" method="post" enctype="multipart/form-data">
-                <div class="mb-3">
-                    <label for="txtID" class="form-label">ID:</label>
-                    <input type="text" value="<?php echo $txtID; ?>" class="form-control" readonly name="txtID" id="txtID" aria-describedby="helpId">
-                </div>
-                <div class="mb-3">
-                    <label for="usuario" class="form-label">Nombre del usuario:</label>
-                    <input type="text" value="<?php echo $usuario; ?>" class="form-control" name="usuario" id="usuario" aria-describedby="helpId" placeholder="Ejemplo: Juan10">
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password:</label>
-                    <input type="text" value="<?php echo $password; ?>" class="form-control" name="password" id="password" aria-describedby="helpId" placeholder="Ejemplo: password">
-                </div>
-                <div class="mb-3">
-                    <label for="correo" class="form-label">Correo:</label>
-                    <input type="email" value="<?php echo $correo; ?>" class="form-control" name="correo" id="correo" aria-describedby="helpId" placeholder="Ejemplo: correo@dominio.com">
-                </div>
-                <button type="submit" class="btn btn-outline-success">Actualizar</button>
-                <a name="" id="" class="btn btn-outline-primary" href="index.php" role="button">Cancelar</a>
-            </form>
-        </div>
-        <div class="card-footer text-muted"></div>
-    </div>
-</section>
+<?php require __DIR__ . '/../../app/Views/users/edit.php'; ?>
 <?php include("../../templates/footer.php") ?>

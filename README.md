@@ -70,3 +70,15 @@ Se migró el CRUD de puestos a capas:
 - `secciones/puestos/index.php`, `crear.php` y `editar.php` ahora delegan lógica de negocio y persistencia a las capas.
 
 Estado: **completado**.
+
+## Migración Usuarios (bloque 6)
+
+Se migró el CRUD de usuarios a capas:
+
+- `app/Controllers/UserController.php`
+- `app/Services/UserService.php`
+- `app/Repositories/UserRepository.php` (extendido para CRUD sin romper Auth)
+- `app/Views/users/*`
+- `secciones/usuarios/index.php`, `crear.php` y `editar.php` ahora delegan lógica de negocio y persistencia a las capas.
+
+Estado: **completado**.
