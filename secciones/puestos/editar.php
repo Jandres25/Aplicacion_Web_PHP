@@ -1,58 +1,41 @@
 <?php
 
-include("../../bd.php");
+require_once __DIR__ . '/../../core/Env.php';
 require_once __DIR__ . '/../../core/Flash.php';
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../app/Repositories/PositionRepository.php';
+require_once __DIR__ . '/../../app/Services/PositionService.php';
+require_once __DIR__ . '/../../app/Controllers/PositionController.php';
 
+use App\Controllers\PositionController;
+use Core\Env;
 use Core\Flash;
 
-if (isset($_GET["txtID"])) {
-    $txtID = (isset($_GET["txtID"])) ? $_GET["txtID"] : "";
+Env::load(__DIR__ . '/../../.env');
+$controller = PositionController::fromEnvironment();
 
-    $sentencia = $conexion->prepare("SELECT * FROM `tbl-puestos` WHERE ID=:ID");
-    $sentencia->bindParam(":ID", $txtID);
-    $sentencia->execute();
+$txtID = isset($_GET["txtID"]) ? (int)$_GET["txtID"] : (isset($_POST["txtID"]) ? (int)$_POST["txtID"] : 0);
+$mensaje = null;
 
-    $registro = $sentencia->fetch(PDO::FETCH_LAZY);
-    $nombredelpuesto = $registro["Nombredelpuesto"];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $resultado = $controller->updatePosition($txtID, $_POST);
+    if (isset($resultado['success']) && $resultado['success'] === true) {
+        Flash::set('Registro Actualizado', 'success');
+        header("Location:index.php");
+        exit();
+    }
+    $mensaje = isset($resultado['message']) ? $resultado['message'] : 'No se pudo actualizar el registro.';
 }
 
-if ($_POST) {
-
-    $txtID = (isset($_POST["txtID"])) ? $_POST["txtID"] : "";
-    $nombredelpuesto = (isset($_POST["nombredelpuesto"]) ? $_POST["nombredelpuesto"] : "");
-
-    $sentencia = $conexion->prepare("UPDATE `tbl-puestos` SET Nombredelpuesto = :nombredelpuesto WHERE ID=:ID");
-
-    $sentencia->bindParam(":nombredelpuesto", $nombredelpuesto);
-    $sentencia->bindParam(":ID", $txtID);
-    $sentencia->execute();
-    Flash::set('Registro Actualizado', 'success');
-    header("Location:index.php");
-    exit();
+$registro = $controller->getPosition($txtID);
+if ($registro === null && $txtID > 0 && $mensaje === null) {
+    $mensaje = 'No se encontró el puesto a editar.';
 }
+
+$nombredelpuesto = isset($registro["Nombredelpuesto"]) ? $registro["Nombredelpuesto"] : "";
+$formAction = 'editar.php?txtID=' . $txtID;
 ?>
 
 <?php include("../../templates/header.php") ?>
-<section class="mt-5">
-    <div class="card">
-        <div class="card-header">
-            Datos del puesto
-        </div>
-        <div class="card-body">
-            <form action="" method="post" enctype="multipart/form-data">
-                <div class="mb-3">
-                    <label for="txtID" class="form-label">ID:</label>
-                    <input type="text" value="<?php echo $txtID; ?>" class="form-control" readonly name="txtID" id="txtID" aria-describedby="helpId" placeholder="ID">
-                </div>
-                <div class="mb-3">
-                    <label for="nombredelpuesto" class="form-label">Puesto:</label>
-                    <input type="text" value="<?php echo $nombredelpuesto; ?>" class="form-control" name="nombredelpuesto" id="nombredelpuesto" aria-describedby="helpId" placeholder="Puesto">
-                </div>
-                <button type="submit" class="btn btn-outline-success">Actualizar</button>
-                <a name="" id="" class="btn btn-outline-primary" href="index.php" role="button">Cancelar</a>
-            </form>
-        </div>
-        <div class="card-footer text-muted"></div>
-    </div>
-</section>
+<?php require __DIR__ . '/../../app/Views/positions/edit.php'; ?>
 <?php include("../../templates/footer.php") ?>

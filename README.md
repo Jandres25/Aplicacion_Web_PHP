@@ -58,3 +58,15 @@ Se reemplazó el patrón de mensajes por query string (`?mensaje=...`) por mensa
 - `core/Flash.php` centraliza `set/consume`.
 - `templates/header.php` renderiza toast tipo `top-end`.
 - CRUD de `empleados`, `puestos` y `usuarios` ahora redirigen sin contaminar URL.
+
+## Migración Puestos (bloque 5)
+
+Se migró el CRUD de puestos a capas:
+
+- `app/Controllers/PositionController.php`
+- `app/Services/PositionService.php`
+- `app/Repositories/PositionRepository.php`
+- `app/Views/positions/*`
+- `secciones/puestos/index.php`, `crear.php` y `editar.php` ahora delegan lógica de negocio y persistencia a las capas.
+
+Estado: **completado**.

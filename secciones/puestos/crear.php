@@ -1,41 +1,34 @@
 <?php
-include("../../bd.php");
-require_once __DIR__ . '/../../core/Flash.php';
 
+require_once __DIR__ . '/../../core/Env.php';
+require_once __DIR__ . '/../../core/Flash.php';
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../app/Repositories/PositionRepository.php';
+require_once __DIR__ . '/../../app/Services/PositionService.php';
+require_once __DIR__ . '/../../app/Controllers/PositionController.php';
+
+use App\Controllers\PositionController;
+use Core\Env;
 use Core\Flash;
 
-if ($_POST) {
+Env::load(__DIR__ . '/../../.env');
+$controller = PositionController::fromEnvironment();
+$mensaje = null;
 
-    $nombredelpuesto = (isset($_POST["nombredelpuesto"]) ? $_POST["nombredelpuesto"] : "");
-
-    $sentencia = $conexion->prepare("INSERT INTO `tbl-puestos`(ID,Nombredelpuesto) VALUES(null, :Nombredelpuesto)");
-
-    $sentencia->bindParam(":Nombredelpuesto", $nombredelpuesto);
-    $sentencia->execute();
-    Flash::set('Registro Agregado', 'success');
-    header("Location:index.php");
-    exit();
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $resultado = $controller->createPosition($_POST);
+    if (isset($resultado['success']) && $resultado['success'] === true) {
+        Flash::set('Registro Agregado', 'success');
+        header('Location:index.php');
+        exit();
+    }
+    $mensaje = isset($resultado['message']) ? $resultado['message'] : 'No se pudo agregar el registro.';
 }
+
+$formAction = 'crear.php';
+
 ?>
 
 <?php include("../../templates/header.php") ?>
-<section class="mt-5">
-    <div class="card">
-        <div class="card-header">
-            Creación del puesto
-        </div>
-        <div class="card-body">
-            <form action="" method="post" enctype="multipart/form-data">
-                <div class="mb-3">
-                    <label for="nombredelpuesto" class="form-label">Puesto</label>
-                    <input type="text" class="form-control" name="nombredelpuesto" id="nombredelpuesto" aria-describedby="helpId" placeholder="Ejemplo: Programador Jr.">
-                    <small id="helpId" class="form-text text-muted">Ingrese el nombre del puesto</small>
-                </div>
-                <button type="submit" class="btn btn-outline-success">Agregar</button>
-                <a name="" id="" class="btn btn-outline-primary" href="index.php" role="button">Cancelar</a>
-            </form>
-        </div>
-        <div class="card-footer text-muted"></div>
-    </div>
-</section>
+<?php require __DIR__ . '/../../app/Views/positions/create.php'; ?>
 <?php include("../../templates/footer.php") ?>
