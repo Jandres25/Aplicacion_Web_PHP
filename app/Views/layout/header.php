@@ -1,7 +1,7 @@
 <?php
-require_once __DIR__ . '/../core/Env.php';
-require_once __DIR__ . '/../core/Flash.php';
-require_once __DIR__ . '/../app/Middleware/AuthMiddleware.php';
+require_once __DIR__ . '/../../../core/Env.php';
+require_once __DIR__ . '/../../../core/Flash.php';
+require_once __DIR__ . '/../../../app/Middleware/AuthMiddleware.php';
 
 use App\Middleware\AuthMiddleware;
 use Core\Env;
@@ -11,9 +11,10 @@ Env::load(__DIR__ . '/../.env');
 
 $url_base = Env::get('APP_URL', 'http://localhost/Aplicacion_Web_PHP/');
 $url_base = rtrim($url_base, '/') . '/';
+$public_base = $url_base . 'public/';
 
 $authMiddleware = new AuthMiddleware();
-$authMiddleware->requireLogin($url_base . 'login.php');
+$authMiddleware->requireLogin($public_base . 'login');
 $nombreUsuario = $authMiddleware->currentUser();
 
 if (isset($_GET['mensaje'])) {
@@ -44,7 +45,7 @@ $flash = Flash::consume();
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  <link rel="icon" type="image/x-icon" href="<?= $url_base; ?>deadpool.ico">
+  <link rel="icon" type="image/x-icon" href="<?= $public_base; ?>img/deadpool.ico">
   <!-- Bootstrap CSS v5.2.1 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
 
@@ -75,23 +76,23 @@ $flash = Flash::consume();
       <div class="container-fluid" style="display: flex; justify-content: space-between;">
         <ul class="nav navbar-nav">
           <li class="nav-item">
-            <a class="nav-link active" href="<?= $url_base; ?>" aria-current="page">Sistema Web</a>
+            <a class="nav-link active" href="<?= $public_base; ?>" aria-current="page">Sistema Web</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="<?= $url_base; ?>secciones/empleados/">Empleados</a>
+            <a class="nav-link" href="<?= $public_base; ?>empleados">Empleados</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="<?= $url_base; ?>secciones/puestos/">Puestos</a>
+            <a class="nav-link" href="<?= $public_base; ?>puestos">Puestos</a>
           </li>
           <?php if ($nombreUsuario == "Administrador") : ?>
             <li class="nav-item">
-              <a class="nav-link" href="<?= $url_base; ?>secciones/usuarios/">Usuarios</a>
+              <a class="nav-link" href="<?= $public_base; ?>usuarios">Usuarios</a>
             </li>
           <?php endif; ?>
         </ul>
         <ul class="nav navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="<?= $url_base; ?>cerrar.php">Cerrar Sesión</a>
+            <a class="nav-link" href="<?= $public_base; ?>cerrar">Cerrar Sesión</a>
           </li>
         </ul>
       </div>

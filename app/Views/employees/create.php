@@ -54,7 +54,7 @@
         <small id="helpId" class="form-text text-muted">Seleccione la fecha de ingreso del empleado</small>
       </div>
       <button type="submit" class="btn btn-outline-success">Agregar Registro</button>
-      <a name="" id="" class="btn btn-outline-primary" href="index.php" role="button">Cancelar</a>
+      <a name="" id="" class="btn btn-outline-primary" href="empleados" role="button">Cancelar</a>
     </form>
   </div>
   <div class="card-footer text-muted"></div>

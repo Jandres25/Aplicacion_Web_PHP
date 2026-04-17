@@ -19,7 +19,7 @@
                     <input type="text" value="<?= htmlspecialchars((string)$nombredelpuesto, ENT_QUOTES, 'UTF-8'); ?>" class="form-control" name="nombredelpuesto" id="nombredelpuesto" aria-describedby="helpId" placeholder="Puesto" required>
                 </div>
                 <button type="submit" class="btn btn-outline-success">Actualizar</button>
-                <a name="" id="" class="btn btn-outline-primary" href="index.php" role="button">Cancelar</a>
+                <a name="" id="" class="btn btn-outline-primary" href="puestos" role="button">Cancelar</a>
             </form>
         </div>
         <div class="card-footer text-muted"></div>

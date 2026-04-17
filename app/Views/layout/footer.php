@@ -27,16 +27,19 @@
   });
 </script>
 <script>
-  function borrar(ID) {
+  function borrar(targetUrl) {
     Swal.fire({
       title: '¿Esta seguro de borrar el registro?',
       text: '¡Una vez borrado no se puede recuperar!',
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'Si, elimínelo'
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Si, elimínelo',
+      cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        window.location = "index.php?txtID=" + ID;
+        window.location = targetUrl;
       }
     })
   }

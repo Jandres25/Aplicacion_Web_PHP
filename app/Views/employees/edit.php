@@ -32,13 +32,17 @@
             <div class="mb-3">
                 <label for="foto" class="form-label">Foto:</label>
                 <br>
-                <img width="70" src="<?= $foto; ?>" class="rounded" alt="">
+                <?php $fotoPath = (string)$foto; ?>
+                <?php if ($fotoPath !== '' && strpos($fotoPath, '/') === false) { $fotoPath = 'storage/uploads/' . $fotoPath; } ?>
+                <img width="70" src="<?= htmlspecialchars($fotoPath, ENT_QUOTES, 'UTF-8'); ?>" class="rounded" alt="">
                 <input type="file" class="form-control" name="foto" id="foto" aria-describedby="helpId" placeholder="Foto">
             </div>
             <div class="mb-3">
                 <label for="CV" class="form-label">CV(PDF):</label>
                 <br>
-                <a href="<?= $cv; ?>"><?= $cv; ?></a>
+                <?php $cvPath = (string)$cv; ?>
+                <?php if ($cvPath !== '' && strpos($cvPath, '/') === false) { $cvPath = 'storage/uploads/' . $cvPath; } ?>
+                <a href="<?= htmlspecialchars($cvPath, ENT_QUOTES, 'UTF-8'); ?>"><?= htmlspecialchars($cvPath, ENT_QUOTES, 'UTF-8'); ?></a>
                 <input type="file" class="form-control" name="CV" id="CV" aria-describedby="helpId" placeholder="CV">
             </div>
             <div class="mb-3">
@@ -54,7 +58,7 @@
                 <input type="date" value="<?= $fechadeingreso; ?>" class="form-control" name="fechadeingreso" id="fechadeingreso" aria-describedby="helpId" placeholder="CV">
             </div>
             <button type="submit" class="btn btn-outline-success">Actualizar</button>
-            <a name="" id="" class="btn btn-outline-primary" href="index.php" role="button">Cancelar</a>
+            <a name="" id="" class="btn btn-outline-primary" href="empleados" role="button">Cancelar</a>
         </form>
     </div>
     <div class="card-footer text-muted"></div>

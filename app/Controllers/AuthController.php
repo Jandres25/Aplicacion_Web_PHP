@@ -44,7 +44,7 @@ class AuthController
         $_SESSION['usuario'] = $user['Nombreusuario'];
         $_SESSION['logueado'] = true;
 
-        header('Location:' . $this->baseUrl . 'index.php');
+        header('Location:' . $this->baseUrl . 'public/');
         exit();
     }
 

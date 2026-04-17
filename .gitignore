@@ -1,6 +1,6 @@
 .env
 /vendor/
 /storage/logs/*.log
-/storage/uploads/*
+public/storage/uploads/*
 .DS_Store
 Thumbs.db

@@ -5,19 +5,49 @@ namespace Core;
 class Router
 {
     private $projectRoot;
+    private $publicRoot;
+    private $routes = [];
 
-    public function __construct($projectRoot)
+    public function __construct($projectRoot, $publicDirectory = 'public')
     {
         $resolvedRoot = realpath($projectRoot);
         $this->projectRoot = $resolvedRoot !== false ? rtrim($resolvedRoot, '/') : rtrim($projectRoot, '/');
+        $publicPath = $this->projectRoot . '/' . trim((string)$publicDirectory, '/');
+        $resolvedPublicRoot = realpath($publicPath);
+        $this->publicRoot = $resolvedPublicRoot !== false ? rtrim($resolvedPublicRoot, '/') : rtrim($publicPath, '/');
     }
 
-    public function dispatch($requestUri, $scriptName)
+    public function get($path, callable $handler)
+    {
+        $this->add('GET', $path, $handler);
+        return $this;
+    }
+
+    public function post($path, callable $handler)
+    {
+        $this->add('POST', $path, $handler);
+        return $this;
+    }
+
+    public function add($methods, $path, callable $handler)
+    {
+        $normalizedPath = $this->normalizeRoutePath($path);
+        $methods = is_array($methods) ? $methods : [$methods];
+
+        foreach ($methods as $method) {
+            $normalizedMethod = strtoupper((string)$method);
+            if ($normalizedMethod === '') {
+                continue;
+            }
+            $this->routes[$normalizedMethod][$normalizedPath] = $handler;
+        }
+
+        return $this;
+    }
+
+    public function dispatch($requestUri, $scriptName, $requestMethod = null)
     {
         $path = $this->extractPath($requestUri, $scriptName);
-        if ($path === '') {
-            $path = 'index';
-        }
 
         $staticFile = $this->resolveStatic($path);
         if ($staticFile !== null) {
@@ -25,9 +55,13 @@ class Router
             return;
         }
 
-        $phpFile = $this->resolvePhp($path);
-        if ($phpFile !== null) {
-            $this->executePhp($phpFile);
+        $method = strtoupper((string)($requestMethod ?? ($_SERVER['REQUEST_METHOD'] ?? 'GET')));
+        if ($method === 'HEAD' && isset($this->routes['GET'][$path])) {
+            $method = 'GET';
+        }
+
+        if (isset($this->routes[$method][$path])) {
+            call_user_func($this->routes[$method][$path]);
             return;
         }
 
@@ -49,12 +83,23 @@ class Router
         }
 
         $uriPath = rawurldecode($uriPath);
-        $uriPath = trim($uriPath, '/');
-        $uriPath = preg_replace('#/+#', '/', $uriPath);
+        $uriPath = preg_replace('#/+#', '/', (string)$uriPath);
         $uriPath = str_replace('\\', '/', $uriPath);
 
         if ($uriPath === null || strpos($uriPath, '..') !== false) {
-            return '';
+            return '/';
+        }
+
+        if ($uriPath === '') {
+            return '/';
+        }
+
+        if ($uriPath[0] !== '/') {
+            $uriPath = '/' . $uriPath;
+        }
+
+        if ($uriPath !== '/' && substr($uriPath, -1) === '/') {
+            $uriPath = rtrim($uriPath, '/');
         }
 
         return $uriPath;
@@ -62,10 +107,14 @@ class Router
 
     private function resolveStatic($path)
     {
-        $candidates = [$path, $path . '/index.html'];
+        $normalizedPath = ltrim((string)$path, '/');
+        if ($normalizedPath === '') {
+            return null;
+        }
 
+        $candidates = [$normalizedPath, $normalizedPath . '/index.html'];
         foreach ($candidates as $candidate) {
-            $file = $this->resolveExistingPath($candidate);
+            $file = $this->resolvePublicPath($candidate);
             if ($file === null || !is_file($file)) {
                 continue;
             }
@@ -86,34 +135,14 @@ class Router
         return null;
     }
 
-    private function resolvePhp($path)
+    private function resolvePublicPath($relativePath)
     {
-        $candidates = [];
-        if (preg_match('/\.php$/i', $path)) {
-            $candidates[] = $path;
-        } else {
-            $candidates[] = $path . '.php';
-            $candidates[] = $path . '/index.php';
-        }
-
-        foreach ($candidates as $candidate) {
-            $file = $this->resolveExistingPath($candidate);
-            if ($file !== null && is_file($file)) {
-                return $file;
-            }
-        }
-
-        return null;
-    }
-
-    private function resolveExistingPath($relativePath)
-    {
-        $relativePath = ltrim($relativePath, '/');
+        $relativePath = ltrim((string)$relativePath, '/');
         if ($relativePath === '') {
             return null;
         }
 
-        $fullPath = $this->projectRoot . '/' . $relativePath;
+        $fullPath = $this->publicRoot . '/' . $relativePath;
         if (!file_exists($fullPath)) {
             return null;
         }
@@ -123,21 +152,30 @@ class Router
             return null;
         }
 
-        if ($resolvedPath !== $this->projectRoot && strpos($resolvedPath, $this->projectRoot . '/') !== 0) {
+        if ($resolvedPath !== $this->publicRoot && strpos($resolvedPath, $this->publicRoot . '/') !== 0) {
             return null;
         }
 
         return $resolvedPath;
     }
 
-    private function executePhp($file)
+    private function normalizeRoutePath($path)
     {
-        $currentDirectory = getcwd();
-        chdir(dirname($file));
-        require $file;
-        if ($currentDirectory !== false) {
-            chdir($currentDirectory);
+        $path = trim((string)$path);
+        if ($path === '') {
+            return '/';
         }
+
+        if ($path[0] !== '/') {
+            $path = '/' . $path;
+        }
+
+        $path = preg_replace('#/+#', '/', $path);
+        if ($path !== '/' && substr($path, -1) === '/') {
+            $path = rtrim($path, '/');
+        }
+
+        return $path;
     }
 
     private function serveStatic($file)

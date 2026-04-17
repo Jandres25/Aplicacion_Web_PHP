@@ -44,8 +44,19 @@ class EmployeeService
             return ['success' => false, 'message' => $validationError];
         }
 
-        $photoName = $this->fileStorage->storeUploadedFile(isset($files['foto']) ? $files['foto'] : [], $baseDirectory);
-        $cvName = $this->fileStorage->storeUploadedFile(isset($files['CV']) ? $files['CV'] : [], $baseDirectory);
+        $photoError = null;
+        $cvError = null;
+        $photoName = $this->fileStorage->storeUploadedFile(isset($files['foto']) ? $files['foto'] : [], $baseDirectory, $photoError);
+        $cvName = $this->fileStorage->storeUploadedFile(isset($files['CV']) ? $files['CV'] : [], $baseDirectory, $cvError);
+        if ($photoError !== null || $cvError !== null) {
+            if ($photoName !== '') {
+                $this->fileStorage->deleteFileIfExists($baseDirectory, $photoName);
+            }
+            if ($cvName !== '') {
+                $this->fileStorage->deleteFileIfExists($baseDirectory, $cvName);
+            }
+            return ['success' => false, 'message' => $this->mergeUploadErrors($photoError, $cvError)];
+        }
 
         try {
             $created = $this->employeeRepository->create([
@@ -59,10 +70,22 @@ class EmployeeService
                 'Fecha' => (string)($data['fechadeingreso'] ?? '')
             ]);
         } catch (PDOException $exception) {
+            if ($photoName !== '') {
+                $this->fileStorage->deleteFileIfExists($baseDirectory, $photoName);
+            }
+            if ($cvName !== '') {
+                $this->fileStorage->deleteFileIfExists($baseDirectory, $cvName);
+            }
             return ['success' => false, 'message' => 'No se pudo agregar el registro.'];
         }
 
         if (!$created) {
+            if ($photoName !== '') {
+                $this->fileStorage->deleteFileIfExists($baseDirectory, $photoName);
+            }
+            if ($cvName !== '') {
+                $this->fileStorage->deleteFileIfExists($baseDirectory, $cvName);
+            }
             return ['success' => false, 'message' => 'No se pudo agregar el registro.'];
         }
 
@@ -89,17 +112,16 @@ class EmployeeService
         $currentPhoto = isset($existingEmployee['Foto']) ? (string)$existingEmployee['Foto'] : '';
         $currentCv = isset($existingEmployee['CV']) ? (string)$existingEmployee['CV'] : '';
 
-        $newPhoto = $this->fileStorage->storeUploadedFile(isset($files['foto']) ? $files['foto'] : [], $baseDirectory);
-        if ($newPhoto !== '') {
-            $this->fileStorage->deleteFileIfExists($baseDirectory, $currentPhoto);
-            $currentPhoto = $newPhoto;
+        $photoError = null;
+        $cvError = null;
+        $newPhoto = $this->fileStorage->storeUploadedFile(isset($files['foto']) ? $files['foto'] : [], $baseDirectory, $photoError);
+        $newCv = $this->fileStorage->storeUploadedFile(isset($files['CV']) ? $files['CV'] : [], $baseDirectory, $cvError);
+        if ($photoError !== null || $cvError !== null) {
+            return ['success' => false, 'message' => $this->mergeUploadErrors($photoError, $cvError)];
         }
 
-        $newCv = $this->fileStorage->storeUploadedFile(isset($files['CV']) ? $files['CV'] : [], $baseDirectory);
-        if ($newCv !== '') {
-            $this->fileStorage->deleteFileIfExists($baseDirectory, $currentCv);
-            $currentCv = $newCv;
-        }
+        $photoToPersist = $newPhoto !== '' ? $newPhoto : $currentPhoto;
+        $cvToPersist = $newCv !== '' ? $newCv : $currentCv;
 
         try {
             $updated = $this->employeeRepository->update($employeeId, [
@@ -107,17 +129,36 @@ class EmployeeService
                 'Segundonombre' => trim((string)($data['segundonombre'] ?? '')),
                 'Primerapellido' => trim((string)($data['primerapellido'] ?? '')),
                 'Segundoapellido' => trim((string)($data['segundoapellido'] ?? '')),
-                'Foto' => $currentPhoto,
-                'CV' => $currentCv,
+                'Foto' => $photoToPersist,
+                'CV' => $cvToPersist,
                 'Idpuesto' => (int)($data['idpuesto'] ?? 0),
                 'Fecha' => (string)($data['fechadeingreso'] ?? '')
             ]);
         } catch (PDOException $exception) {
+            if ($newPhoto !== '') {
+                $this->fileStorage->deleteFileIfExists($baseDirectory, $newPhoto);
+            }
+            if ($newCv !== '') {
+                $this->fileStorage->deleteFileIfExists($baseDirectory, $newCv);
+            }
             return ['success' => false, 'message' => 'No se pudo actualizar el registro.'];
         }
 
         if (!$updated) {
+            if ($newPhoto !== '') {
+                $this->fileStorage->deleteFileIfExists($baseDirectory, $newPhoto);
+            }
+            if ($newCv !== '') {
+                $this->fileStorage->deleteFileIfExists($baseDirectory, $newCv);
+            }
             return ['success' => false, 'message' => 'No se pudo actualizar el registro.'];
+        }
+
+        if ($newPhoto !== '') {
+            $this->fileStorage->deleteFileIfExists($baseDirectory, $currentPhoto);
+        }
+        if ($newCv !== '') {
+            $this->fileStorage->deleteFileIfExists($baseDirectory, $currentCv);
         }
 
         return ['success' => true, 'message' => 'Registro actualizado'];
@@ -166,5 +207,17 @@ class EmployeeService
     {
         $parsed = \DateTime::createFromFormat('Y-m-d', $date);
         return $parsed !== false && $parsed->format('Y-m-d') === $date;
+    }
+
+    private function mergeUploadErrors($photoError, $cvError)
+    {
+        $errors = [];
+        if (is_string($photoError) && trim($photoError) !== '') {
+            $errors[] = 'Foto: ' . trim($photoError);
+        }
+        if (is_string($cvError) && trim($cvError) !== '') {
+            $errors[] = 'CV: ' . trim($cvError);
+        }
+        return $errors === [] ? 'No se pudo procesar la subida de archivos.' : implode(' ', $errors);
     }
 }

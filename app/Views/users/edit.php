@@ -27,7 +27,7 @@
                     <input type="email" value="<?= htmlspecialchars((string)$correo, ENT_QUOTES, 'UTF-8'); ?>" class="form-control" name="correo" id="correo" aria-describedby="helpId" placeholder="Ejemplo: correo@dominio.com" required>
                 </div>
                 <button type="submit" class="btn btn-outline-success">Actualizar</button>
-                <a name="" id="" class="btn btn-outline-primary" href="index.php" role="button">Cancelar</a>
+                <a name="" id="" class="btn btn-outline-primary" href="usuarios" role="button">Cancelar</a>
             </form>
         </div>
         <div class="card-footer text-muted"></div>

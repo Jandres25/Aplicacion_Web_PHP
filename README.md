@@ -13,10 +13,10 @@ Realize algunos cambios en el login y agregue un paginador que baje cuando haya 
 ## Front controller (bloque 2)
 
 Se agregó un front controller en `public/index.php` y un router base en `core/Router.php` para iniciar la migración por capas.
+Ahora las rutas de la aplicación se registran explícitamente en `routes/web.php`.
 
-- Acceso recomendado en transición: `http://localhost/Aplicacion_Web_PHP/public/`
-- Ejemplos de rutas: `/public/login`, `/public/secciones/empleados`, `/public/estilos/style.css`
-- Las rutas legacy directas siguen funcionando mientras se migran módulos.
+- Acceso principal: `http://localhost/Aplicacion_Web_PHP/public/`
+- Ejemplos de rutas: `/public/login`, `/public/empleados`, `/public/puestos`, `/public/usuarios`
 
 ## Migración Auth (bloque 3)
 
@@ -48,6 +48,16 @@ Se migró el CRUD de empleados y el manejo de archivos a capas:
 - `app/Infrastructure/EmployeeFileStorage.php`
 - `app/Views/employees/*`
 - `secciones/empleados/index.php`, `crear.php`, `editar.php` y `carta_recomendacion.php` ahora delegan lógica de negocio, datos y archivos a las capas.
+
+Estado: **completado**.
+
+## Limpieza legacy y compatibilidad (bloque 7)
+
+Se dejó la aplicación operando en modo **solo front controller**:
+
+- `core/PublicEntryGuard.php` fuerza redirección de entradas legacy hacia `/public/*`.
+- `index.php`, `login.php`, `cerrar.php` y `secciones/*` se protegen para no ejecutarse fuera del front controller.
+- `templates/header.php` y flujos de auth/login/logout apuntan a rutas `/public/*`.
 
 Estado: **completado**.
 

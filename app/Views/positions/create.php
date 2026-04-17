@@ -16,7 +16,7 @@
                     <small id="helpId" class="form-text text-muted">Ingrese el nombre del puesto</small>
                 </div>
                 <button type="submit" class="btn btn-outline-success">Agregar</button>
-                <a name="" id="" class="btn btn-outline-primary" href="index.php" role="button">Cancelar</a>
+                <a name="" id="" class="btn btn-outline-primary" href="puestos" role="button">Cancelar</a>
             </form>
         </div>
         <div class="card-footer text-muted"></div>
