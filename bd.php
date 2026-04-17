@@ -1,12 +1,12 @@
 <?php
 
-$servidor = "localhost";
-$baseDeDatos = "app";
-$usuario = "root";
-$contrasenia = "";
+require_once __DIR__ . '/core/Env.php';
+require_once __DIR__ . '/config/database.php';
+
+Env::load(__DIR__ . '/.env');
 
 try {
-    $conexion = new PDO("mysql:host=$servidor; dbname=$baseDeDatos", $usuario, $contrasenia);
+    $conexion = Database::getConnection();
 } catch (Exception $ex) {
     echo $ex->getMessage();
 }
