@@ -1,5 +1,8 @@
 <?php
 include("../../bd.php");
+require_once __DIR__ . '/../../core/Flash.php';
+
+use Core\Flash;
 
 if ($_POST) {
 
@@ -9,8 +12,9 @@ if ($_POST) {
 
     $sentencia->bindParam(":Nombredelpuesto", $nombredelpuesto);
     $sentencia->execute();
-    $mensaje = "Registro Agregado";
-    header("Location:index.php?mensaje=" . $mensaje);
+    Flash::set('Registro Agregado', 'success');
+    header("Location:index.php");
+    exit();
 }
 ?>
 

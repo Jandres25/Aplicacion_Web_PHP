@@ -1,6 +1,9 @@
 <?php
 
 include("../../bd.php");
+require_once __DIR__ . '/../../core/Flash.php';
+
+use Core\Flash;
 
 if (isset($_GET["txtID"])) {
     $txtID = (isset($_GET["txtID"])) ? $_GET["txtID"] : "";
@@ -16,8 +19,6 @@ if (isset($_GET["txtID"])) {
 }
 
 if ($_POST) {
-
-    var_dump($_POST);
     $txtID = (isset($_POST["txtID"])) ? $_POST["txtID"] : "";
     $usuario = (isset($_POST["usuario"]) ? $_POST["usuario"] : "");
     $password = (isset($_POST["password"]) ? $_POST["password"] : "");
@@ -30,8 +31,9 @@ if ($_POST) {
     $sentencia->bindParam(":correo", $correo);
     $sentencia->bindParam(":ID", $txtID);
     $sentencia->execute();
-    $mensaje = "Registro Actualizado";
-    header("Location:index.php?mensaje=" . $mensaje);
+    Flash::set('Registro Actualizado', 'success');
+    header("Location:index.php");
+    exit();
 }
 
 ?>

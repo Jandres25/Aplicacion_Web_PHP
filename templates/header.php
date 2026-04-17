@@ -1,9 +1,11 @@
 <?php
 require_once __DIR__ . '/../core/Env.php';
+require_once __DIR__ . '/../core/Flash.php';
 require_once __DIR__ . '/../app/Middleware/AuthMiddleware.php';
 
 use App\Middleware\AuthMiddleware;
 use Core\Env;
+use Core\Flash;
 
 Env::load(__DIR__ . '/../.env');
 
@@ -13,6 +15,24 @@ $url_base = rtrim($url_base, '/') . '/';
 $authMiddleware = new AuthMiddleware();
 $authMiddleware->requireLogin($url_base . 'login.php');
 $nombreUsuario = $authMiddleware->currentUser();
+
+if (isset($_GET['mensaje'])) {
+  Flash::set($_GET['mensaje'], 'success');
+  $queryParams = $_GET;
+  unset($queryParams['mensaje']);
+
+  $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+  $path = is_string($path) ? $path : '';
+  $redirectUrl = $path;
+  if (!empty($queryParams)) {
+    $redirectUrl .= '?' . http_build_query($queryParams);
+  }
+
+  header('Location:' . $redirectUrl);
+  exit();
+}
+
+$flash = Flash::consume();
 ?>
 
 <!doctype html>
@@ -79,11 +99,22 @@ $nombreUsuario = $authMiddleware->currentUser();
   </header>
 
   <main class="container">
-    <?php if (isset($_GET['mensaje'])) : ?>
+    <?php if ($flash !== null) : ?>
       <script>
-        Swal.fire({
-          icon: "success",
-          title: "<?= $_GET['mensaje']; ?>"
+        const Toast = Swal.mixin({
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 5000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+          }
+        });
+        Toast.fire({
+          icon: <?= json_encode($flash['icon']); ?>,
+          title: <?= json_encode($flash['message']); ?>
         });
       </script>
     <?php endif; ?>

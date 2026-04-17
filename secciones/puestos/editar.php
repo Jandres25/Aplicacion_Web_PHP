@@ -1,6 +1,9 @@
 <?php
 
 include("../../bd.php");
+require_once __DIR__ . '/../../core/Flash.php';
+
+use Core\Flash;
 
 if (isset($_GET["txtID"])) {
     $txtID = (isset($_GET["txtID"])) ? $_GET["txtID"] : "";
@@ -23,8 +26,9 @@ if ($_POST) {
     $sentencia->bindParam(":nombredelpuesto", $nombredelpuesto);
     $sentencia->bindParam(":ID", $txtID);
     $sentencia->execute();
-    $mensaje = "Registro Actualizado";
-    header("Location:index.php?mensaje=" . $mensaje);
+    Flash::set('Registro Actualizado', 'success');
+    header("Location:index.php");
+    exit();
 }
 ?>
 

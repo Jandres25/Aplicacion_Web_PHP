@@ -1,5 +1,8 @@
 <?php
 include("../../bd.php");
+require_once __DIR__ . '/../../core/Flash.php';
+
+use Core\Flash;
 
 if (isset($_GET['txtID'])) {
     $txtID = (isset($_GET['txtID'])) ? $_GET['txtID'] : "";
@@ -7,8 +10,9 @@ if (isset($_GET['txtID'])) {
     $sentencia = $conexion->prepare("DELETE FROM `tbl-puestos` WHERE ID=:ID");
     $sentencia->bindParam(":ID", $txtID);
     $sentencia->execute();
-    $mensaje = "Registro Eliminado";
-    header("Location:index.php?mensaje=" . $mensaje);
+    Flash::set('Registro Eliminado', 'success');
+    header("Location:index.php");
+    exit();
 }
 $sentencia = $conexion->prepare("SELECT * FROM `tbl-puestos`");
 $sentencia->execute();

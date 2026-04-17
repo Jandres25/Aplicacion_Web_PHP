@@ -1,109 +1,31 @@
 <?php
 
-include("../../bd.php");
+require_once __DIR__ . '/../../core/Env.php';
+require_once __DIR__ . '/../../core/Flash.php';
+require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../app/Infrastructure/EmployeeFileStorage.php';
+require_once __DIR__ . '/../../app/Repositories/EmployeeRepository.php';
+require_once __DIR__ . '/../../app/Services/EmployeeService.php';
+require_once __DIR__ . '/../../app/Controllers/EmployeeController.php';
+
+use App\Controllers\EmployeeController;
+use Core\Env;
+use Core\Flash;
+
+Env::load(__DIR__ . '/../../.env');
+$controller = EmployeeController::fromEnvironment();
 
 if (isset($_GET['txtID'])) {
-    $txtID = (isset($_GET['txtID'])) ? $_GET['txtID'] : "";
-
-    $sentencia = $conexion->prepare("SELECT Foto, CV FROM `tbl-empleados` WHERE ID=:ID");
-    $sentencia->bindParam(':ID', $txtID);
-    $sentencia->execute();
-    $registro_recuperado = $sentencia->fetch(PDO::FETCH_LAZY);
-
-    if (isset($registro_recuperado["Foto"]) && $registro_recuperado["Foto"] != "") {
-        if (file_exists("./" . $registro_recuperado["Foto"])) {
-            unlink("./" . $registro_recuperado["Foto"]);
-        }
-    }
-
-    if (isset($registro_recuperado["CV"]) && $registro_recuperado["CV"] != "") {
-        if (file_exists("./" . $registro_recuperado["CV"])) {
-            unlink("./" . $registro_recuperado["CV"]);
-        }
-    }
-
-    $sentencia = $conexion->prepare("DELETE FROM `tbl-empleados` WHERE ID=:ID");
-    $sentencia->bindParam(":ID", $txtID);
-    $sentencia->execute();
-    $mensaje = "Registro Eliminado";
-    header("Location:index.php?mensaje=" . $mensaje);
-    header("Location:index.php");
+    $controller->deleteEmployee($_GET['txtID'], __DIR__);
+    Flash::set('Registro Eliminado', 'success');
+    header('Location:index.php');
+    exit();
 }
 
-$sentencia = $conexion->prepare("SELECT *, (SELECT Nombredelpuesto FROM `tbl-puestos` WHERE ID=Idpuesto limit 1) as puesto FROM `tbl-empleados`");
-$sentencia->execute();
-$lista_tbl_empleados = $sentencia->fetchAll(PDO::FETCH_ASSOC);
+$lista_tbl_empleados = $controller->listEmployees();
 
 ?>
 
 <?php include("../../templates/header.php"); ?>
-<section class="mt-4 mb-4">
-    <h2>Lista Empleados</h2>
-
-    <div class="card text-bg-light" style="margin-bottom: 3%;">
-        <div class="card-header">
-            <a name="" id="" class="btn btn-outline-primary" href="crear.php" role="button">Agregar Registro</a>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive-sm">
-                <table class="table table-hover" id="tabla_id">
-                    <thead class="table-dark">
-                        <tr>
-                            <th scope="col">ID</th>
-                            <th scope="col">Nombre</th>
-                            <th scope="col">Foto</th>
-                            <th scope="col">CV</th>
-                            <th scope="col">Puesto</th>
-                            <th scope="col">Fecha Ingreso</th>
-                            <th scope="col">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($lista_tbl_empleados as $registro) { ?>
-                            <tr>
-                                <td><?php echo $registro["ID"]; ?></td>
-                                <td class="w-20">
-                                    <?php echo $registro["Primernombre"]; ?> <?php echo $registro["Segundonombre"]; ?>
-                                    <?php echo $registro["Primerapellido"]; ?> <?php echo $registro["Segundoapellido"]; ?>
-                                </td>
-                                <td>
-                                    <img width="50" src="<?php echo $registro["Foto"]; ?>" class="img-fluid rounded" alt="">
-                                </td>
-                                <td>
-                                    <a href="<?php echo $registro["CV"]; ?>"><?php echo $registro["CV"]; ?></a>
-                                </td>
-                                <td><?php echo $registro["puesto"]; ?></td>
-                                <td><?php echo $registro["Fecha"]; ?></td>
-                                <td>
-                                    <div class="dropdown">
-                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="fad fa-ellipsis-v"></i>
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-end text-center" aria-labelledby="dropdownMenuButton">
-                                            <li class="dropdown-item">
-                                                <a href="carta_recomendacion.php?txtID=<?php echo $registro['ID']; ?>" data-bs-toggle="tooltip" data-bs-placement="right" title="Carta de recomendación">
-                                                    <i class="fad fa-envelope-open-text fa-2x"></i>
-                                                </a>
-                                            </li>
-                                            <li class="dropdown-item">
-                                                <a href="editar.php?txtID=<?php echo $registro['ID']; ?>" data-bs-toggle="tooltip" data-bs-placement="right" title="Editar registro">
-                                                    <i class="fad fa-edit fa-2x"></i>
-                                                </a>
-                                            </li>
-                                            <li class="dropdown-item">
-                                                <a href="javascript:borrar(<?php echo $registro['ID']; ?>);" data-bs-toggle="tooltip" data-bs-placement="right" title="Eliminar registro">
-                                                    <i class="fad fa-trash fa-2x"></i>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </td>
-                            </tr>
-                        <?php } ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</section>
+<?php require __DIR__ . '/../../app/Views/employees/index.php'; ?>
 <?php include("../../templates/footer.php"); ?>
