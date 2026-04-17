@@ -33,3 +33,28 @@ Se migró la autenticación a capas:
 ## Convención de namespaces
 
 Durante la migración, los nuevos componentes y los componentes base actualizados deben declararse con `namespace`.
+
+## Singleton en Database
+
+`config/database.php` ahora reutiliza una única instancia de conexión PDO (patrón Singleton) mediante `Database::getConnection()`.
+
+## Migración Empleados (bloque 4)
+
+Se migró el CRUD de empleados y el manejo de archivos a capas:
+
+- `app/Controllers/EmployeeController.php`
+- `app/Services/EmployeeService.php`
+- `app/Repositories/EmployeeRepository.php`
+- `app/Infrastructure/EmployeeFileStorage.php`
+- `app/Views/employees/*`
+- `secciones/empleados/index.php`, `crear.php`, `editar.php` y `carta_recomendacion.php` ahora delegan lógica de negocio, datos y archivos a las capas.
+
+Estado: **completado**.
+
+## Notificaciones Flash (SweetAlert2 Toast)
+
+Se reemplazó el patrón de mensajes por query string (`?mensaje=...`) por mensajes flash en sesión:
+
+- `core/Flash.php` centraliza `set/consume`.
+- `templates/header.php` renderiza toast tipo `top-end`.
+- CRUD de `empleados`, `puestos` y `usuarios` ahora redirigen sin contaminar URL.
