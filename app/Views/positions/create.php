@@ -1,24 +1,43 @@
-<section class="mt-5">
-    <div class="card">
-        <div class="card-header">
-            Creación del puesto
-        </div>
-        <div class="card-body">
-            <?php if (isset($mensaje) && $mensaje !== null && $mensaje !== '') { ?>
-                <div class="alert alert-danger" role="alert">
-                    <?= htmlspecialchars($mensaje, ENT_QUOTES, 'UTF-8'); ?>
+<section class="mt-4 mb-5">
+    <form action="<?= htmlspecialchars($formAction, ENT_QUOTES, 'UTF-8'); ?>" method="post" class="needs-validation">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
+                <h5 class="mb-0 fw-bold text-primary">
+                    <i class="fas fa-plus-circle me-2"></i>Registrar Nuevo Puesto
+                </h5>
+            </div>
+            <div class="card-body p-4">
+                <?php if (isset($mensaje) && $mensaje !== null && $mensaje !== '') : ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <?= htmlspecialchars($mensaje, ENT_QUOTES, 'UTF-8'); ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
+
+                <div class="mb-4">
+                    <label for="nombredelpuesto" class="form-label fw-bold">Nombre del Puesto</label>
+                    <div class="input-group shadow-sm">
+                        <span class="input-group-text bg-light text-primary"><i class="fas fa-briefcase"></i></span>
+                        <input type="text" class="form-control" name="nombredelpuesto" id="nombredelpuesto" placeholder="Ej: Desarrollador Senior" required>
+                    </div>
+                    <div class="form-text mt-2">Ingrese el nombre oficial del cargo o puesto laboral.</div>
                 </div>
-            <?php } ?>
-            <form action="<?= htmlspecialchars($formAction, ENT_QUOTES, 'UTF-8'); ?>" method="post" enctype="multipart/form-data">
-                <div class="mb-3">
-                    <label for="nombredelpuesto" class="form-label">Puesto</label>
-                    <input type="text" class="form-control" name="nombredelpuesto" id="nombredelpuesto" aria-describedby="helpId" placeholder="Ejemplo: Programador Jr." required>
-                    <small id="helpId" class="form-text text-muted">Ingrese el nombre del puesto</small>
+            </div>
+            <div class="card-footer bg-white py-3">
+                <div class="row g-2">
+                    <div class="col-12 col-sm-auto">
+                        <button type="submit" class="btn btn-primary shadow-sm w-100">
+                            <i class="fas fa-save me-1"></i> Guardar Puesto
+                        </button>
+                    </div>
+                    <div class="col-12 col-sm-auto">
+                        <a class="btn btn-light border w-100" href="puestos" role="button">
+                            <i class="fas fa-times me-1"></i> Cancelar
+                        </a>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-outline-success">Agregar</button>
-                <a name="" id="" class="btn btn-outline-primary" href="puestos" role="button">Cancelar</a>
-            </form>
+            </div>
         </div>
-        <div class="card-footer text-muted"></div>
-    </div>
+    </form>
 </section>

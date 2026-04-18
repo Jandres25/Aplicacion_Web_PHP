@@ -1,22 +1,27 @@
 <section class="mt-4 mb-4">
-    <h2>Lista Empleados</h2>
-
-    <div class="card text-bg-light" style="margin-bottom: 3%;">
-        <div class="card-header">
-            <a name="" id="" class="btn btn-outline-primary" href="empleados-crear" role="button">Agregar Registro</a>
+    <div class="card shadow-sm">
+        <div class="card-header bg-white py-3 d-flex flex-column flex-sm-row justify-content-between align-items-center border-bottom gap-3">
+            <h5 class="card-title mb-0">
+                <i class="fas fa-users me-2 text-primary"></i>Listado de Empleados
+            </h5>
+            <div class="card-tools">
+                <a class="btn btn-primary btn-sm shadow-sm" href="empleados-crear" role="button">
+                    <i class="fas fa-user-plus me-1"></i> Agregar Registro
+                </a>
+            </div>
         </div>
         <div class="card-body">
-            <div class="table-responsive-sm">
-                <table class="table table-hover" id="tabla_id">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle" id="tabla_id" style="visibility: hidden;">
                     <thead class="table-dark">
                         <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Nombre</th>
+                            <th scope="col" class="text-center" style="width: 50px;">#</th>
+                            <th scope="col">Nombre Completo</th>
                             <th scope="col">Foto</th>
                             <th scope="col">CV</th>
                             <th scope="col">Puesto</th>
                             <th scope="col">Fecha Ingreso</th>
-                            <th scope="col">Acciones</th>
+                            <th scope="col" class="text-center" style="width: 150px;">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -24,53 +29,66 @@
                         $counter = 1;
                         foreach ($lista_tbl_empleados as $registro) : ?>
                             <tr>
-                                <td><?= $counter++; ?></td>
-                                <td class="w-20">
-                                    <?= $registro["Primernombre"]; ?> <?= $registro["Segundonombre"]; ?>
-                                    <?= $registro["Primerapellido"]; ?> <?= $registro["Segundoapellido"]; ?>
+                                <td class="text-center fw-bold"><?= $counter++; ?></td>
+                                <td class="fw-medium">
+                                    <?= htmlspecialchars($registro["Primernombre"] . " " . $registro["Segundonombre"] . " " . $registro["Primerapellido"] . " " . $registro["Segundoapellido"], ENT_QUOTES, 'UTF-8'); ?>
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     <?php if (!empty($registro["Foto"])) : ?>
                                         <?php $fotoPath = (string)$registro["Foto"]; ?>
-                                        <?php if ($fotoPath !== '' && strpos($fotoPath, '/') === false) { $fotoPath = 'storage/uploads/' . $fotoPath; } ?>
-                                        <img width="50" src="<?= htmlspecialchars($fotoPath, ENT_QUOTES, 'UTF-8'); ?>" class="img-fluid rounded" alt="">
+                                        <?php if ($fotoPath !== '' && strpos($fotoPath, '/') === false) {
+                                            $fotoPath = 'storage/uploads/' . $fotoPath;
+                                        } ?>
+                                        <img width="45" src="<?= htmlspecialchars($fotoPath, ENT_QUOTES, 'UTF-8'); ?>" class="img-fluid rounded-circle shadow-sm border" alt="Foto" style="height: 45px; object-fit: cover;">
                                     <?php else : ?>
-                                        <img width="50" src="https://via.placeholder.com/50" class="img-fluid rounded" alt="Foto no disponible">
+                                        <div class="avatar-sm mx-auto bg-light rounded-circle d-flex align-items-center justify-content-center border shadow-sm" style="width: 45px; height: 45px;">
+                                            <i class="fas fa-user text-secondary"></i>
+                                        </div>
                                     <?php endif; ?>
                                 </td>
                                 <td>
                                     <?php if (!empty($registro["CV"])) : ?>
                                         <?php $cvPath = (string)$registro["CV"]; ?>
-                                        <?php if ($cvPath !== '' && strpos($cvPath, '/') === false) { $cvPath = 'storage/uploads/' . $cvPath; } ?>
-                                        <a href="<?= htmlspecialchars($cvPath, ENT_QUOTES, 'UTF-8'); ?>" target="_blank"><?= htmlspecialchars($cvPath, ENT_QUOTES, 'UTF-8'); ?></a>
+                                        <?php if ($cvPath !== '' && strpos($cvPath, '/') === false) {
+                                            $cvPath = 'storage/uploads/' . $cvPath;
+                                        } ?>
+                                        <a href="<?= htmlspecialchars($cvPath, ENT_QUOTES, 'UTF-8'); ?>" target="_blank" class="btn btn-outline-info btn-sm" title="Ver CV">
+                                            <i class="fas fa-file-pdf me-1"></i> Ver CV
+                                        </a>
                                     <?php else : ?>
-                                        <span class="text-muted">CV no disponible</span>
+                                        <span class="badge bg-light text-dark border">Sin CV</span>
                                     <?php endif; ?>
                                 </td>
-                                <td><?= $registro["puesto"]; ?></td>
-                                <td><?= $registro["Fecha"]; ?></td>
                                 <td>
-                                    <div class="dropdown">
-                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="fad fa-ellipsis-v"></i>
+                                    <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1">
+                                        <?= htmlspecialchars($registro["puesto"], ENT_QUOTES, 'UTF-8'); ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="small text-muted">
+                                        <i class="far fa-calendar-alt me-1"></i> <?= htmlspecialchars($registro["Fecha"], ENT_QUOTES, 'UTF-8'); ?>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="btn-group shadow-sm" role="group">
+                                        <a class="btn btn-outline-info btn-sm"
+                                            href="empleados-carta-recomendacion?txtID=<?= urlencode($registro['ID']); ?>"
+                                            data-bs-toggle="tooltip"
+                                            title="Carta de Recomendación">
+                                            <i class="fas fa-file-signature"></i>
+                                        </a>
+                                        <a class="btn btn-outline-success btn-sm"
+                                            href="empleados-editar?txtID=<?= urlencode($registro['ID']); ?>"
+                                            data-bs-toggle="tooltip"
+                                            title="Editar Registro">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button class="btn btn-outline-danger btn-sm"
+                                            onclick="borrar('empleados?txtID=<?= (int)$registro['ID']; ?>')"
+                                            data-bs-toggle="tooltip"
+                                            title="Eliminar Registro">
+                                            <i class="fas fa-trash-alt"></i>
                                         </button>
-                                        <ul class="dropdown-menu dropdown-menu-end text-center" aria-labelledby="dropdownMenuButton">
-                                            <li class="dropdown-item">
-                                                <a href="empleados-carta-recomendacion?txtID=<?= $registro['ID']; ?>" data-bs-toggle="tooltip" data-bs-placement="right" title="Carta de recomendación">
-                                                    <i class="fad fa-envelope-open-text fa-2x"></i>
-                                                </a>
-                                            </li>
-                                            <li class="dropdown-item">
-                                                <a href="empleados-editar?txtID=<?= $registro['ID']; ?>" data-bs-toggle="tooltip" data-bs-placement="right" title="Editar registro">
-                                                    <i class="fad fa-edit fa-2x"></i>
-                                                </a>
-                                            </li>
-                                            <li class="dropdown-item">
-                                                <a href="javascript:borrar('empleados?txtID=<?= $registro['ID']; ?>');" data-bs-toggle="tooltip" data-bs-placement="right" title="Eliminar registro">
-                                                    <i class="fad fa-trash fa-2x"></i>
-                                                </a>
-                                            </li>
-                                        </ul>
                                     </div>
                                 </td>
                             </tr>

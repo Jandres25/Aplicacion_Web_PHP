@@ -1,27 +1,45 @@
-<section class="mt-5">
-    <div class="card">
-        <div class="card-header">
-            Datos del puesto
+<section class="mt-4 mb-5">
+    <form action="<?= htmlspecialchars($formAction, ENT_QUOTES, 'UTF-8'); ?>" method="post" class="needs-validation">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
+                <h5 class="mb-0 fw-bold text-success">
+                    <i class="fas fa-edit me-2"></i>Editar Datos del Puesto
+                </h5>
+                <span class="badge bg-light text-dark border">ID: <?= htmlspecialchars((string)$txtID, ENT_QUOTES, 'UTF-8'); ?></span>
+                <input type="hidden" name="txtID" value="<?= htmlspecialchars((string)$txtID, ENT_QUOTES, 'UTF-8'); ?>">
+            </div>
+            <div class="card-body p-4">
+                <?php if (isset($mensaje) && $mensaje !== null && $mensaje !== '') : ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <?= htmlspecialchars($mensaje, ENT_QUOTES, 'UTF-8'); ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <?php endif; ?>
+
+                <div class="mb-4">
+                    <label for="nombredelpuesto" class="form-label fw-bold">Nombre del Puesto</label>
+                    <div class="input-group shadow-sm">
+                        <span class="input-group-text bg-light text-success"><i class="fas fa-briefcase"></i></span>
+                        <input type="text" value="<?= htmlspecialchars((string)$nombredelpuesto, ENT_QUOTES, 'UTF-8'); ?>" class="form-control" name="nombredelpuesto" id="nombredelpuesto" required>
+                    </div>
+                    <div class="form-text mt-2">Modifique el nombre del cargo o puesto laboral.</div>
+                </div>
+            </div>
+            <div class="card-footer bg-white py-3">
+                <div class="row g-2">
+                    <div class="col-12 col-sm-auto">
+                        <button type="submit" class="btn btn-success shadow-sm w-100">
+                            <i class="fas fa-sync-alt me-1"></i> Actualizar Puesto
+                        </button>
+                    </div>
+                    <div class="col-12 col-sm-auto">
+                        <a class="btn btn-light border w-100" href="puestos" role="button">
+                            <i class="fas fa-times me-1"></i> Cancelar
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            <?php if (isset($mensaje) && $mensaje !== null && $mensaje !== '') { ?>
-                <div class="alert alert-danger" role="alert">
-                    <?= htmlspecialchars($mensaje, ENT_QUOTES, 'UTF-8'); ?>
-                </div>
-            <?php } ?>
-            <form action="<?= htmlspecialchars($formAction, ENT_QUOTES, 'UTF-8'); ?>" method="post" enctype="multipart/form-data">
-                <div class="mb-3">
-                    <label for="txtID" class="form-label">ID:</label>
-                    <input type="text" value="<?= htmlspecialchars((string)$txtID, ENT_QUOTES, 'UTF-8'); ?>" class="form-control" readonly name="txtID" id="txtID" aria-describedby="helpId" placeholder="ID">
-                </div>
-                <div class="mb-3">
-                    <label for="nombredelpuesto" class="form-label">Puesto:</label>
-                    <input type="text" value="<?= htmlspecialchars((string)$nombredelpuesto, ENT_QUOTES, 'UTF-8'); ?>" class="form-control" name="nombredelpuesto" id="nombredelpuesto" aria-describedby="helpId" placeholder="Puesto" required>
-                </div>
-                <button type="submit" class="btn btn-outline-success">Actualizar</button>
-                <a name="" id="" class="btn btn-outline-primary" href="puestos" role="button">Cancelar</a>
-            </form>
-        </div>
-        <div class="card-footer text-muted"></div>
-    </div>
+    </form>
 </section>
