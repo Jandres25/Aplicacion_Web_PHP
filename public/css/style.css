@@ -1,67 +1,119 @@
-* {
-	margin: 0;
-	padding: 0;
+/* --- ESTILOS ORIGINALES DEL LOGIN --- */
+.login-body {
+    background: #222222 !important;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
 }
 
-body {
-    background: #222222;
-	overflow: hidden;
-}
-
-#tarjeta {
-    -webkit-borde-radius: 10px;
-    -webkit-box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    -moz-border-shadow: 10px;
-    -moz-box-shadow: 0 0 20px  rgba(0,0,0,0.5);
-    -o-border-radius: 10px;
-    -o-border-shadow: 0 0 20px rgba(0,0,0,0.5);
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    font-size: 20px;
-	padding: 3%;
-    width: 35%;
-	max-width: 40%;
-}
-
-.container {
+main.container-login {
     position: relative;
     width: 100%;
     height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#tarjeta {
+    -webkit-border-radius: 10px;
+    -webkit-box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    -moz-border-shadow: 10px;
+    -moz-box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    -o-border-radius: 10px;
+    -o-border-shadow: 0 0 20px rgba(0,0,0,0.5);
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    font-size: 18px;
+    padding: 30px;
+    width: 90%;
+    max-width: 450px;
+    background: white;
+    z-index: 2;
 }
 
 .square {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 50px;
-	height: 50px;
-	background: linear-gradient(#303030, #757575);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(#303030, #757575);
+    z-index: 1;
 }
 
 .circle {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 50px;
-	height: 50px;
-	background: #1cd99d;
-	border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    background: #1cd99d;
+    border-radius: 50%;
+    z-index: 1;
 }
 
 .triangle {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 50px;
-	height: 50px;
-	background: #f5f5f5;
-	clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-	-webkit-clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px;
+    height: 50px;
+    background: #f5f5f5;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    -webkit-clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    z-index: 1;
 }
 
-.login-form {
-    position: relative;
-    z-index: 2;
+/* --- ESTILOS MODERNOS DEL DASHBOARD --- */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+main.container {
+    flex-grow: 1;
+}
+
+.card {
+    border: none;
+    border-radius: 0.75rem;
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, .125);
+    border-top-left-radius: 0.75rem !important;
+    border-top-right-radius: 0.75rem !important;
+}
+
+.transition-hover {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.transition-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
+}
+
+.avatar-sm {
+    width: 35px;
+    height: 35px;
+}
+
+.avatar-lg {
+    width: 70px;
+    height: 70px;
+}
+
+.table.dataTable {
+    visibility: hidden;
+}
+
+footer {
+    margin-top: auto;
 }

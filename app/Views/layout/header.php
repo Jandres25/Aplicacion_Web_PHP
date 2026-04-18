@@ -1,41 +1,4 @@
-<?php
-require_once __DIR__ . '/../../../core/Env.php';
-require_once __DIR__ . '/../../../core/Flash.php';
-require_once __DIR__ . '/../../../app/Middleware/AuthMiddleware.php';
-
-use App\Middleware\AuthMiddleware;
-use Core\Env;
-use Core\Flash;
-
-Env::load(__DIR__ . '/../.env');
-
-$url_base = Env::get('APP_URL', 'http://localhost/Aplicacion_Web_PHP/');
-$url_base = rtrim($url_base, '/') . '/';
-$public_base = $url_base . 'public/';
-
-$authMiddleware = new AuthMiddleware();
-$authMiddleware->requireLogin($public_base . 'login');
-$nombreUsuario = $authMiddleware->currentUser();
-
-if (isset($_GET['mensaje'])) {
-  Flash::set($_GET['mensaje'], 'success');
-  $queryParams = $_GET;
-  unset($queryParams['mensaje']);
-
-  $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-  $path = is_string($path) ? $path : '';
-  $redirectUrl = $path;
-  if (!empty($queryParams)) {
-    $redirectUrl .= '?' . http_build_query($queryParams);
-  }
-
-  header('Location:' . $redirectUrl);
-  exit();
-}
-
-$flash = Flash::consume();
-?>
-
+<?php require_once dirname(__DIR__, 3) . '/core/bootstrap.php'; ?>
 <!doctype html>
 <html lang="es">
 
@@ -51,71 +14,66 @@ $flash = Flash::consume();
 
   <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
 
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
-  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
-  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+  <!-- DataTables con Bootstrap 5 + Responsive -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css" />
+  
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Estilos Personalizados -->
+  <link rel="stylesheet" href="<?= $public_base; ?>css/style.css">
 
   <script src="http://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-  <style>
-    body {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    main {
-      flex-grow: 1;
-    }
-  </style>
 </head>
 
 <body>
   <header>
-    <nav class="navbar navbar-expand navbar-dark bg-dark">
-      <div class="container-fluid" style="display: flex; justify-content: space-between;">
-        <ul class="nav navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link active" href="<?= $public_base; ?>" aria-current="page">Sistema Web</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="<?= $public_base; ?>empleados">Empleados</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="<?= $public_base; ?>puestos">Puestos</a>
-          </li>
-          <?php if ($nombreUsuario == "Administrador") : ?>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+      <div class="container">
+        <a class="navbar-brand fw-bold" href="<?= $public_base; ?>">
+          <i class="fas fa-laptop-code me-2"></i>Sistema Web
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNavbar">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link" href="<?= $public_base; ?>usuarios">Usuarios</a>
+              <a class="nav-link" href="<?= $public_base; ?>empleados">
+                <i class="fas fa-user-tie me-1"></i> Empleados
+              </a>
             </li>
-          <?php endif; ?>
-        </ul>
-        <ul class="nav navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" href="<?= $public_base; ?>cerrar">Cerrar Sesión</a>
-          </li>
-        </ul>
+            <li class="nav-item">
+              <a class="nav-link" href="<?= $public_base; ?>puestos">
+                <i class="fas fa-briefcase me-1"></i> Puestos
+              </a>
+            </li>
+            <?php if ($nombreUsuario == "Administrador") : ?>
+              <li class="nav-item">
+                <a class="nav-link" href="<?= $public_base; ?>usuarios">
+                  <i class="fas fa-users-cog me-1"></i> Usuarios
+                </a>
+              </li>
+            <?php endif; ?>
+          </ul>
+          <div class="d-flex align-items-center">
+            <span class="navbar-text me-3 d-none d-lg-inline">
+              <i class="fas fa-user-circle me-1"></i> <?= htmlspecialchars($nombreUsuario); ?>
+            </span>
+            <a class="btn btn-outline-light btn-sm" href="<?= $public_base; ?>cerrar">
+              <i class="fas fa-sign-out-alt me-1"></i> Cerrar Sesión
+            </a>
+          </div>
+        </div>
       </div>
     </nav>
   </header>
 
   <main class="container">
     <?php if ($flash !== null) : ?>
-      <script>
-        const Toast = Swal.mixin({
-          toast: true,
-          position: "top-end",
-          showConfirmButton: false,
-          timer: 5000,
-          timerProgressBar: true,
-          didOpen: (toast) => {
-            toast.onmouseenter = Swal.stopTimer;
-            toast.onmouseleave = Swal.resumeTimer;
-          }
-        });
-        Toast.fire({
-          icon: <?= json_encode($flash['icon']); ?>,
-          title: <?= json_encode($flash['message']); ?>
-        });
-      </script>
+      <div id="flash-data" 
+           data-icon="<?= htmlspecialchars($flash['icon']); ?>" 
+           data-message="<?= htmlspecialchars($flash['message']); ?>">
+      </div>
     <?php endif; ?>

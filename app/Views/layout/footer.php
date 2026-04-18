@@ -1,8 +1,16 @@
 </main>
-<footer>
-  <div class="d-flex align-items-center justify-content-center" style="height: 60px; background: rgb(33, 37, 41); color: white;">
-    <b5>&copy; Derechos Reservados UPDS
-      <b5 />
+<footer class="mt-auto">
+  <div class="container-fluid py-3 bg-dark text-white text-center">
+    <div class="row">
+      <div class="col-12">
+        <p class="mb-0 small">
+          &copy; <?= date('Y'); ?> <span class="fw-bold">Derechos Reservados UPDS</span> 
+          <span class="d-none d-md-inline">|</span> 
+          <br class="d-md-none"> 
+          Sistema de Gestión Empresarial
+        </p>
+      </div>
+    </div>
   </div>
 </footer>
 <!-- Bootstrap JavaScript Libraries -->
@@ -12,45 +20,17 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js" integrity="sha384-7VPbUDkoPSGFnVtYi0QogXtr74QeVeeIs99Qfg5YCF+TidwNdjvaKZX19NZ/e6oz" crossorigin="anonymous">
 </script>
 
-<script>
-  $(document).ready(function() {
-    $("#tabla_id").DataTable({
-      "pageLength": 5,
-      lengthMenu: [
-        [3, 5, 10, 25, 50],
-        [3, 5, 10, 25, 50]
-      ],
-      "language": {
-        "url": "https://cdn.datatables.net/plug-ins/1.13.1/i18n/es-ES.json"
-      }
-    });
-  });
-</script>
-<script>
-  function borrar(targetUrl) {
-    Swal.fire({
-      title: '¿Esta seguro de borrar el registro?',
-      text: '¡Una vez borrado no se puede recuperar!',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Si, elimínelo',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        window.location = targetUrl;
-      }
-    })
-  }
-</script>
+<!-- DataTables Core & Bootstrap 5 Integration -->
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 
-<script>
-  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-  var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-    return new bootstrap.Tooltip(tooltipTriggerEl);
-  });
-</script>
+<!-- DataTables Extensions -->
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/responsive.bootstrap5.min.js"></script>
+
+<!-- Scripts Personalizados -->
+<script src="<?= $public_base; ?>js/notifications.js"></script>
+<script src="<?= $public_base; ?>js/main.js"></script>
 
 </body>
 
