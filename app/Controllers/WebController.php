@@ -57,6 +57,9 @@ class WebController
             $this->redirect('');
         }
 
+        $public_base = $this->publicBaseUrl;
+        $formAction = 'login';
+        $mensaje = '';
         require $this->projectRoot . '/app/Views/auth/login.php';
     }
 
@@ -64,6 +67,9 @@ class WebController
     {
         $authController = AuthController::fromEnvironment();
         $result = $authController->handleLogin($_POST);
+        
+        $public_base = $this->publicBaseUrl;
+        $formAction = 'login';
         $mensaje = isset($result['mensaje']) ? (string)$result['mensaje'] : '';
         require $this->projectRoot . '/app/Views/auth/login.php';
     }

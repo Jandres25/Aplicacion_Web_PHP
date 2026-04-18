@@ -2,9 +2,6 @@
 
 namespace Config;
 
-require_once __DIR__ . '/../core/Env.php';
-
-use Core\Env;
 use PDO;
 
 class Database
@@ -13,24 +10,26 @@ class Database
 
     private function __construct() {}
 
+    /**
+     * Obtiene la instancia única de la conexión PDO (Singleton)
+     */
     public static function getConnection()
     {
         if (self::$connection instanceof PDO) {
             return self::$connection;
         }
 
-        $host = Env::get('DB_HOST', '127.0.0.1');
-        $port = Env::get('DB_PORT', '3306');
-        $database = Env::get('DB_DATABASE', 'app');
-        $username = Env::get('DB_USERNAME', 'root');
-        $password = Env::get('DB_PASSWORD', 'root');
+        try {
+            $dsn = "mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME . ";charset=utf8mb4";
 
-        $dsn = "mysql:host={$host};port={$port};dbname={$database};charset=utf8mb4";
-
-        self::$connection = new PDO($dsn, $username, $password, [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-        ]);
+            self::$connection = new PDO($dsn, DB_USER, DB_PASS, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
+            ]);
+        } catch (\PDOException $e) {
+            die("Error de conexión a la base de datos: " . $e->getMessage());
+        }
 
         return self::$connection;
     }
@@ -39,6 +38,6 @@ class Database
 
     public function __wakeup()
     {
-        throw new \Exception('Cannot unserialize singleton');
+        throw new \Exception('No se puede deserializar una instancia de Database');
     }
 }

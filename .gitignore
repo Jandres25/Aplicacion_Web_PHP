@@ -1,6 +1,26 @@
-.env
+# Cache and temporary files
+*.log
+*.tmp
+
+# System files
 /vendor/
-/storage/logs/*.log
-public/storage/uploads/*
 .DS_Store
 Thumbs.db
+bash.exe.stackdump
+.env
+public/storage/uploads/*
+!public/storage/uploads/cv_default.pdf
+!public/storage/uploads/user-default.jpg
+config/app.php
+
+# IDEs and editors
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+
+# Database backups
+*.sql
+!database/schema.sql
+!database/seeders.sql

@@ -1,0 +1,21 @@
+<?php
+/**
+ * Plantilla de Configuración General
+ * Copie este archivo a app.php y ajuste si es necesario.
+ */
+
+use Core\Env;
+
+// Cargar entorno
+Env::load(__DIR__ . '/../.env');
+
+// URLs Base
+define('APP_URL', rtrim(Env::get('APP_URL', 'http://localhost/'), '/') . '/');
+define('PUBLIC_PATH', APP_URL . 'public/');
+
+// Configuración de Base de Datos
+define('DB_HOST', Env::get('DB_HOST', '127.0.0.1'));
+define('DB_PORT', Env::get('DB_PORT', '3306'));
+define('DB_NAME', Env::get('DB_DATABASE', 'database_name'));
+define('DB_USER', Env::get('DB_USERNAME', 'db_user'));
+define('DB_PASS', Env::get('DB_PASSWORD', 'db_password'));
