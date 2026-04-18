@@ -1,94 +1,87 @@
-# Aplicacion web en PHP
+<div align="center">
+  <img src="public/img/deadpool.ico" width="80" alt="Logo">
+  <h1>🚀 Sistema de Gestión Empresarial PHP</h1>
+  <p>Una aplicación web robusta construida con arquitectura por capas en PHP Vanilla, enfocada en la mantenibilidad, escalabilidad y una experiencia de usuario moderna.</p>
 
-La aplicación web que realize esta basada en un video del canal de develoteca: [Crea una aplicación web en php](https://youtu.be/J2LW5__bDkI "Crea una aplicación web con php").
+[![PHP Version](https://img.shields.io/badge/php-%5E8.0-blue.svg)](https://www.php.net/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Architecture](https://img.shields.io/badge/architecture-Layered-orange.svg)](#arquitectura-por-capas)
 
-Realize algunos cambios en el login y agregue un paginador que baje cuando haya mas contenido.
+</div>
 
-## Configuración de entorno
+---
 
-1. Copiar `.env.example` a `.env`.
-2. Ajustar credenciales de base de datos y `APP_URL` en `.env`.
-3. Ejecutar la aplicación en tu entorno local (XAMPP/LAMPP).
+## 📋 Descripción del Proyecto
 
-## Front controller (bloque 2)
+Este sistema es una solución integral para la gestión de recursos humanos, que permite el control de **empleados**, **puestos de trabajo** y **usuarios del sistema**. Ha evolucionado de un script simple a una aplicación empresarial estructurada siguiendo los principios de **Clean Architecture**.
 
-Se agregó un front controller en `public/index.php` y un router base en `core/Router.php` para iniciar la migración por capas.
-Ahora las rutas de la aplicación se registran explícitamente en `routes/web.php`.
+## 🏗️ Arquitectura por Capas
 
-- Acceso principal: `http://localhost/Aplicacion_Web_PHP/public/`
-- Ejemplos de rutas: `/public/login`, `/public/empleados`, `/public/puestos`, `/public/usuarios`
+La aplicación implementa una separación estricta de responsabilidades para facilitar el mantenimiento y las pruebas:
 
-## Migración Auth (bloque 3)
+- **Controladores (`Controllers`)**: Manejan las peticiones HTTP y coordinan la respuesta.
+- **Servicios (`Services`)**: Orquestan la lógica de negocio pura.
+- **Repositorios (`Repositories`)**: Abstraen el acceso a datos (SQL/PDO).
+- **Middleware**: Gestionan la seguridad y autenticación en las rutas.
+- **Infraestructura**: Servicios externos como almacenamiento de archivos y generación de PDFs (DomPDF).
 
-Se migró la autenticación a capas:
+## 🚀 Características Principales
 
-- `app/Controllers/AuthController.php`
-- `app/Services/AuthService.php`
-- `app/Repositories/UserRepository.php`
-- `app/Middleware/AuthMiddleware.php`
-- `app/Views/auth/login.php`
+- **Frontend Moderno**: Interfaz basada en **Bootstrap 5** con un diseño limpio y profesional.
+- **DataTables Avanzados**: Listados responsivos con búsqueda rápida y paginación.
+- **Notificaciones Dinámicas**: Sistema de mensajes Flash integrados con **SweetAlert2**.
+- **Seguridad**: Autenticación centralizada, protección de rutas y prevención de inyección SQL mediante PDO.
+- **Generación de Documentos**: Creación automatizada de cartas de recomendación en formato PDF.
+- **Estructura Front Controller**: Enrutamiento amigable y centralizado en `public/index.php`.
 
-`login.php` ahora actúa como punto de entrada del módulo Auth y delega la lógica a las capas.
+## 🎨 Diseño e Interfaz de Usuario (UI/UX)
 
-## Convención de namespaces
+Se ha implementado un sistema de diseño consistente y moderno a lo largo de todos los módulos de la aplicación, elevando la calidad visual y la experiencia del usuario:
 
-Durante la migración, los nuevos componentes y los componentes base actualizados deben declararse con `namespace`.
+### 🌟 Patrón de Diseño Consistente
+Todos los módulos (Usuarios, Empleados y Puestos) comparten una estructura visual uniforme que facilita la navegación:
+- **Tarjetas con Sombra (`shadow-sm`)**: Proporcionan profundidad y una separación clara de las secciones del sistema.
+- **Iconografía Intuitiva**: Integración extensiva de **FontAwesome 6** en encabezados, grupos de entrada y botones de acción para una navegación visual más rápida.
+- **Tipografía y Jerarquía**: Uso de fuentes legibles y contrastes adecuados, con etiquetas en negrita y textos de ayuda claros.
 
-## Singleton en Database
+### 📊 Listados Inteligentes
+- **Tablas Modernas**: Implementación de tablas interactivas con encabezados oscuros, efectos de hover y alineación vertical media.
+- **Estados Visuales**: Uso de insignias (`badges`) de colores para puestos, IDs y estados, permitiendo una lectura rápida de la información.
+- **Acciones Agrupadas**: Botones de acción (Editar, Eliminar, Ver) organizados en grupos estilizados con tooltips para evitar el desorden visual.
 
-`config/database.php` ahora reutiliza una única instancia de conexión PDO (patrón Singleton) mediante `Database::getConnection()`.
+### 📝 Formularios Optimizados
+- **Grupos de Entrada con Iconos**: Entradas de datos enriquecidas visualmente para indicar el tipo de información requerida.
+- **Distribución Multicolumna**: Formularios complejos (como el de Empleados) organizados en rejillas de dos columnas para reducir el desplazamiento vertical.
+- **Gestión de Archivos Mejorada**: Previsualización circular de fotos de perfil y enlaces directos a documentos CV dentro de los formularios de edición.
+- **Feedback en Tiempo Real**: Alertas de validación y mensajes de error integrados de forma elegante en la parte superior de los formularios.
 
-## Migración Empleados (bloque 4)
+---
 
-Se migró el CRUD de empleados y el manejo de archivos a capas:
+## 🛠️ Instalación y Configuración
 
-- `app/Controllers/EmployeeController.php`
-- `app/Services/EmployeeService.php`
-- `app/Repositories/EmployeeRepository.php`
-- `app/Infrastructure/EmployeeFileStorage.php`
-- `app/Views/employees/*`
-- `secciones/empleados/index.php`, `crear.php`, `editar.php` y `carta_recomendacion.php` ahora delegan lógica de negocio, datos y archivos a las capas.
+1. **Requisitos**: PHP 8.0+, Servidor Web (Apache/Nginx) y MySQL/MariaDB.
+2. **Clonar y Preparar**:
+   ```bash
+   cp .env.example .env
+   ```
+3. **Configuración**: Ajustar las credenciales de base de datos y la `APP_URL` en el archivo `.env`.
+4. **Base de Datos**: Importar el archivo `app.sql` en tu gestor de base de datos.
+5. **Acceso**: Apuntar tu servidor web a la carpeta `public/` o acceder vía `http://localhost/Aplicacion_Web_PHP/public/`.
 
-Estado: **completado**.
+## 📂 Estructura del Directorio
 
-## Limpieza legacy y compatibilidad (bloque 7)
+```text
+├── app/                # Lógica de la aplicación (MVC + Capas)
+├── config/             # Configuración y Conexiones Singleton
+├── core/               # Componentes núcleo (Router, Flash, Env)
+├── public/             # Único punto de entrada y activos estáticos
+├── routes/             # Definición de rutas del sistema
+└── libs/               # Librerías externas (DomPDF, etc.)
+```
 
-Se dejó la aplicación operando en modo **solo front controller**:
+---
 
-- `core/PublicEntryGuard.php` fuerza redirección de entradas legacy hacia `/public/*`.
-- `index.php`, `login.php`, `cerrar.php` y `secciones/*` se protegen para no ejecutarse fuera del front controller.
-- `templates/header.php` y flujos de auth/login/logout apuntan a rutas `/public/*`.
-
-Estado: **completado**.
-
-## Notificaciones Flash (SweetAlert2 Toast)
-
-Se reemplazó el patrón de mensajes por query string (`?mensaje=...`) por mensajes flash en sesión:
-
-- `core/Flash.php` centraliza `set/consume`.
-- `templates/header.php` renderiza toast tipo `top-end`.
-- CRUD de `empleados`, `puestos` y `usuarios` ahora redirigen sin contaminar URL.
-
-## Migración Puestos (bloque 5)
-
-Se migró el CRUD de puestos a capas:
-
-- `app/Controllers/PositionController.php`
-- `app/Services/PositionService.php`
-- `app/Repositories/PositionRepository.php`
-- `app/Views/positions/*`
-- `secciones/puestos/index.php`, `crear.php` y `editar.php` ahora delegan lógica de negocio y persistencia a las capas.
-
-Estado: **completado**.
-
-## Migración Usuarios (bloque 6)
-
-Se migró el CRUD de usuarios a capas:
-
-- `app/Controllers/UserController.php`
-- `app/Services/UserService.php`
-- `app/Repositories/UserRepository.php` (extendido para CRUD sin romper Auth)
-- `app/Views/users/*`
-- `secciones/usuarios/index.php`, `crear.php` y `editar.php` ahora delegan lógica de negocio y persistencia a las capas.
-
-Estado: **completado**.
+<div align="center">
+  <p>&copy; 2026 Desarrollado por <b>Jose Andres Meneces Lopez</b> - Proyecto de Ingeniería de Sistemas</p>
+  <p><i>Construido con ❤️ para la gestión eficiente de datos.</i></p>
+</div>
