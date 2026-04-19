@@ -23,11 +23,12 @@
 
         <?php if (!empty($mensaje)) : ?>
           <div class="alert alert-danger text-center py-2 mb-3" role="alert">
-            <small><?= $mensaje; ?></small>
+            <small><?= htmlspecialchars((string)$mensaje, ENT_QUOTES, 'UTF-8'); ?></small>
           </div>
         <?php endif; ?>
 
-        <form action="<?= $formAction; ?>" method="post">
+        <form action="<?= htmlspecialchars((string)$formAction, ENT_QUOTES, 'UTF-8'); ?>" method="post">
+          <input type="hidden" name="csrf_token" value="<?= htmlspecialchars((string)$csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
           <div class="mb-3">
             <label for="usuario" class="form-label small fw-bold">Usuario</label>
             <div class="input-group">

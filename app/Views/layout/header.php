@@ -61,9 +61,12 @@
             <span class="navbar-text me-3 d-none d-lg-inline">
               <i class="fas fa-user-circle me-1"></i> <?= htmlspecialchars($nombreUsuario); ?>
             </span>
-            <a class="btn btn-outline-light btn-sm" href="<?= $public_base; ?>cerrar">
-              <i class="fas fa-sign-out-alt me-1"></i> Cerrar Sesión
-            </a>
+            <form action="<?= htmlspecialchars($public_base, ENT_QUOTES, 'UTF-8'); ?>cerrar" method="post" class="d-inline">
+              <input type="hidden" name="csrf_token" value="<?= htmlspecialchars((string)$csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+              <button type="submit" class="btn btn-outline-light btn-sm">
+                <i class="fas fa-sign-out-alt me-1"></i> Cerrar Sesión
+              </button>
+            </form>
           </div>
         </div>
       </div>

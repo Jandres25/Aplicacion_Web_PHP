@@ -40,12 +40,16 @@
                                             title="Editar Puesto">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <button class="btn btn-outline-danger btn-sm"
-                                            onclick="borrar('puestos?txtID=<?= (int)$registro['ID']; ?>')"
-                                            data-bs-toggle="tooltip"
-                                            title="Eliminar Puesto">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
+                                        <form id="delete-position-<?= (int)$registro['ID']; ?>" action="puestos-eliminar" method="post" class="d-inline">
+                                            <input type="hidden" name="txtID" value="<?= (int)$registro['ID']; ?>">
+                                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars((string)$csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
+                                            <button type="button" class="btn btn-outline-danger btn-sm"
+                                                onclick="borrar('delete-position-<?= (int)$registro['ID']; ?>')"
+                                                data-bs-toggle="tooltip"
+                                                title="Eliminar Puesto">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>

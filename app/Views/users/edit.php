@@ -1,5 +1,6 @@
 <section class="mt-4 mb-5">
     <form action="<?= htmlspecialchars($formAction, ENT_QUOTES, 'UTF-8'); ?>" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars((string)$csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
         <div class="card shadow-sm">
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                 <h5 class="mb-0 fw-bold text-success">
@@ -45,10 +46,10 @@
                         <label for="password" class="form-label fw-bold">Contraseña</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="fas fa-lock text-success"></i></span>
-                            <input type="password" value="<?= htmlspecialchars((string)$password, ENT_QUOTES, 'UTF-8'); ?>" class="form-control" name="password" id="password" placeholder="Nueva contraseña" required>
+                            <input type="password" class="form-control" name="password" id="password" placeholder="Nueva contraseña">
                         </div>
                         <div class="form-text text-info">
-                            <i class="fas fa-info-circle me-1"></i> Ingrese la nueva contraseña o mantenga la actual.
+                            <i class="fas fa-info-circle me-1"></i> Déjelo vacío para conservar la contraseña actual.
                         </div>
                     </div>
                 </div>

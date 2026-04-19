@@ -58,7 +58,7 @@ $(document).ready(function () {
 /**
  * Función para confirmar el borrado de un registro
  */
-function borrar(targetUrl) {
+function borrar(formId) {
     Swal.fire({
         title: '¿Está seguro de borrar el registro?',
         text: '¡Una vez borrado no se puede recuperar!',
@@ -71,7 +71,10 @@ function borrar(targetUrl) {
         reverseButtons: true
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = targetUrl;
+            const form = document.getElementById(formId);
+            if (form) {
+                form.submit();
+            }
         }
     });
 }
