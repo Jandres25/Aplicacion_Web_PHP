@@ -2,13 +2,15 @@
 
 namespace App\Middleware;
 
+require_once __DIR__ . '/../../core/Security.php';
+
+use Core\Security;
+
 class AuthMiddleware
 {
     public function requireLogin($loginUrl)
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        Security::startSession();
 
         if (!isset($_SESSION['logueado'])) {
             header('Location:' . $loginUrl);
@@ -18,9 +20,7 @@ class AuthMiddleware
 
     public function currentUser()
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        Security::startSession();
 
         return isset($_SESSION['usuario']) ? $_SESSION['usuario'] : '';
     }

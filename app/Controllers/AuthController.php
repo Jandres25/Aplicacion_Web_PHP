@@ -2,10 +2,13 @@
 
 namespace App\Controllers;
 
+require_once __DIR__ . '/../../core/Security.php';
+
 use App\Repositories\UserRepository;
 use App\Services\AuthService;
 use Config\Database;
 use Core\Env;
+use Core\Security;
 
 class AuthController
 {
@@ -37,9 +40,8 @@ class AuthController
             return ['mensaje' => 'El usuario o la contraseña son incorrectos'];
         }
 
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        Security::startSession();
+        session_regenerate_id(true);
 
         $_SESSION['usuario'] = $user['Nombreusuario'];
         $_SESSION['logueado'] = true;

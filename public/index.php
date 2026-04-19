@@ -1,13 +1,16 @@
 <?php
 
 require_once __DIR__ . '/../core/Env.php';
+require_once __DIR__ . '/../core/Security.php';
 require_once __DIR__ . '/../config/app.php';
 require_once __DIR__ . '/../core/Router.php';
 
 use Core\Env;
 use Core\Router;
+use Core\Security;
 
 Env::load(__DIR__ . '/../.env');
+Security::sendSecurityHeaders();
 
 $router = new Router(__DIR__ . '/..');
 $routesRegistrar = require __DIR__ . '/../routes/web.php';

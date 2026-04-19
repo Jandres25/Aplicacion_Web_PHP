@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 require_once __DIR__ . '/../../core/Flash.php';
+require_once __DIR__ . '/../../core/Security.php';
 require_once __DIR__ . '/../Middleware/AuthMiddleware.php';
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../Repositories/UserRepository.php';
@@ -20,6 +21,7 @@ require_once __DIR__ . '/UserController.php';
 
 use App\Middleware\AuthMiddleware;
 use Core\Flash;
+use Core\Security;
 
 class WebController
 {
@@ -49,9 +51,7 @@ class WebController
 
     public function showLogin()
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        Security::startSession();
 
         if (isset($_SESSION['logueado'])) {
             $this->redirect('');
@@ -60,25 +60,39 @@ class WebController
         $public_base = $this->publicBaseUrl;
         $formAction = 'login';
         $mensaje = '';
+        $csrfToken = Security::getCsrfToken();
         require $this->projectRoot . '/app/Views/auth/login.php';
     }
 
     public function login()
     {
+        if (!$this->hasValidCsrfToken($_POST)) {
+            $public_base = $this->publicBaseUrl;
+            $formAction = 'login';
+            $mensaje = 'Solicitud inválida, recargue la página e intente nuevamente.';
+            $csrfToken = Security::getCsrfToken();
+            require $this->projectRoot . '/app/Views/auth/login.php';
+            return;
+        }
+
         $authController = AuthController::fromEnvironment();
         $result = $authController->handleLogin($_POST);
         
         $public_base = $this->publicBaseUrl;
         $formAction = 'login';
         $mensaje = isset($result['mensaje']) ? (string)$result['mensaje'] : '';
+        $csrfToken = Security::getCsrfToken();
         require $this->projectRoot . '/app/Views/auth/login.php';
     }
 
     public function logout()
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
+        if (!$this->hasValidCsrfToken($_POST)) {
+            Flash::set('Solicitud inválida, recargue la página e intente nuevamente.', 'error');
+            $this->redirect('');
         }
+
+        Security::startSession();
 
         session_unset();
         session_destroy();
@@ -89,13 +103,6 @@ class WebController
     {
         $this->requireLogin();
         $employeeController = EmployeeController::fromEnvironment();
-
-        $txtID = (int)($_GET['txtID'] ?? 0);
-        if ($txtID > 0) {
-            $deleted = $employeeController->deleteEmployee($txtID, $this->uploadsDirectory);
-            Flash::set($deleted ? 'Registro borrado' : 'No se pudo borrar el registro', $deleted ? 'success' : 'error');
-            $this->redirect('empleados');
-        }
 
         $lista_tbl_empleados = $employeeController->listEmployees();
         $this->renderWithLayout('employees/index.php', compact('lista_tbl_empleados'));
@@ -114,6 +121,11 @@ class WebController
     public function employeesCreate()
     {
         $this->requireLogin();
+        if (!$this->hasValidCsrfToken($_POST)) {
+            Flash::set('Solicitud inválida, recargue la página e intente nuevamente.', 'error');
+            $this->redirect('empleados-crear');
+        }
+
         $employeeController = EmployeeController::fromEnvironment();
         $result = $employeeController->createEmployee($_POST, $_FILES, $this->uploadsDirectory);
         if (($result['success'] ?? false) === true) {
@@ -169,6 +181,11 @@ class WebController
     public function employeesEdit()
     {
         $this->requireLogin();
+        if (!$this->hasValidCsrfToken($_POST)) {
+            Flash::set('Solicitud inválida, recargue la página e intente nuevamente.', 'error');
+            $this->redirect('empleados');
+        }
+
         $employeeController = EmployeeController::fromEnvironment();
         $txtID = (int)($_POST['txtID'] ?? 0);
         $result = $employeeController->updateEmployee($txtID, $_POST, $_FILES, $this->uploadsDirectory);
@@ -236,16 +253,30 @@ class WebController
         require $this->projectRoot . '/app/Views/employees/recommendation_letter.php';
     }
 
+    public function employeesDelete()
+    {
+        $this->requireLogin();
+        if (!$this->hasValidCsrfToken($_POST)) {
+            Flash::set('Solicitud inválida, recargue la página e intente nuevamente.', 'error');
+            $this->redirect('empleados');
+        }
+
+        $employeeController = EmployeeController::fromEnvironment();
+        $txtID = (int)($_POST['txtID'] ?? 0);
+        if ($txtID > 0) {
+            $deleted = $employeeController->deleteEmployee($txtID, $this->uploadsDirectory);
+            Flash::set($deleted ? 'Registro borrado' : 'No se pudo borrar el registro', $deleted ? 'success' : 'error');
+        } else {
+            Flash::set('El ID del empleado no es válido.', 'error');
+        }
+
+        $this->redirect('empleados');
+    }
+
     public function positionsIndex()
     {
         $this->requireLogin();
         $positionController = PositionController::fromEnvironment();
-        $txtID = (int)($_GET['txtID'] ?? 0);
-        if ($txtID > 0) {
-            $deleted = $positionController->deletePosition($txtID);
-            Flash::set($deleted ? 'Registro borrado' : 'No se pudo borrar el registro', $deleted ? 'success' : 'error');
-            $this->redirect('puestos');
-        }
 
         $lista_tbl_puestos = $positionController->listPositions();
         $this->renderWithLayout('positions/index.php', compact('lista_tbl_puestos'));
@@ -262,6 +293,11 @@ class WebController
     public function positionsCreate()
     {
         $this->requireLogin();
+        if (!$this->hasValidCsrfToken($_POST)) {
+            Flash::set('Solicitud inválida, recargue la página e intente nuevamente.', 'error');
+            $this->redirect('puestos-crear');
+        }
+
         $positionController = PositionController::fromEnvironment();
         $result = $positionController->createPosition($_POST);
         if (($result['success'] ?? false) === true) {
@@ -294,6 +330,11 @@ class WebController
     public function positionsEdit()
     {
         $this->requireLogin();
+        if (!$this->hasValidCsrfToken($_POST)) {
+            Flash::set('Solicitud inválida, recargue la página e intente nuevamente.', 'error');
+            $this->redirect('puestos');
+        }
+
         $positionController = PositionController::fromEnvironment();
         $txtID = (int)($_POST['txtID'] ?? 0);
         $result = $positionController->updatePosition($txtID, $_POST);
@@ -308,17 +349,31 @@ class WebController
         $this->renderWithLayout('positions/edit.php', compact('formAction', 'mensaje', 'txtID', 'nombredelpuesto'));
     }
 
+    public function positionsDelete()
+    {
+        $this->requireLogin();
+        if (!$this->hasValidCsrfToken($_POST)) {
+            Flash::set('Solicitud inválida, recargue la página e intente nuevamente.', 'error');
+            $this->redirect('puestos');
+        }
+
+        $positionController = PositionController::fromEnvironment();
+        $txtID = (int)($_POST['txtID'] ?? 0);
+        if ($txtID > 0) {
+            $deleted = $positionController->deletePosition($txtID);
+            Flash::set($deleted ? 'Registro borrado' : 'No se pudo borrar el registro', $deleted ? 'success' : 'error');
+        } else {
+            Flash::set('El ID del puesto no es válido.', 'error');
+        }
+
+        $this->redirect('puestos');
+    }
+
     public function usersIndex()
     {
         $this->requireLogin();
         $this->requireAdmin();
         $userController = UserController::fromEnvironment();
-        $txtID = (int)($_GET['txtID'] ?? 0);
-        if ($txtID > 0) {
-            $deleted = $userController->deleteUser($txtID);
-            Flash::set($deleted ? 'Registro borrado' : 'No se pudo borrar el registro', $deleted ? 'success' : 'error');
-            $this->redirect('usuarios');
-        }
 
         $lista_tbl_usuarios = $userController->listUsers();
         $this->renderWithLayout('users/index.php', compact('lista_tbl_usuarios'));
@@ -337,6 +392,11 @@ class WebController
     {
         $this->requireLogin();
         $this->requireAdmin();
+        if (!$this->hasValidCsrfToken($_POST)) {
+            Flash::set('Solicitud inválida, recargue la página e intente nuevamente.', 'error');
+            $this->redirect('usuarios-crear');
+        }
+
         $userController = UserController::fromEnvironment();
         $result = $userController->createUser($_POST);
         if (($result['success'] ?? false) === true) {
@@ -364,15 +424,19 @@ class WebController
         $formAction = 'usuarios-editar';
         $mensaje = '';
         $usuario = (string)($usuarioData['Nombreusuario'] ?? '');
-        $password = (string)($usuarioData['Password'] ?? '');
         $correo = (string)($usuarioData['Correo'] ?? '');
-        $this->renderWithLayout('users/edit.php', compact('formAction', 'mensaje', 'txtID', 'usuario', 'password', 'correo'));
+        $this->renderWithLayout('users/edit.php', compact('formAction', 'mensaje', 'txtID', 'usuario', 'correo'));
     }
 
     public function usersEdit()
     {
         $this->requireLogin();
         $this->requireAdmin();
+        if (!$this->hasValidCsrfToken($_POST)) {
+            Flash::set('Solicitud inválida, recargue la página e intente nuevamente.', 'error');
+            $this->redirect('usuarios');
+        }
+
         $userController = UserController::fromEnvironment();
         $txtID = (int)($_POST['txtID'] ?? 0);
         $result = $userController->updateUser($txtID, $_POST);
@@ -384,13 +448,34 @@ class WebController
         $formAction = 'usuarios-editar';
         $mensaje = (string)($result['message'] ?? 'No se pudo actualizar el registro.');
         $usuario = trim((string)($_POST['usuario'] ?? ''));
-        $password = trim((string)($_POST['password'] ?? ''));
         $correo = trim((string)($_POST['correo'] ?? ''));
-        $this->renderWithLayout('users/edit.php', compact('formAction', 'mensaje', 'txtID', 'usuario', 'password', 'correo'));
+        $this->renderWithLayout('users/edit.php', compact('formAction', 'mensaje', 'txtID', 'usuario', 'correo'));
+    }
+
+    public function usersDelete()
+    {
+        $this->requireLogin();
+        $this->requireAdmin();
+        if (!$this->hasValidCsrfToken($_POST)) {
+            Flash::set('Solicitud inválida, recargue la página e intente nuevamente.', 'error');
+            $this->redirect('usuarios');
+        }
+
+        $userController = UserController::fromEnvironment();
+        $txtID = (int)($_POST['txtID'] ?? 0);
+        if ($txtID > 0) {
+            $deleted = $userController->deleteUser($txtID);
+            Flash::set($deleted ? 'Registro borrado' : 'No se pudo borrar el registro', $deleted ? 'success' : 'error');
+        } else {
+            Flash::set('El ID del usuario no es válido.', 'error');
+        }
+
+        $this->redirect('usuarios');
     }
 
     private function renderWithLayout($viewFile, array $data = [])
     {
+        $csrfToken = Security::getCsrfToken();
         extract($data);
         require $this->projectRoot . '/app/Views/layout/header.php';
         require $this->projectRoot . '/app/Views/' . ltrim((string)$viewFile, '/');
@@ -419,5 +504,10 @@ class WebController
     {
         header('Location:' . $this->publicBaseUrl . ltrim((string)$route, '/'));
         exit();
+    }
+
+    private function hasValidCsrfToken(array $request): bool
+    {
+        return Security::isValidCsrfToken($request['csrf_token'] ?? null);
     }
 }

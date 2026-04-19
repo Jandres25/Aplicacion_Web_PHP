@@ -2,13 +2,13 @@
 
 namespace Core;
 
+require_once __DIR__ . '/Security.php';
+
 class Flash
 {
     public static function set($message, $icon = 'success')
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        Security::startSession();
 
         $_SESSION['message'] = (string)$message;
         $_SESSION['icon'] = (string)$icon;
@@ -16,9 +16,7 @@ class Flash
 
     public static function consume()
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        Security::startSession();
 
         if (!isset($_SESSION['message']) || !isset($_SESSION['icon'])) {
             return null;
