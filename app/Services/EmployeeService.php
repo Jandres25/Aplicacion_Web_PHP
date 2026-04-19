@@ -46,8 +46,8 @@ class EmployeeService
 
         $photoError = null;
         $cvError = null;
-        $photoName = $this->fileStorage->storeUploadedFile(isset($files['foto']) ? $files['foto'] : [], $baseDirectory, $photoError);
-        $cvName = $this->fileStorage->storeUploadedFile(isset($files['CV']) ? $files['CV'] : [], $baseDirectory, $cvError);
+        $photoName = $this->fileStorage->storeUploadedFile(isset($files['foto']) ? $files['foto'] : [], $baseDirectory, $photoError, ['jpg', 'jpeg', 'png', 'webp']);
+        $cvName = $this->fileStorage->storeUploadedFile(isset($files['CV']) ? $files['CV'] : [], $baseDirectory, $cvError, ['pdf']);
         if ($photoError !== null || $cvError !== null) {
             if ($photoName !== '') {
                 $this->fileStorage->deleteFileIfExists($baseDirectory, $photoName);
@@ -114,8 +114,8 @@ class EmployeeService
 
         $photoError = null;
         $cvError = null;
-        $newPhoto = $this->fileStorage->storeUploadedFile(isset($files['foto']) ? $files['foto'] : [], $baseDirectory, $photoError);
-        $newCv = $this->fileStorage->storeUploadedFile(isset($files['CV']) ? $files['CV'] : [], $baseDirectory, $cvError);
+        $newPhoto = $this->fileStorage->storeUploadedFile(isset($files['foto']) ? $files['foto'] : [], $baseDirectory, $photoError, ['jpg', 'jpeg', 'png', 'webp']);
+        $newCv = $this->fileStorage->storeUploadedFile(isset($files['CV']) ? $files['CV'] : [], $baseDirectory, $cvError, ['pdf']);
         if ($photoError !== null || $cvError !== null) {
             return ['success' => false, 'message' => $this->mergeUploadErrors($photoError, $cvError)];
         }

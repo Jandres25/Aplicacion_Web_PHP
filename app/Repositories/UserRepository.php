@@ -13,18 +13,16 @@ class UserRepository
         $this->connection = $connection;
     }
 
-    public function findByCredentials($username, $password)
+    public function findByUsername($username)
     {
         $statement = $this->connection->prepare(
-            "SELECT ID, Nombreusuario, Correo
+            "SELECT ID, Nombreusuario, Password, Correo
              FROM `tbl-usuarios`
              WHERE Nombreusuario = :Nombreusuario
-               AND Password = :Password
-             LIMIT 1"
+              LIMIT 1"
         );
 
         $statement->bindParam(':Nombreusuario', $username);
-        $statement->bindParam(':Password', $password);
         $statement->execute();
 
         $user = $statement->fetch(PDO::FETCH_ASSOC);
@@ -34,7 +32,7 @@ class UserRepository
     public function listAll()
     {
         $statement = $this->connection->prepare(
-            "SELECT ID, Nombreusuario, Password, Correo
+            "SELECT ID, Nombreusuario, Correo
              FROM `tbl-usuarios`
              ORDER BY ID DESC"
         );
@@ -93,5 +91,18 @@ class UserRepository
         );
         $statement->bindParam(':ID', $id, PDO::PARAM_INT);
         return $statement->execute();
+    }
+
+    public function updatePasswordHash($id, $passwordHash)
+    {
+        $statement = $this->connection->prepare(
+            "UPDATE `tbl-usuarios`
+             SET Password = :Password
+             WHERE ID = :ID"
+        );
+        return $statement->execute([
+            ':Password' => $passwordHash,
+            ':ID' => (int)$id
+        ]);
     }
 }

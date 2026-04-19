@@ -4,7 +4,7 @@ namespace App\Infrastructure;
 
 class EmployeeFileStorage
 {
-    public function storeUploadedFile($uploadedFile, $baseDirectory, &$errorMessage = null)
+    public function storeUploadedFile($uploadedFile, $baseDirectory, &$errorMessage = null, array $allowedExtensions = [])
     {
         $errorMessage = null;
 
@@ -49,6 +49,10 @@ class EmployeeFileStorage
 
         if (!is_uploaded_file($uploadedFile['tmp_name'])) {
             $errorMessage = 'El archivo temporal de subida no es válido.';
+            return '';
+        }
+
+        if (!$this->isAllowedUploadedFile($originalName, $uploadedFile['tmp_name'], $allowedExtensions, $errorMessage)) {
             return '';
         }
 
@@ -167,5 +171,51 @@ class EmployeeFileStorage
         ];
 
         return isset($messages[$uploadError]) ? $messages[$uploadError] : 'La subida del archivo falló por un error desconocido.';
+    }
+
+    private function isAllowedUploadedFile($originalName, $tmpFile, array $allowedExtensions, &$errorMessage)
+    {
+        if ($allowedExtensions === []) {
+            return true;
+        }
+
+        $normalizedAllowed = array_map(static function ($extension) {
+            return strtolower(ltrim((string)$extension, '.'));
+        }, $allowedExtensions);
+
+        $extension = strtolower((string)pathinfo($originalName, PATHINFO_EXTENSION));
+        if ($extension === '' || !in_array($extension, $normalizedAllowed, true)) {
+            $errorMessage = 'El tipo de archivo no está permitido.';
+            return false;
+        }
+
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        if ($finfo === false) {
+            $errorMessage = 'No se pudo validar el archivo subido.';
+            return false;
+        }
+
+        $mimeType = finfo_file($finfo, $tmpFile);
+        finfo_close($finfo);
+        if (!is_string($mimeType) || $mimeType === '') {
+            $errorMessage = 'No se pudo validar el tipo MIME del archivo.';
+            return false;
+        }
+
+        $allowedMimesByExtension = [
+            'jpg' => ['image/jpeg'],
+            'jpeg' => ['image/jpeg'],
+            'png' => ['image/png'],
+            'webp' => ['image/webp'],
+            'pdf' => ['application/pdf'],
+        ];
+
+        $allowedMimes = $allowedMimesByExtension[$extension] ?? [];
+        if ($allowedMimes !== [] && !in_array($mimeType, $allowedMimes, true)) {
+            $errorMessage = 'El archivo no coincide con el tipo esperado.';
+            return false;
+        }
+
+        return true;
     }
 }

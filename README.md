@@ -30,7 +30,7 @@ La aplicación implementa una separación estricta de responsabilidades para fac
 - **Frontend Moderno**: Interfaz basada en **Bootstrap 5** con un diseño limpio y profesional.
 - **DataTables Avanzados**: Listados responsivos con búsqueda rápida y paginación.
 - **Notificaciones Dinámicas**: Sistema de mensajes Flash integrados con **SweetAlert2**.
-- **Seguridad**: Autenticación centralizada, protección de rutas y prevención de inyección SQL mediante PDO.
+- **Seguridad**: Autenticación centralizada con `password_hash`/`password_verify`, protección CSRF en formularios y prevención de inyección SQL mediante PDO.
 - **Generación de Documentos**: Creación automatizada de cartas de recomendación en formato PDF.
 - **Estructura Front Controller**: Enrutamiento amigable y centralizado en `public/index.php`.
 
