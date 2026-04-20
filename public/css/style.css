@@ -117,3 +117,14 @@ main.container {
 footer {
     margin-top: auto;
 }
+
+.error-page-body {
+    background-color: #f3f5f7;
+    min-height: 100vh;
+}
+
+.error-page-card {
+    width: 100%;
+    max-width: 640px;
+    border-radius: 1rem;
+}

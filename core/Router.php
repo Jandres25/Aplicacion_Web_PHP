@@ -2,19 +2,24 @@
 
 namespace Core;
 
+require_once __DIR__ . '/ErrorPage.php';
+
 class Router
 {
     private $projectRoot;
     private $publicRoot;
+    private $publicBaseUrl;
     private $routes = [];
 
-    public function __construct($projectRoot, $publicDirectory = 'public')
+    public function __construct($projectRoot, $publicDirectory = 'public', $publicBaseUrl = null)
     {
         $resolvedRoot = realpath($projectRoot);
         $this->projectRoot = $resolvedRoot !== false ? rtrim($resolvedRoot, '/') : rtrim($projectRoot, '/');
         $publicPath = $this->projectRoot . '/' . trim((string)$publicDirectory, '/');
         $resolvedPublicRoot = realpath($publicPath);
         $this->publicRoot = $resolvedPublicRoot !== false ? rtrim($resolvedPublicRoot, '/') : rtrim($publicPath, '/');
+        $fallbackPublicBaseUrl = defined('PUBLIC_PATH') ? (string)PUBLIC_PATH : '/public/';
+        $this->publicBaseUrl = rtrim((string)($publicBaseUrl ?? $fallbackPublicBaseUrl), '/') . '/';
     }
 
     public function get($path, callable $handler)
@@ -65,8 +70,26 @@ class Router
             return;
         }
 
-        http_response_code(404);
-        echo '404 Not Found';
+        $allowedMethods = $this->allowedMethodsForPath($path);
+        if (!empty($allowedMethods)) {
+            header('Allow: ' . implode(', ', $allowedMethods));
+            ErrorPage::render($this->projectRoot, $this->publicBaseUrl, 405);
+        }
+
+        ErrorPage::render($this->projectRoot, $this->publicBaseUrl, 404);
+    }
+
+    private function allowedMethodsForPath($path)
+    {
+        $allowedMethods = [];
+        foreach ($this->routes as $httpMethod => $routesForMethod) {
+            if (isset($routesForMethod[$path])) {
+                $allowedMethods[] = $httpMethod;
+            }
+        }
+
+        sort($allowedMethods);
+        return $allowedMethods;
     }
 
     private function extractPath($requestUri, $scriptName)
