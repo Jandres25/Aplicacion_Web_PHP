@@ -12,8 +12,8 @@ $pageBreadcrumbs = (isset($pageBreadcrumbs) && is_array($pageBreadcrumbs)) ? $pa
 ?>
 
 <section class="module-page-header mt-4 mb-3" aria-labelledby="module-page-title">
-    <div class="module-page-header__inner">
-        <div class="module-page-header__title-wrap">
+    <div class="row module-page-header__inner align-items-center g-2">
+        <div class="col-12 col-md-6 module-page-header__title-wrap">
             <h1 class="module-page-header__title mb-0" id="module-page-title">
                 <i class="<?= htmlspecialchars($pageHeaderIcon, ENT_QUOTES, 'UTF-8'); ?> me-2" aria-hidden="true"></i>
                 <?= htmlspecialchars($pageHeaderTitle, ENT_QUOTES, 'UTF-8'); ?>
@@ -21,8 +21,8 @@ $pageBreadcrumbs = (isset($pageBreadcrumbs) && is_array($pageBreadcrumbs)) ? $pa
         </div>
 
         <?php if (!empty($pageBreadcrumbs)) : ?>
-            <nav class="module-page-header__breadcrumb-nav" aria-label="breadcrumb">
-                <ol class="breadcrumb module-page-header__breadcrumb mb-0">
+            <nav class="col-12 col-md-6 module-page-header__breadcrumb-nav" aria-label="breadcrumb">
+                <ol class="breadcrumb module-page-header__breadcrumb mb-0 justify-content-md-end">
                     <?php foreach ($pageBreadcrumbs as $item) : ?>
                         <?php
                         $label = isset($item['label']) ? trim((string)$item['label']) : '';

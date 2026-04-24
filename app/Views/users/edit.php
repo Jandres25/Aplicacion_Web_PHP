@@ -4,7 +4,7 @@
         <div class="card shadow-sm">
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                 <h5 class="mb-0 fw-bold text-success">
-                    <i class="fas fa-user-edit me-2"></i>Editar Información de Usuario
+                    <i class="fas fa-id-card me-2"></i>Datos del Usuario
                 </h5>
             </div>
             <div class="card-body p-4">

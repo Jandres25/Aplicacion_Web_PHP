@@ -633,6 +633,7 @@ class WebController
         $csrfToken = Security::getCsrfToken();
         extract($data);
         require $this->projectRoot . '/app/Views/layout/header.php';
+        require $this->projectRoot . '/app/Views/layout/module_header.php';
         require $this->projectRoot . '/app/Views/' . ltrim((string)$viewFile, '/');
         require $this->projectRoot . '/app/Views/layout/footer.php';
     }
