@@ -4,7 +4,7 @@
         <div class="card shadow-sm">
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
                 <h5 class="mb-0 fw-bold text-success">
-                    <i class="fas fa-user-edit me-2"></i>Editar Datos del Empleado
+                    <i class="fas fa-id-card me-2"></i>Datos del Empleado
                 </h5>
                 <span class="badge bg-light text-dark border">ID: <?= htmlspecialchars($txtID, ENT_QUOTES, 'UTF-8'); ?></span>
                 <input type="hidden" name="txtID" value="<?= htmlspecialchars($txtID, ENT_QUOTES, 'UTF-8'); ?>">

@@ -2,7 +2,7 @@
     <div class="card shadow-sm">
         <div class="card-header bg-white py-3 d-flex flex-column flex-sm-row justify-content-between align-items-center border-bottom gap-3">
             <h5 class="card-title mb-0">
-                <i class="fas fa-briefcase me-2 text-primary"></i>Listado de Puestos
+                <i class="fas fa-list-ul me-2 text-primary"></i>Lista de Registros
             </h5>
             <div class="card-tools">
                 <a class="btn btn-primary btn-sm shadow-sm" href="puestos-crear" role="button">

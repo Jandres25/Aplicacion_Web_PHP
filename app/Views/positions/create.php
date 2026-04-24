@@ -4,7 +4,7 @@
         <div class="card shadow-sm">
             <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
                 <h5 class="mb-0 fw-bold text-primary">
-                    <i class="fas fa-plus-circle me-2"></i>Registrar Nuevo Puesto
+                    <i class="fas fa-id-card me-2"></i>Datos del Puesto
                 </h5>
             </div>
             <div class="card-body p-4">
