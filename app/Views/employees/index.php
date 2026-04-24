@@ -1,4 +1,4 @@
-<section class="mt-4 mb-4">
+<section class="mt-3 mb-4">
     <div class="card shadow-sm">
         <div class="card-header bg-white py-3 d-flex flex-column flex-sm-row justify-content-between align-items-center border-bottom gap-3">
             <h5 class="card-title mb-0">

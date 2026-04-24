@@ -1,4 +1,4 @@
-<section class="mt-4 mb-5">
+<section class="mt-3 mb-5">
     <form action="<?= htmlspecialchars($formAction, ENT_QUOTES, 'UTF-8'); ?>" method="post" class="needs-validation">
         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars((string)$csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
         <div class="card shadow-sm">
