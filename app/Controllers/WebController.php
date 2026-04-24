@@ -105,7 +105,17 @@ class WebController
         $employeeController = EmployeeController::fromEnvironment();
 
         $lista_tbl_empleados = $employeeController->listEmployees();
-        $this->renderWithLayout('employees/index.php', compact('lista_tbl_empleados'));
+        $this->renderWithLayout(
+            'employees/index.php',
+            array_merge(
+                compact('lista_tbl_empleados'),
+                $this->pageHeaderData(
+                    'Gestión de Empleados',
+                    'fas fa-users',
+                    $this->moduleBreadcrumbs('Empleados', 'empleados')
+                )
+            )
+        );
     }
 
     public function employeesCreateForm()
@@ -115,7 +125,17 @@ class WebController
         $lista_tbl_puestos = $employeeController->listPositions();
         $formAction = 'empleados-crear';
         $mensaje = '';
-        $this->renderWithLayout('employees/create.php', compact('lista_tbl_puestos', 'formAction', 'mensaje'));
+        $this->renderWithLayout(
+            'employees/create.php',
+            array_merge(
+                compact('lista_tbl_puestos', 'formAction', 'mensaje'),
+                $this->pageHeaderData(
+                    'Nuevo Empleado',
+                    'fas fa-user-plus',
+                    $this->moduleBreadcrumbs('Empleados', 'empleados', 'Nuevo')
+                )
+            )
+        );
     }
 
     public function employeesCreate()
@@ -136,7 +156,17 @@ class WebController
         $lista_tbl_puestos = $employeeController->listPositions();
         $formAction = 'empleados-crear';
         $mensaje = (string)($result['message'] ?? 'No se pudo agregar el registro.');
-        $this->renderWithLayout('employees/create.php', compact('lista_tbl_puestos', 'formAction', 'mensaje'));
+        $this->renderWithLayout(
+            'employees/create.php',
+            array_merge(
+                compact('lista_tbl_puestos', 'formAction', 'mensaje'),
+                $this->pageHeaderData(
+                    'Nuevo Empleado',
+                    'fas fa-user-plus',
+                    $this->moduleBreadcrumbs('Empleados', 'empleados', 'Nuevo')
+                )
+            )
+        );
     }
 
     public function employeesEditForm()
@@ -162,20 +192,30 @@ class WebController
         $idpuesto = (string)($empleado['Idpuesto'] ?? '');
         $fechadeingreso = (string)($empleado['Fecha'] ?? '');
 
-        $this->renderWithLayout('employees/edit.php', compact(
-            'lista_tbl_puestos',
-            'formAction',
-            'mensaje',
-            'txtID',
-            'primernombre',
-            'segundonombre',
-            'primerapellido',
-            'segundoapellido',
-            'foto',
-            'cv',
-            'idpuesto',
-            'fechadeingreso'
-        ));
+        $this->renderWithLayout(
+            'employees/edit.php',
+            array_merge(
+                compact(
+                    'lista_tbl_puestos',
+                    'formAction',
+                    'mensaje',
+                    'txtID',
+                    'primernombre',
+                    'segundonombre',
+                    'primerapellido',
+                    'segundoapellido',
+                    'foto',
+                    'cv',
+                    'idpuesto',
+                    'fechadeingreso'
+                ),
+                $this->pageHeaderData(
+                    'Editar Empleado',
+                    'fas fa-user-edit',
+                    $this->moduleBreadcrumbs('Empleados', 'empleados', 'Editar')
+                )
+            )
+        );
     }
 
     public function employeesEdit()
@@ -212,20 +252,30 @@ class WebController
         $idpuesto = (string)($_POST['idpuesto'] ?? $empleado['Idpuesto'] ?? '');
         $fechadeingreso = (string)($_POST['fechadeingreso'] ?? $empleado['Fecha'] ?? '');
 
-        $this->renderWithLayout('employees/edit.php', compact(
-            'lista_tbl_puestos',
-            'formAction',
-            'mensaje',
-            'txtID',
-            'primernombre',
-            'segundonombre',
-            'primerapellido',
-            'segundoapellido',
-            'foto',
-            'cv',
-            'idpuesto',
-            'fechadeingreso'
-        ));
+        $this->renderWithLayout(
+            'employees/edit.php',
+            array_merge(
+                compact(
+                    'lista_tbl_puestos',
+                    'formAction',
+                    'mensaje',
+                    'txtID',
+                    'primernombre',
+                    'segundonombre',
+                    'primerapellido',
+                    'segundoapellido',
+                    'foto',
+                    'cv',
+                    'idpuesto',
+                    'fechadeingreso'
+                ),
+                $this->pageHeaderData(
+                    'Editar Empleado',
+                    'fas fa-user-edit',
+                    $this->moduleBreadcrumbs('Empleados', 'empleados', 'Editar')
+                )
+            )
+        );
     }
 
     public function employeeRecommendation()
@@ -279,7 +329,17 @@ class WebController
         $positionController = PositionController::fromEnvironment();
 
         $lista_tbl_puestos = $positionController->listPositions();
-        $this->renderWithLayout('positions/index.php', compact('lista_tbl_puestos'));
+        $this->renderWithLayout(
+            'positions/index.php',
+            array_merge(
+                compact('lista_tbl_puestos'),
+                $this->pageHeaderData(
+                    'Gestión de Puestos',
+                    'fas fa-briefcase',
+                    $this->moduleBreadcrumbs('Puestos', 'puestos')
+                )
+            )
+        );
     }
 
     public function positionsCreateForm()
@@ -287,7 +347,17 @@ class WebController
         $this->requireLogin();
         $formAction = 'puestos-crear';
         $mensaje = '';
-        $this->renderWithLayout('positions/create.php', compact('formAction', 'mensaje'));
+        $this->renderWithLayout(
+            'positions/create.php',
+            array_merge(
+                compact('formAction', 'mensaje'),
+                $this->pageHeaderData(
+                    'Nuevo Puesto',
+                    'fas fa-plus-circle',
+                    $this->moduleBreadcrumbs('Puestos', 'puestos', 'Nuevo')
+                )
+            )
+        );
     }
 
     public function positionsCreate()
@@ -307,7 +377,17 @@ class WebController
 
         $formAction = 'puestos-crear';
         $mensaje = (string)($result['message'] ?? 'No se pudo agregar el registro.');
-        $this->renderWithLayout('positions/create.php', compact('formAction', 'mensaje'));
+        $this->renderWithLayout(
+            'positions/create.php',
+            array_merge(
+                compact('formAction', 'mensaje'),
+                $this->pageHeaderData(
+                    'Nuevo Puesto',
+                    'fas fa-plus-circle',
+                    $this->moduleBreadcrumbs('Puestos', 'puestos', 'Nuevo')
+                )
+            )
+        );
     }
 
     public function positionsEditForm()
@@ -324,7 +404,17 @@ class WebController
         $formAction = 'puestos-editar';
         $mensaje = '';
         $nombredelpuesto = (string)($puesto['Nombredelpuesto'] ?? '');
-        $this->renderWithLayout('positions/edit.php', compact('formAction', 'mensaje', 'txtID', 'nombredelpuesto'));
+        $this->renderWithLayout(
+            'positions/edit.php',
+            array_merge(
+                compact('formAction', 'mensaje', 'txtID', 'nombredelpuesto'),
+                $this->pageHeaderData(
+                    'Editar Puesto',
+                    'fas fa-edit',
+                    $this->moduleBreadcrumbs('Puestos', 'puestos', 'Editar')
+                )
+            )
+        );
     }
 
     public function positionsEdit()
@@ -346,7 +436,17 @@ class WebController
         $formAction = 'puestos-editar';
         $mensaje = (string)($result['message'] ?? 'No se pudo actualizar el registro.');
         $nombredelpuesto = trim((string)($_POST['nombredelpuesto'] ?? ''));
-        $this->renderWithLayout('positions/edit.php', compact('formAction', 'mensaje', 'txtID', 'nombredelpuesto'));
+        $this->renderWithLayout(
+            'positions/edit.php',
+            array_merge(
+                compact('formAction', 'mensaje', 'txtID', 'nombredelpuesto'),
+                $this->pageHeaderData(
+                    'Editar Puesto',
+                    'fas fa-edit',
+                    $this->moduleBreadcrumbs('Puestos', 'puestos', 'Editar')
+                )
+            )
+        );
     }
 
     public function positionsDelete()
@@ -376,7 +476,17 @@ class WebController
         $userController = UserController::fromEnvironment();
 
         $lista_tbl_usuarios = $userController->listUsers();
-        $this->renderWithLayout('users/index.php', compact('lista_tbl_usuarios'));
+        $this->renderWithLayout(
+            'users/index.php',
+            array_merge(
+                compact('lista_tbl_usuarios'),
+                $this->pageHeaderData(
+                    'Gestión de Usuarios',
+                    'fas fa-users-cog',
+                    $this->moduleBreadcrumbs('Usuarios', 'usuarios')
+                )
+            )
+        );
     }
 
     public function usersCreateForm()
@@ -385,7 +495,17 @@ class WebController
         $this->requireAdmin();
         $formAction = 'usuarios-crear';
         $mensaje = '';
-        $this->renderWithLayout('users/create.php', compact('formAction', 'mensaje'));
+        $this->renderWithLayout(
+            'users/create.php',
+            array_merge(
+                compact('formAction', 'mensaje'),
+                $this->pageHeaderData(
+                    'Nuevo Usuario',
+                    'fas fa-user-plus',
+                    $this->moduleBreadcrumbs('Usuarios', 'usuarios', 'Nuevo')
+                )
+            )
+        );
     }
 
     public function usersCreate()
@@ -406,7 +526,17 @@ class WebController
 
         $formAction = 'usuarios-crear';
         $mensaje = (string)($result['message'] ?? 'No se pudo agregar el registro.');
-        $this->renderWithLayout('users/create.php', compact('formAction', 'mensaje'));
+        $this->renderWithLayout(
+            'users/create.php',
+            array_merge(
+                compact('formAction', 'mensaje'),
+                $this->pageHeaderData(
+                    'Nuevo Usuario',
+                    'fas fa-user-plus',
+                    $this->moduleBreadcrumbs('Usuarios', 'usuarios', 'Nuevo')
+                )
+            )
+        );
     }
 
     public function usersEditForm()
@@ -425,7 +555,17 @@ class WebController
         $mensaje = '';
         $usuario = (string)($usuarioData['Nombreusuario'] ?? '');
         $correo = (string)($usuarioData['Correo'] ?? '');
-        $this->renderWithLayout('users/edit.php', compact('formAction', 'mensaje', 'txtID', 'usuario', 'correo'));
+        $this->renderWithLayout(
+            'users/edit.php',
+            array_merge(
+                compact('formAction', 'mensaje', 'txtID', 'usuario', 'correo'),
+                $this->pageHeaderData(
+                    'Editar Usuario',
+                    'fas fa-user-edit',
+                    $this->moduleBreadcrumbs('Usuarios', 'usuarios', 'Editar')
+                )
+            )
+        );
     }
 
     public function usersEdit()
@@ -449,7 +589,17 @@ class WebController
         $mensaje = (string)($result['message'] ?? 'No se pudo actualizar el registro.');
         $usuario = trim((string)($_POST['usuario'] ?? ''));
         $correo = trim((string)($_POST['correo'] ?? ''));
-        $this->renderWithLayout('users/edit.php', compact('formAction', 'mensaje', 'txtID', 'usuario', 'correo'));
+        $this->renderWithLayout(
+            'users/edit.php',
+            array_merge(
+                compact('formAction', 'mensaje', 'txtID', 'usuario', 'correo'),
+                $this->pageHeaderData(
+                    'Editar Usuario',
+                    'fas fa-user-edit',
+                    $this->moduleBreadcrumbs('Usuarios', 'usuarios', 'Editar')
+                )
+            )
+        );
     }
 
     public function usersDelete()
@@ -475,11 +625,54 @@ class WebController
 
     private function renderWithLayout($viewFile, array $data = [])
     {
+        $data = array_merge([
+            'pageHeaderTitle' => '',
+            'pageHeaderIcon' => '',
+            'pageBreadcrumbs' => [],
+        ], $data);
         $csrfToken = Security::getCsrfToken();
         extract($data);
         require $this->projectRoot . '/app/Views/layout/header.php';
         require $this->projectRoot . '/app/Views/' . ltrim((string)$viewFile, '/');
         require $this->projectRoot . '/app/Views/layout/footer.php';
+    }
+
+    private function pageHeaderData(string $title, string $icon, array $breadcrumbs): array
+    {
+        return [
+            'pageHeaderTitle' => $title,
+            'pageHeaderIcon' => $icon,
+            'pageBreadcrumbs' => $breadcrumbs,
+        ];
+    }
+
+    private function moduleBreadcrumbs(string $moduleLabel, string $moduleRoute, string $currentLabel = ''): array
+    {
+        $breadcrumbs = [[
+            'label' => 'Inicio',
+            'href' => $this->publicBaseUrl,
+            'icon' => 'fas fa-house',
+        ]];
+
+        if ($currentLabel === '') {
+            $breadcrumbs[] = [
+                'label' => $moduleLabel,
+                'active' => true,
+            ];
+            return $breadcrumbs;
+        }
+
+        $breadcrumbs[] = [
+            'label' => $moduleLabel,
+            'href' => $this->publicBaseUrl . ltrim($moduleRoute, '/'),
+        ];
+
+        $breadcrumbs[] = [
+            'label' => $currentLabel,
+            'active' => true,
+        ];
+
+        return $breadcrumbs;
     }
 
     private function requireLogin()
