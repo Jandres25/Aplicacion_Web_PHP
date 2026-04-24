@@ -77,7 +77,7 @@ class WebController
 
         $authController = AuthController::fromEnvironment();
         $result = $authController->handleLogin($_POST);
-        
+
         $public_base = $this->publicBaseUrl;
         $formAction = 'login';
         $mensaje = isset($result['mensaje']) ? (string)$result['mensaje'] : '';
@@ -112,7 +112,7 @@ class WebController
                 $this->pageHeaderData(
                     'Gestión de Empleados',
                     'fas fa-users',
-                    $this->moduleBreadcrumbs('Empleados', 'empleados')
+                    $this->moduleBreadcrumbs('Empleados', 'empleados', 'fas fa-users')
                 )
             )
         );
@@ -132,7 +132,7 @@ class WebController
                 $this->pageHeaderData(
                     'Nuevo Empleado',
                     'fas fa-user-plus',
-                    $this->moduleBreadcrumbs('Empleados', 'empleados', 'Nuevo')
+                    $this->moduleBreadcrumbs('Empleados', 'empleados', 'fas fa-users', 'Nuevo', 'fas fa-plus')
                 )
             )
         );
@@ -163,7 +163,7 @@ class WebController
                 $this->pageHeaderData(
                     'Nuevo Empleado',
                     'fas fa-user-plus',
-                    $this->moduleBreadcrumbs('Empleados', 'empleados', 'Nuevo')
+                    $this->moduleBreadcrumbs('Empleados', 'empleados', 'fas fa-users', 'Nuevo', 'fas fa-plus')
                 )
             )
         );
@@ -212,7 +212,7 @@ class WebController
                 $this->pageHeaderData(
                     'Editar Empleado',
                     'fas fa-user-edit',
-                    $this->moduleBreadcrumbs('Empleados', 'empleados', 'Editar')
+                    $this->moduleBreadcrumbs('Empleados', 'empleados', 'fas fa-users', 'Editar', 'fas fa-pen')
                 )
             )
         );
@@ -272,7 +272,7 @@ class WebController
                 $this->pageHeaderData(
                     'Editar Empleado',
                     'fas fa-user-edit',
-                    $this->moduleBreadcrumbs('Empleados', 'empleados', 'Editar')
+                    $this->moduleBreadcrumbs('Empleados', 'empleados', 'fas fa-users', 'Editar', 'fas fa-pen')
                 )
             )
         );
@@ -336,7 +336,7 @@ class WebController
                 $this->pageHeaderData(
                     'Gestión de Puestos',
                     'fas fa-briefcase',
-                    $this->moduleBreadcrumbs('Puestos', 'puestos')
+                    $this->moduleBreadcrumbs('Puestos', 'puestos', 'fas fa-briefcase')
                 )
             )
         );
@@ -354,7 +354,7 @@ class WebController
                 $this->pageHeaderData(
                     'Nuevo Puesto',
                     'fas fa-plus-circle',
-                    $this->moduleBreadcrumbs('Puestos', 'puestos', 'Nuevo')
+                    $this->moduleBreadcrumbs('Puestos', 'puestos', 'fas fa-briefcase', 'Nuevo', 'fas fa-plus')
                 )
             )
         );
@@ -384,7 +384,7 @@ class WebController
                 $this->pageHeaderData(
                     'Nuevo Puesto',
                     'fas fa-plus-circle',
-                    $this->moduleBreadcrumbs('Puestos', 'puestos', 'Nuevo')
+                    $this->moduleBreadcrumbs('Puestos', 'puestos', 'fas fa-briefcase', 'Nuevo', 'fas fa-plus')
                 )
             )
         );
@@ -411,7 +411,7 @@ class WebController
                 $this->pageHeaderData(
                     'Editar Puesto',
                     'fas fa-edit',
-                    $this->moduleBreadcrumbs('Puestos', 'puestos', 'Editar')
+                    $this->moduleBreadcrumbs('Puestos', 'puestos', 'fas fa-briefcase', 'Editar', 'fas fa-pen')
                 )
             )
         );
@@ -443,7 +443,7 @@ class WebController
                 $this->pageHeaderData(
                     'Editar Puesto',
                     'fas fa-edit',
-                    $this->moduleBreadcrumbs('Puestos', 'puestos', 'Editar')
+                    $this->moduleBreadcrumbs('Puestos', 'puestos', 'fas fa-briefcase', 'Editar', 'fas fa-pen')
                 )
             )
         );
@@ -483,7 +483,7 @@ class WebController
                 $this->pageHeaderData(
                     'Gestión de Usuarios',
                     'fas fa-users-cog',
-                    $this->moduleBreadcrumbs('Usuarios', 'usuarios')
+                    $this->moduleBreadcrumbs('Usuarios', 'usuarios', 'fas fa-users-cog')
                 )
             )
         );
@@ -502,7 +502,7 @@ class WebController
                 $this->pageHeaderData(
                     'Nuevo Usuario',
                     'fas fa-user-plus',
-                    $this->moduleBreadcrumbs('Usuarios', 'usuarios', 'Nuevo')
+                    $this->moduleBreadcrumbs('Usuarios', 'usuarios', 'fas fa-users-cog', 'Nuevo', 'fas fa-plus')
                 )
             )
         );
@@ -533,7 +533,7 @@ class WebController
                 $this->pageHeaderData(
                     'Nuevo Usuario',
                     'fas fa-user-plus',
-                    $this->moduleBreadcrumbs('Usuarios', 'usuarios', 'Nuevo')
+                    $this->moduleBreadcrumbs('Usuarios', 'usuarios', 'fas fa-users-cog', 'Nuevo', 'fas fa-plus')
                 )
             )
         );
@@ -562,7 +562,7 @@ class WebController
                 $this->pageHeaderData(
                     'Editar Usuario',
                     'fas fa-user-edit',
-                    $this->moduleBreadcrumbs('Usuarios', 'usuarios', 'Editar')
+                    $this->moduleBreadcrumbs('Usuarios', 'usuarios', 'fas fa-users-cog', 'Editar', 'fas fa-pen')
                 )
             )
         );
@@ -596,7 +596,7 @@ class WebController
                 $this->pageHeaderData(
                     'Editar Usuario',
                     'fas fa-user-edit',
-                    $this->moduleBreadcrumbs('Usuarios', 'usuarios', 'Editar')
+                    $this->moduleBreadcrumbs('Usuarios', 'usuarios', 'fas fa-users-cog', 'Editar', 'fas fa-pen')
                 )
             )
         );
@@ -647,8 +647,13 @@ class WebController
         ];
     }
 
-    private function moduleBreadcrumbs(string $moduleLabel, string $moduleRoute, string $currentLabel = ''): array
-    {
+    private function moduleBreadcrumbs(
+        string $moduleLabel,
+        string $moduleRoute,
+        string $moduleIcon,
+        string $currentLabel = '',
+        string $currentIcon = ''
+    ): array {
         $breadcrumbs = [[
             'label' => 'Inicio',
             'href' => $this->publicBaseUrl,
@@ -658,6 +663,7 @@ class WebController
         if ($currentLabel === '') {
             $breadcrumbs[] = [
                 'label' => $moduleLabel,
+                'icon' => $moduleIcon,
                 'active' => true,
             ];
             return $breadcrumbs;
@@ -666,10 +672,12 @@ class WebController
         $breadcrumbs[] = [
             'label' => $moduleLabel,
             'href' => $this->publicBaseUrl . ltrim($moduleRoute, '/'),
+            'icon' => $moduleIcon,
         ];
 
         $breadcrumbs[] = [
             'label' => $currentLabel,
+            'icon' => $currentIcon,
             'active' => true,
         ];
 

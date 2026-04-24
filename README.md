@@ -40,9 +40,18 @@ Se ha implementado un sistema de diseño consistente y moderno a lo largo de tod
 
 ### 🌟 Patrón de Diseño Consistente
 Todos los módulos (Usuarios, Empleados y Puestos) comparten una estructura visual uniforme que facilita la navegación:
+- **Encabezado de Módulo Reutilizable**: Título principal con ícono y breadcrumb responsivo (Inicio / Módulo / Acción) renderizado desde layout para evitar duplicación en vistas.
+- **Breadcrumb con Iconografía Contextual**: Cada módulo y acción (Nuevo, Editar) muestra íconos específicos para mejorar la orientación visual del usuario.
 - **Tarjetas con Sombra (`shadow-sm`)**: Proporcionan profundidad y una separación clara de las secciones del sistema.
 - **Iconografía Intuitiva**: Integración extensiva de **FontAwesome 6** en encabezados, grupos de entrada y botones de acción para una navegación visual más rápida.
 - **Tipografía y Jerarquía**: Uso de fuentes legibles y contrastes adecuados, con etiquetas en negrita y textos de ayuda claros.
+
+### 🧩 Cambios aplicados en la app
+- **Renderizado centralizado en layout**: `WebController::renderWithLayout()` ahora carga `app/Views/layout/module_header.php` junto a `header` y `footer`.
+- **Breadcrumb dinámico desde controlador**: Se estandarizó la metadata de página con `pageHeaderData(...)` y `moduleBreadcrumbs(...)`, incluyendo iconos por módulo y por acción.
+- **Patrón aplicado en vistas de módulos**: Cobertura completa en `users`, `employees` y `positions` para `index`, `create` y `edit`.
+- **Encabezado responsive por grid Bootstrap**: El título y breadcrumb se distribuyen en `row` con `col-md-6` en desktop y stack en móvil.
+- **Ajustes de consistencia visual**: Se unificó el espaciado superior de secciones (`mt-3`) y se simplificaron títulos internos de tarjetas para evitar redundancia con el título principal.
 
 ### 📊 Listados Inteligentes
 - **Tablas Modernas**: Implementación de tablas interactivas con encabezados oscuros, efectos de hover y alineación vertical media.
