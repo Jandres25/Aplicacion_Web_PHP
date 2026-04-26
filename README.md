@@ -30,7 +30,11 @@ La aplicación implementa una separación estricta de responsabilidades para fac
 - **Frontend Moderno**: Interfaz basada en **Bootstrap 5** con un diseño limpio y profesional.
 - **DataTables Avanzados**: Listados responsivos con búsqueda rápida y paginación.
 - **Notificaciones Dinámicas**: Sistema de mensajes Flash integrados con **SweetAlert2**.
-- **Seguridad**: Autenticación centralizada con `password_hash`/`password_verify`, protección CSRF en formularios y prevención de inyección SQL mediante PDO.
+- **Acciones Asíncronas (AJAX)**: Eliminación de registros optimizada mediante peticiones AJAX y confirmaciones interactivas, evitando recargas innecesarias de página.
+- **Seguridad Robusta**: 
+  - Autenticación centralizada con `password_hash`/`password_verify`.
+  - Protección CSRF integral tanto en formularios tradicionales como en peticiones AJAX (vía Meta Tags y Headers personalizados).
+  - Prevención de inyección SQL mediante sentencias preparadas con PDO.
 - **Generación de Documentos**: Creación automatizada de cartas de recomendación en formato PDF.
 - **Estructura Front Controller**: Enrutamiento amigable y centralizado en `public/index.php`.
 
@@ -46,7 +50,10 @@ Todos los módulos (Usuarios, Empleados y Puestos) comparten una estructura visu
 - **Iconografía Intuitiva**: Integración extensiva de **FontAwesome 6** en encabezados, grupos de entrada y botones de acción para una navegación visual más rápida.
 - **Tipografía y Jerarquía**: Uso de fuentes legibles y contrastes adecuados, con etiquetas en negrita y textos de ayuda claros.
 
-### 🧩 Cambios aplicados en la app
+### 🧩 Experiencia de Usuario Dinámica
+- **Eliminación con Confirmación**: Implementación de SweetAlert2 para confirmar acciones destructivas, integrada con AJAX para una respuesta inmediata sin recargar la página completa.
+- **Feedback Visual**: Uso de Toasts dinámicos para informar al usuario sobre el resultado de operaciones asíncronas.
+- **Manejo Inteligente de Datos**: El sistema ahora gestiona de forma transparente campos opcionales (como segundos nombres o apellidos), almacenándolos como `NULL` en la base de datos cuando están vacíos, manteniendo la integridad del modelo.
 - **Renderizado centralizado en layout**: `WebController::renderWithLayout()` ahora carga `app/Views/layout/module_header.php` junto a `header` y `footer`.
 - **Breadcrumb dinámico desde controlador**: Se estandarizó la metadata de página con `pageHeaderData(...)` y `moduleBreadcrumbs(...)`, incluyendo iconos por módulo y por acción.
 - **Patrón aplicado en vistas de módulos**: Cobertura completa en `users`, `employees` y `positions` para `index`, `create` y `edit`.
