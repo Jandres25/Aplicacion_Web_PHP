@@ -12,18 +12,21 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-hover align-middle" id="tabla_id" style="visibility: hidden;">
-                    <thead class="table-dark">
+                <table class="table table-hover table-bordered" id="tabla_id" style="visibility: hidden;">
+                    <thead class="table-light">
                         <tr>
-                            <th scope="col" class="text-center" style="width: 80px;">ID</th>
+                            <th scope="col" class="text-center" style="width: 80px;">#</th>
                             <th scope="col">Nombre del Puesto</th>
                             <th scope="col" class="text-center" style="width: 150px;">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($lista_tbl_puestos as $registro) : ?>
+                        <?php
+                        $counter = 1;
+                        foreach ($lista_tbl_puestos as $registro) :
+                        ?>
                             <tr>
-                                <td class="text-center fw-bold text-muted"><?= htmlspecialchars((string)$registro['ID'], ENT_QUOTES, 'UTF-8'); ?></td>
+                                <td class="text-center fw-bold text-muted"><?= $counter++; ?></td>
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <div class="avatar-sm me-3 bg-light rounded-circle d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
@@ -40,16 +43,12 @@
                                             title="Editar Puesto">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <form id="delete-position-<?= (int)$registro['ID']; ?>" action="puestos-eliminar" method="post" class="d-inline">
-                                            <input type="hidden" name="txtID" value="<?= (int)$registro['ID']; ?>">
-                                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars((string)$csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
-                                            <button type="button" class="btn btn-outline-danger btn-sm"
-                                                onclick="borrar('delete-position-<?= (int)$registro['ID']; ?>')"
-                                                data-bs-toggle="tooltip"
-                                                title="Eliminar Puesto">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </form>
+                                        <button type="button" class="btn btn-outline-danger btn-sm"
+                                            onclick="eliminarCargo(<?= (int)$registro['ID']; ?>)"
+                                            data-bs-toggle="tooltip"
+                                            title="Eliminar Puesto">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -60,3 +59,6 @@
         </div>
     </div>
 </section>
+
+<!-- Script específico para Puestos -->
+<script src="<?= $public_base; ?>js/positions.js"></script>

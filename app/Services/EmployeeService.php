@@ -61,11 +61,11 @@ class EmployeeService
         try {
             $created = $this->employeeRepository->create([
                 'Primernombre' => trim((string)($data['primernombre'] ?? '')),
-                'Segundonombre' => trim((string)($data['segundonombre'] ?? '')),
+                'Segundonombre' => $this->nullIfEmpty($data['segundonombre'] ?? null),
                 'Primerapellido' => trim((string)($data['primerapellido'] ?? '')),
                 'Segundoapellido' => trim((string)($data['segundoapellido'] ?? '')),
-                'Foto' => $photoName,
-                'CV' => $cvName,
+                'Foto' => $this->nullIfEmpty($photoName),
+                'CV' => $this->nullIfEmpty($cvName),
                 'Idpuesto' => (int)($data['idpuesto'] ?? 0),
                 'Fecha' => (string)($data['fechadeingreso'] ?? '')
             ]);
@@ -126,11 +126,11 @@ class EmployeeService
         try {
             $updated = $this->employeeRepository->update($employeeId, [
                 'Primernombre' => trim((string)($data['primernombre'] ?? '')),
-                'Segundonombre' => trim((string)($data['segundonombre'] ?? '')),
+                'Segundonombre' => $this->nullIfEmpty($data['segundonombre'] ?? null),
                 'Primerapellido' => trim((string)($data['primerapellido'] ?? '')),
                 'Segundoapellido' => trim((string)($data['segundoapellido'] ?? '')),
-                'Foto' => $photoToPersist,
-                'CV' => $cvToPersist,
+                'Foto' => $this->nullIfEmpty($photoToPersist),
+                'CV' => $this->nullIfEmpty($cvToPersist),
                 'Idpuesto' => (int)($data['idpuesto'] ?? 0),
                 'Fecha' => (string)($data['fechadeingreso'] ?? '')
             ]);
@@ -219,5 +219,14 @@ class EmployeeService
             $errors[] = 'CV: ' . trim($cvError);
         }
         return $errors === [] ? 'No se pudo procesar la subida de archivos.' : implode(' ', $errors);
+    }
+
+    private function nullIfEmpty($value)
+    {
+        if ($value === null) {
+            return null;
+        }
+        $trimmed = trim((string)$value);
+        return $trimmed === '' ? null : $trimmed;
     }
 }

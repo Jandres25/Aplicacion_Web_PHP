@@ -12,8 +12,8 @@
         </div>
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-hover align-middle" id="tabla_id" style="visibility: hidden;">
-                    <thead class="table-dark">
+                <table class="table table-hover table-bordered" id="tabla_id" style="visibility: hidden;">
+                    <thead class="table-light">
                         <tr>
                             <th scope="col" class="text-center" style="width: 50px;">#</th>
                             <th scope="col">Nombre Completo</th>
@@ -83,16 +83,12 @@
                                             title="Editar Registro">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <form id="delete-employee-<?= (int)$registro['ID']; ?>" action="empleados-eliminar" method="post" class="d-inline">
-                                            <input type="hidden" name="txtID" value="<?= (int)$registro['ID']; ?>">
-                                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars((string)$csrfToken, ENT_QUOTES, 'UTF-8'); ?>">
-                                            <button type="button" class="btn btn-outline-danger btn-sm"
-                                                onclick="borrar('delete-employee-<?= (int)$registro['ID']; ?>')"
-                                                data-bs-toggle="tooltip"
-                                                title="Eliminar Registro">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </form>
+                                        <button type="button" class="btn btn-outline-danger btn-sm"
+                                            onclick="eliminarEmpleado(<?= (int)$registro['ID']; ?>)"
+                                            data-bs-toggle="tooltip"
+                                            title="Eliminar Registro">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -103,3 +99,6 @@
         </div>
     </div>
 </section>
+
+<!-- Script específico para Empleados -->
+<script src="<?= $public_base; ?>js/employees.js"></script>

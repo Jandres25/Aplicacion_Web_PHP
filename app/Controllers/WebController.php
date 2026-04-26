@@ -306,20 +306,39 @@ class WebController
     public function employeesDelete()
     {
         $this->requireLogin();
+        $isAjax = $this->isAjaxRequest();
+
         if (!$this->hasValidCsrfToken($_POST)) {
-            Flash::set('Solicitud inválida, recargue la página e intente nuevamente.', 'error');
+            $msg = 'Solicitud inválida, recargue la página e intente nuevamente.';
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'message' => $msg]);
+                exit;
+            }
+            Flash::set($msg, 'error');
             $this->redirect('empleados');
         }
 
         $employeeController = EmployeeController::fromEnvironment();
         $txtID = (int)($_POST['txtID'] ?? 0);
+        $success = false;
+        $message = '';
+
         if ($txtID > 0) {
             $deleted = $employeeController->deleteEmployee($txtID, $this->uploadsDirectory);
-            Flash::set($deleted ? 'Registro borrado' : 'No se pudo borrar el registro', $deleted ? 'success' : 'error');
+            $success = $deleted;
+            $message = $deleted ? 'Registro borrado' : 'No se pudo borrar el registro';
         } else {
-            Flash::set('El ID del empleado no es válido.', 'error');
+            $message = 'El ID del empleado no es válido.';
         }
 
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => $success, 'message' => $message]);
+            exit;
+        }
+
+        Flash::set($message, $success ? 'success' : 'error');
         $this->redirect('empleados');
     }
 
@@ -452,20 +471,39 @@ class WebController
     public function positionsDelete()
     {
         $this->requireLogin();
+        $isAjax = $this->isAjaxRequest();
+
         if (!$this->hasValidCsrfToken($_POST)) {
-            Flash::set('Solicitud inválida, recargue la página e intente nuevamente.', 'error');
+            $msg = 'Solicitud inválida, recargue la página e intente nuevamente.';
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'message' => $msg]);
+                exit;
+            }
+            Flash::set($msg, 'error');
             $this->redirect('puestos');
         }
 
         $positionController = PositionController::fromEnvironment();
         $txtID = (int)($_POST['txtID'] ?? 0);
+        $success = false;
+        $message = '';
+
         if ($txtID > 0) {
             $deleted = $positionController->deletePosition($txtID);
-            Flash::set($deleted ? 'Registro borrado' : 'No se pudo borrar el registro', $deleted ? 'success' : 'error');
+            $success = $deleted;
+            $message = $deleted ? 'Registro borrado' : 'No se pudo borrar el registro';
         } else {
-            Flash::set('El ID del puesto no es válido.', 'error');
+            $message = 'El ID del puesto no es válido.';
         }
 
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => $success, 'message' => $message]);
+            exit;
+        }
+
+        Flash::set($message, $success ? 'success' : 'error');
         $this->redirect('puestos');
     }
 
@@ -606,20 +644,40 @@ class WebController
     {
         $this->requireLogin();
         $this->requireAdmin();
+
+        $isAjax = $this->isAjaxRequest();
+
         if (!$this->hasValidCsrfToken($_POST)) {
-            Flash::set('Solicitud inválida, recargue la página e intente nuevamente.', 'error');
+            $msg = 'Solicitud inválida, recargue la página e intente nuevamente.';
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'message' => $msg]);
+                exit;
+            }
+            Flash::set($msg, 'error');
             $this->redirect('usuarios');
         }
 
         $userController = UserController::fromEnvironment();
         $txtID = (int)($_POST['txtID'] ?? 0);
+        $success = false;
+        $message = '';
+
         if ($txtID > 0) {
             $deleted = $userController->deleteUser($txtID);
-            Flash::set($deleted ? 'Registro borrado' : 'No se pudo borrar el registro', $deleted ? 'success' : 'error');
+            $success = $deleted;
+            $message = $deleted ? 'Registro borrado' : 'No se pudo borrar el registro';
         } else {
-            Flash::set('El ID del usuario no es válido.', 'error');
+            $message = 'El ID del usuario no es válido.';
         }
 
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => $success, 'message' => $message]);
+            exit;
+        }
+
+        Flash::set($message, $success ? 'success' : 'error');
         $this->redirect('usuarios');
     }
 
@@ -711,5 +769,10 @@ class WebController
     private function hasValidCsrfToken(array $request): bool
     {
         return Security::isValidCsrfToken($request['csrf_token'] ?? null);
+    }
+
+    private function isAjaxRequest(): bool
+    {
+        return (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
     }
 }
