@@ -1,40 +1,49 @@
 <?php
 
-use App\Controllers\WebController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\EmployeesController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PositionsController;
+use App\Http\Controllers\UsersController;
 use Core\Env;
 use Core\Router;
 
 return static function (Router $router, $projectRoot): void {
     $publicBaseUrl = rtrim((string)Env::get('APP_URL', 'http://localhost/Aplicacion_Web_PHP/'), '/') . '/public/';
-    $controller = new WebController($projectRoot, $publicBaseUrl);
 
-    $router->get('/', [$controller, 'home']);
-    $router->get('/index', [$controller, 'homeAlias']);
-    $router->get('/home', [$controller, 'homeAlias']);
+    $home      = new HomeController($projectRoot, $publicBaseUrl);
+    $auth      = new AuthController($projectRoot, $publicBaseUrl);
+    $employees = new EmployeesController($projectRoot, $publicBaseUrl);
+    $positions = new PositionsController($projectRoot, $publicBaseUrl);
+    $users     = new UsersController($projectRoot, $publicBaseUrl);
 
-    $router->get('/login', [$controller, 'showLogin']);
-    $router->post('/login', [$controller, 'login']);
-    $router->post('/cerrar', [$controller, 'logout']);
+    $router->get('/',      [$home, 'index']);
+    $router->get('/index', [$home, 'alias']);
+    $router->get('/home',  [$home, 'alias']);
 
-    $router->get('/empleados', [$controller, 'employeesIndex']);
-    $router->get('/empleados-crear', [$controller, 'employeesCreateForm']);
-    $router->post('/empleados-crear', [$controller, 'employeesCreate']);
-    $router->get('/empleados-editar', [$controller, 'employeesEditForm']);
-    $router->post('/empleados-editar', [$controller, 'employeesEdit']);
-    $router->post('/empleados-eliminar', [$controller, 'employeesDelete']);
-    $router->get('/empleados-carta-recomendacion', [$controller, 'employeeRecommendation']);
+    $router->get('/login',   [$auth, 'showLogin']);
+    $router->post('/login',  [$auth, 'login']);
+    $router->post('/cerrar', [$auth, 'logout']);
 
-    $router->get('/puestos', [$controller, 'positionsIndex']);
-    $router->get('/puestos-crear', [$controller, 'positionsCreateForm']);
-    $router->post('/puestos-crear', [$controller, 'positionsCreate']);
-    $router->get('/puestos-editar', [$controller, 'positionsEditForm']);
-    $router->post('/puestos-editar', [$controller, 'positionsEdit']);
-    $router->post('/puestos-eliminar', [$controller, 'positionsDelete']);
+    $router->get('/empleados',                    [$employees, 'index']);
+    $router->get('/empleados-crear',              [$employees, 'createForm']);
+    $router->post('/empleados-crear',             [$employees, 'create']);
+    $router->get('/empleados-editar',             [$employees, 'editForm']);
+    $router->post('/empleados-editar',            [$employees, 'edit']);
+    $router->post('/empleados-eliminar',          [$employees, 'delete']);
+    $router->get('/empleados-carta-recomendacion', [$employees, 'recommendation']);
 
-    $router->get('/usuarios', [$controller, 'usersIndex']);
-    $router->get('/usuarios-crear', [$controller, 'usersCreateForm']);
-    $router->post('/usuarios-crear', [$controller, 'usersCreate']);
-    $router->get('/usuarios-editar', [$controller, 'usersEditForm']);
-    $router->post('/usuarios-editar', [$controller, 'usersEdit']);
-    $router->post('/usuarios-eliminar', [$controller, 'usersDelete']);
+    $router->get('/puestos',         [$positions, 'index']);
+    $router->get('/puestos-crear',   [$positions, 'createForm']);
+    $router->post('/puestos-crear',  [$positions, 'create']);
+    $router->get('/puestos-editar',  [$positions, 'editForm']);
+    $router->post('/puestos-editar', [$positions, 'edit']);
+    $router->post('/puestos-eliminar', [$positions, 'delete']);
+
+    $router->get('/usuarios',         [$users, 'index']);
+    $router->get('/usuarios-crear',   [$users, 'createForm']);
+    $router->post('/usuarios-crear',  [$users, 'create']);
+    $router->get('/usuarios-editar',  [$users, 'editForm']);
+    $router->post('/usuarios-editar', [$users, 'edit']);
+    $router->post('/usuarios-eliminar', [$users, 'delete']);
 };
