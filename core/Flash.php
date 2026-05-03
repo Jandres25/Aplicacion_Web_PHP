@@ -2,8 +2,6 @@
 
 namespace Core;
 
-require_once __DIR__ . '/Security.php';
-
 class Flash
 {
     public static function set($message, $icon = 'success')

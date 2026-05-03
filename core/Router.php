@@ -2,8 +2,6 @@
 
 namespace Core;
 
-require_once __DIR__ . '/ErrorPage.php';
-
 class Router
 {
     private $projectRoot;

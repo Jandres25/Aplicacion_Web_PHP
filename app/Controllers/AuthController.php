@@ -2,8 +2,6 @@
 
 namespace App\Controllers;
 
-require_once __DIR__ . '/../../core/Security.php';
-
 use App\Repositories\UserRepository;
 use App\Services\AuthService;
 use Config\Database;

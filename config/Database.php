@@ -10,9 +10,6 @@ class Database
 
     private function __construct() {}
 
-    /**
-     * Obtiene la instancia única de la conexión PDO (Singleton)
-     */
     public static function getConnection()
     {
         if (self::$connection instanceof PDO) {
@@ -36,7 +33,7 @@ class Database
 
     private function __clone() {}
 
-    public function __wakeup()
+    public function __wakeup(): never
     {
         throw new \Exception('No se puede deserializar una instancia de Database');
     }

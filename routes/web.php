@@ -4,8 +4,6 @@ use App\Controllers\WebController;
 use Core\Env;
 use Core\Router;
 
-require_once __DIR__ . '/../app/Controllers/WebController.php';
-
 return static function (Router $router, $projectRoot): void {
     $publicBaseUrl = rtrim((string)Env::get('APP_URL', 'http://localhost/Aplicacion_Web_PHP/'), '/') . '/public/';
     $controller = new WebController($projectRoot, $publicBaseUrl);

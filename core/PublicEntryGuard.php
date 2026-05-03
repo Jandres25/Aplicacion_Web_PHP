@@ -2,8 +2,6 @@
 
 namespace Core;
 
-require_once __DIR__ . '/Env.php';
-
 class PublicEntryGuard
 {
     public static function redirectToPublicIfNeeded($currentFile)

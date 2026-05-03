@@ -1,10 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../core/Env.php';
-require_once __DIR__ . '/../core/Security.php';
-require_once __DIR__ . '/../core/ErrorPage.php';
-require_once __DIR__ . '/../config/app.php';
-require_once __DIR__ . '/../core/Router.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use Core\ErrorPage;
 use Core\Env;

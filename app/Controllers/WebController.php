@@ -2,23 +2,6 @@
 
 namespace App\Controllers;
 
-require_once __DIR__ . '/../../core/Flash.php';
-require_once __DIR__ . '/../../core/Security.php';
-require_once __DIR__ . '/../Middleware/AuthMiddleware.php';
-require_once __DIR__ . '/../../config/database.php';
-require_once __DIR__ . '/../Repositories/UserRepository.php';
-require_once __DIR__ . '/../Repositories/EmployeeRepository.php';
-require_once __DIR__ . '/../Repositories/PositionRepository.php';
-require_once __DIR__ . '/../Services/AuthService.php';
-require_once __DIR__ . '/../Services/EmployeeService.php';
-require_once __DIR__ . '/../Services/UserService.php';
-require_once __DIR__ . '/../Services/PositionService.php';
-require_once __DIR__ . '/../Infrastructure/EmployeeFileStorage.php';
-require_once __DIR__ . '/AuthController.php';
-require_once __DIR__ . '/EmployeeController.php';
-require_once __DIR__ . '/PositionController.php';
-require_once __DIR__ . '/UserController.php';
-
 use App\Middleware\AuthMiddleware;
 use Core\Flash;
 use Core\Security;

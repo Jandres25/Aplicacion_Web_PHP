@@ -2,8 +2,6 @@
 
 namespace App\Middleware;
 
-require_once __DIR__ . '/../../core/Security.php';
-
 use Core\Security;
 
 class AuthMiddleware
