@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Middleware\AuthMiddleware;
 use Core\Flash;
 use Core\Security;
+use Core\View;
 
 class WebController
 {
@@ -40,32 +41,35 @@ class WebController
             $this->redirect('');
         }
 
-        $public_base = $this->publicBaseUrl;
-        $formAction = 'login';
-        $mensaje = '';
-        $csrfToken = Security::getCsrfToken();
-        require $this->projectRoot . '/app/Views/auth/login.php';
+        View::render('auth/login.php', [
+            'public_base' => $this->publicBaseUrl,
+            'formAction'  => 'login',
+            'mensaje'     => '',
+            'csrfToken'   => Security::getCsrfToken(),
+        ]);
     }
 
     public function login()
     {
         if (!$this->hasValidCsrfToken($_POST)) {
-            $public_base = $this->publicBaseUrl;
-            $formAction = 'login';
-            $mensaje = 'Solicitud inválida, recargue la página e intente nuevamente.';
-            $csrfToken = Security::getCsrfToken();
-            require $this->projectRoot . '/app/Views/auth/login.php';
+            View::render('auth/login.php', [
+                'public_base' => $this->publicBaseUrl,
+                'formAction'  => 'login',
+                'mensaje'     => 'Solicitud inválida, recargue la página e intente nuevamente.',
+                'csrfToken'   => Security::getCsrfToken(),
+            ]);
             return;
         }
 
         $authController = AuthController::fromEnvironment();
         $result = $authController->handleLogin($_POST);
 
-        $public_base = $this->publicBaseUrl;
-        $formAction = 'login';
-        $mensaje = isset($result['mensaje']) ? (string)$result['mensaje'] : '';
-        $csrfToken = Security::getCsrfToken();
-        require $this->projectRoot . '/app/Views/auth/login.php';
+        View::render('auth/login.php', [
+            'public_base' => $this->publicBaseUrl,
+            'formAction'  => 'login',
+            'mensaje'     => isset($result['mensaje']) ? (string)$result['mensaje'] : '',
+            'csrfToken'   => Security::getCsrfToken(),
+        ]);
     }
 
     public function logout()
@@ -283,7 +287,9 @@ class WebController
         $fechaIngreso = $fechaIngreso ?: new \DateTime();
         $diferencia = $fechaIngreso->diff(new \DateTime());
         $fechaActual = (new \DateTime())->format('d/m/Y');
-        require $this->projectRoot . '/app/Views/employees/recommendation_letter.php';
+        View::render('employees/recommendation_letter.php', compact(
+            'nombreCompleto', 'puesto', 'fechaIngreso', 'diferencia', 'fechaActual'
+        ));
     }
 
     public function employeesDelete()
@@ -664,19 +670,9 @@ class WebController
         $this->redirect('usuarios');
     }
 
-    private function renderWithLayout($viewFile, array $data = [])
+    private function renderWithLayout(string $viewFile, array $data = []): void
     {
-        $data = array_merge([
-            'pageHeaderTitle' => '',
-            'pageHeaderIcon' => '',
-            'pageBreadcrumbs' => [],
-        ], $data);
-        $csrfToken = Security::getCsrfToken();
-        extract($data);
-        require $this->projectRoot . '/app/Views/layout/header.php';
-        require $this->projectRoot . '/app/Views/layout/module_header.php';
-        require $this->projectRoot . '/app/Views/' . ltrim((string)$viewFile, '/');
-        require $this->projectRoot . '/app/Views/layout/footer.php';
+        View::renderWithLayout($viewFile, $data);
     }
 
     private function pageHeaderData(string $title, string $icon, array $breadcrumbs): array

@@ -3,8 +3,9 @@
 namespace Core;
 
 class ErrorPage
+
 {
-    public static function render($projectRoot, $publicBaseUrl, $statusCode, $customMessage = '')
+    public static function render($projectRoot, $publicBaseUrl, int $statusCode, string $customMessage = '')
     {
         $statusCode = (int)$statusCode;
         $statusMap = self::statusMap();
@@ -15,13 +16,12 @@ class ErrorPage
             header('Content-Type: text/html; charset=UTF-8');
         }
 
-        $projectRoot = rtrim((string)$projectRoot, '/');
-        $public_base = rtrim((string)$publicBaseUrl, '/') . '/';
-        $errorCode = $statusCode;
-        $errorTitle = (string)$statusData['title'];
-        $errorMessage = trim((string)$customMessage) !== '' ? trim((string)$customMessage) : (string)$statusData['message'];
-
-        require $projectRoot . '/app/Views/errors/http_error.php';
+        View::render('errors/http_error.php', [
+            'public_base'  => rtrim((string)$publicBaseUrl, '/') . '/',
+            'errorCode'    => $statusCode,
+            'errorTitle'   => (string)$statusData['title'],
+            'errorMessage' => trim((string)$customMessage) !== '' ? trim((string)$customMessage) : (string)$statusData['message'],
+        ]);
         exit();
     }
 

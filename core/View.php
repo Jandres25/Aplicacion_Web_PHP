@@ -1,0 +1,35 @@
+<?php
+
+namespace Core;
+
+class View
+{
+    private static string $basePath = '';
+
+    public static function setBasePath(string $path): void
+    {
+        self::$basePath = rtrim($path, '/');
+    }
+
+    public static function render(string $view, array $data = []): void
+    {
+        extract($data);
+        require self::$basePath . '/' . ltrim($view, '/');
+    }
+
+    public static function renderWithLayout(string $view, array $data = []): void
+    {
+        $data = array_merge([
+            'pageHeaderTitle' => '',
+            'pageHeaderIcon' => '',
+            'pageBreadcrumbs' => [],
+        ], $data);
+
+        $data['csrfToken'] = Security::getCsrfToken();
+
+        self::render('layout/header.php', $data);
+        self::render('layout/module_header.php', $data);
+        self::render($view, $data);
+        self::render('layout/footer.php', $data);
+    }
+}

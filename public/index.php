@@ -3,6 +3,9 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Core\ErrorPage;
+use Core\View;
+
+View::setBasePath(__DIR__ . '/../resources/views');
 use Core\Env;
 use Core\Router;
 use Core\Security;
