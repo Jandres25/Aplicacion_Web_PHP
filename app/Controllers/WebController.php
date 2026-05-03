@@ -3,6 +3,10 @@
 namespace App\Controllers;
 
 use App\Middleware\AuthMiddleware;
+use App\UseCases\AuthUseCase;
+use App\UseCases\EmployeeUseCase;
+use App\UseCases\PositionUseCase;
+use App\UseCases\UserUseCase;
 use Core\Flash;
 use Core\Security;
 use Core\View;
@@ -61,13 +65,18 @@ class WebController
             return;
         }
 
-        $authController = AuthController::fromEnvironment();
-        $result = $authController->handleLogin($_POST);
+        $authUseCase = AuthUseCase::fromEnvironment();
+        $result = $authUseCase->handleLogin($_POST);
+
+        if ($result['success']) {
+            $this->redirect('');
+            return;
+        }
 
         View::render('auth/login.php', [
             'public_base' => $this->publicBaseUrl,
             'formAction'  => 'login',
-            'mensaje'     => isset($result['mensaje']) ? (string)$result['mensaje'] : '',
+            'mensaje'     => (string)$result['mensaje'],
             'csrfToken'   => Security::getCsrfToken(),
         ]);
     }
@@ -89,9 +98,9 @@ class WebController
     public function employeesIndex()
     {
         $this->requireLogin();
-        $employeeController = EmployeeController::fromEnvironment();
+        $employeeUseCase = EmployeeUseCase::fromEnvironment();
 
-        $lista_tbl_empleados = $employeeController->listEmployees();
+        $lista_tbl_empleados = $employeeUseCase->listEmployees();
         $this->renderWithLayout(
             'employees/index.php',
             array_merge(
@@ -108,8 +117,8 @@ class WebController
     public function employeesCreateForm()
     {
         $this->requireLogin();
-        $employeeController = EmployeeController::fromEnvironment();
-        $lista_tbl_puestos = $employeeController->listPositions();
+        $employeeUseCase = EmployeeUseCase::fromEnvironment();
+        $lista_tbl_puestos = $employeeUseCase->listPositions();
         $formAction = 'empleados-crear';
         $mensaje = '';
         $this->renderWithLayout(
@@ -133,14 +142,14 @@ class WebController
             $this->redirect('empleados-crear');
         }
 
-        $employeeController = EmployeeController::fromEnvironment();
-        $result = $employeeController->createEmployee($_POST, $_FILES, $this->uploadsDirectory);
+        $employeeUseCase = EmployeeUseCase::fromEnvironment();
+        $result = $employeeUseCase->createEmployee($_POST, $_FILES, $this->uploadsDirectory);
         if (($result['success'] ?? false) === true) {
             Flash::set((string)($result['message'] ?? 'Registro agregado'));
             $this->redirect('empleados');
         }
 
-        $lista_tbl_puestos = $employeeController->listPositions();
+        $lista_tbl_puestos = $employeeUseCase->listPositions();
         $formAction = 'empleados-crear';
         $mensaje = (string)($result['message'] ?? 'No se pudo agregar el registro.');
         $this->renderWithLayout(
@@ -159,15 +168,15 @@ class WebController
     public function employeesEditForm()
     {
         $this->requireLogin();
-        $employeeController = EmployeeController::fromEnvironment();
+        $employeeUseCase = EmployeeUseCase::fromEnvironment();
         $txtID = (int)($_GET['txtID'] ?? 0);
-        $empleado = $employeeController->getEmployee($txtID);
+        $empleado = $employeeUseCase->getEmployee($txtID);
         if ($empleado === null) {
             Flash::set('No se encontró el empleado a editar.', 'error');
             $this->redirect('empleados');
         }
 
-        $lista_tbl_puestos = $employeeController->listPositions();
+        $lista_tbl_puestos = $employeeUseCase->listPositions();
         $formAction = 'empleados-editar';
         $mensaje = '';
         $primernombre = (string)($empleado['Primernombre'] ?? '');
@@ -213,21 +222,21 @@ class WebController
             $this->redirect('empleados');
         }
 
-        $employeeController = EmployeeController::fromEnvironment();
+        $employeeUseCase = EmployeeUseCase::fromEnvironment();
         $txtID = (int)($_POST['txtID'] ?? 0);
-        $result = $employeeController->updateEmployee($txtID, $_POST, $_FILES, $this->uploadsDirectory);
+        $result = $employeeUseCase->updateEmployee($txtID, $_POST, $_FILES, $this->uploadsDirectory);
         if (($result['success'] ?? false) === true) {
             Flash::set((string)($result['message'] ?? 'Registro actualizado'));
             $this->redirect('empleados');
         }
 
-        $empleado = $employeeController->getEmployee($txtID);
+        $empleado = $employeeUseCase->getEmployee($txtID);
         if ($empleado === null) {
             Flash::set('No se encontró el empleado a editar.', 'error');
             $this->redirect('empleados');
         }
 
-        $lista_tbl_puestos = $employeeController->listPositions();
+        $lista_tbl_puestos = $employeeUseCase->listPositions();
         $formAction = 'empleados-editar';
         $mensaje = (string)($result['message'] ?? 'No se pudo actualizar el registro.');
         $primernombre = trim((string)($_POST['primernombre'] ?? $empleado['Primernombre'] ?? ''));
@@ -268,9 +277,9 @@ class WebController
     public function employeeRecommendation()
     {
         $this->requireLogin();
-        $employeeController = EmployeeController::fromEnvironment();
+        $employeeUseCase = EmployeeUseCase::fromEnvironment();
         $txtID = (int)($_GET['txtID'] ?? 0);
-        $empleado = $employeeController->getEmployeeWithPosition($txtID);
+        $empleado = $employeeUseCase->getEmployeeWithPosition($txtID);
         if ($empleado === null) {
             Flash::set('No se encontró el empleado para la carta de recomendación.', 'error');
             $this->redirect('empleados');
@@ -308,13 +317,13 @@ class WebController
             $this->redirect('empleados');
         }
 
-        $employeeController = EmployeeController::fromEnvironment();
+        $employeeUseCase = EmployeeUseCase::fromEnvironment();
         $txtID = (int)($_POST['txtID'] ?? 0);
         $success = false;
         $message = '';
 
         if ($txtID > 0) {
-            $deleted = $employeeController->deleteEmployee($txtID, $this->uploadsDirectory);
+            $deleted = $employeeUseCase->deleteEmployee($txtID, $this->uploadsDirectory);
             $success = $deleted;
             $message = $deleted ? 'Registro borrado' : 'No se pudo borrar el registro';
         } else {
@@ -334,9 +343,9 @@ class WebController
     public function positionsIndex()
     {
         $this->requireLogin();
-        $positionController = PositionController::fromEnvironment();
+        $positionUseCase = PositionUseCase::fromEnvironment();
 
-        $lista_tbl_puestos = $positionController->listPositions();
+        $lista_tbl_puestos = $positionUseCase->listPositions();
         $this->renderWithLayout(
             'positions/index.php',
             array_merge(
@@ -376,8 +385,8 @@ class WebController
             $this->redirect('puestos-crear');
         }
 
-        $positionController = PositionController::fromEnvironment();
-        $result = $positionController->createPosition($_POST);
+        $positionUseCase = PositionUseCase::fromEnvironment();
+        $result = $positionUseCase->createPosition($_POST);
         if (($result['success'] ?? false) === true) {
             Flash::set((string)($result['message'] ?? 'Registro agregado'));
             $this->redirect('puestos');
@@ -401,9 +410,9 @@ class WebController
     public function positionsEditForm()
     {
         $this->requireLogin();
-        $positionController = PositionController::fromEnvironment();
+        $positionUseCase = PositionUseCase::fromEnvironment();
         $txtID = (int)($_GET['txtID'] ?? 0);
-        $puesto = $positionController->getPosition($txtID);
+        $puesto = $positionUseCase->getPosition($txtID);
         if ($puesto === null) {
             Flash::set('No se encontró el puesto a editar.', 'error');
             $this->redirect('puestos');
@@ -433,9 +442,9 @@ class WebController
             $this->redirect('puestos');
         }
 
-        $positionController = PositionController::fromEnvironment();
+        $positionUseCase = PositionUseCase::fromEnvironment();
         $txtID = (int)($_POST['txtID'] ?? 0);
-        $result = $positionController->updatePosition($txtID, $_POST);
+        $result = $positionUseCase->updatePosition($txtID, $_POST);
         if (($result['success'] ?? false) === true) {
             Flash::set((string)($result['message'] ?? 'Registro actualizado'));
             $this->redirect('puestos');
@@ -473,13 +482,13 @@ class WebController
             $this->redirect('puestos');
         }
 
-        $positionController = PositionController::fromEnvironment();
+        $positionUseCase = PositionUseCase::fromEnvironment();
         $txtID = (int)($_POST['txtID'] ?? 0);
         $success = false;
         $message = '';
 
         if ($txtID > 0) {
-            $deleted = $positionController->deletePosition($txtID);
+            $deleted = $positionUseCase->deletePosition($txtID);
             $success = $deleted;
             $message = $deleted ? 'Registro borrado' : 'No se pudo borrar el registro';
         } else {
@@ -500,9 +509,9 @@ class WebController
     {
         $this->requireLogin();
         $this->requireAdmin();
-        $userController = UserController::fromEnvironment();
+        $userUseCase = UserUseCase::fromEnvironment();
 
-        $lista_tbl_usuarios = $userController->listUsers();
+        $lista_tbl_usuarios = $userUseCase->listUsers();
         $this->renderWithLayout(
             'users/index.php',
             array_merge(
@@ -544,8 +553,8 @@ class WebController
             $this->redirect('usuarios-crear');
         }
 
-        $userController = UserController::fromEnvironment();
-        $result = $userController->createUser($_POST);
+        $userUseCase = UserUseCase::fromEnvironment();
+        $result = $userUseCase->createUser($_POST);
         if (($result['success'] ?? false) === true) {
             Flash::set((string)($result['message'] ?? 'Registro agregado'));
             $this->redirect('usuarios');
@@ -570,9 +579,9 @@ class WebController
     {
         $this->requireLogin();
         $this->requireAdmin();
-        $userController = UserController::fromEnvironment();
+        $userUseCase = UserUseCase::fromEnvironment();
         $txtID = (int)($_GET['txtID'] ?? 0);
-        $usuarioData = $userController->getUser($txtID);
+        $usuarioData = $userUseCase->getUser($txtID);
         if ($usuarioData === null) {
             Flash::set('No se encontró el usuario a editar.', 'error');
             $this->redirect('usuarios');
@@ -604,9 +613,9 @@ class WebController
             $this->redirect('usuarios');
         }
 
-        $userController = UserController::fromEnvironment();
+        $userUseCase = UserUseCase::fromEnvironment();
         $txtID = (int)($_POST['txtID'] ?? 0);
-        $result = $userController->updateUser($txtID, $_POST);
+        $result = $userUseCase->updateUser($txtID, $_POST);
         if (($result['success'] ?? false) === true) {
             Flash::set((string)($result['message'] ?? 'Registro actualizado'));
             $this->redirect('usuarios');
@@ -647,13 +656,13 @@ class WebController
             $this->redirect('usuarios');
         }
 
-        $userController = UserController::fromEnvironment();
+        $userUseCase = UserUseCase::fromEnvironment();
         $txtID = (int)($_POST['txtID'] ?? 0);
         $success = false;
         $message = '';
 
         if ($txtID > 0) {
-            $deleted = $userController->deleteUser($txtID);
+            $deleted = $userUseCase->deleteUser($txtID);
             $success = $deleted;
             $message = $deleted ? 'Registro borrado' : 'No se pudo borrar el registro';
         } else {
