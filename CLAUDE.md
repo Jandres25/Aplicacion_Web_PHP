@@ -14,6 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 cp .env.example .env
 # Edit .env with DB credentials and APP_URL
+composer install
 ```
 
 Import the schema and seed data:
@@ -23,30 +24,32 @@ mysql -u root -p your_db < database/schema.sql
 mysql -u root -p your_db < database/seeders.sql
 ```
 
-There is no Composer autoloading — all `require_once` calls are explicit and manual.
+Autoloading is handled by Composer PSR-4. Run `composer dump-autoload` after adding new classes.
 
 ## Architecture
 
-This is a custom PHP MVC framework with no external dependencies (except bundled DomPDF in `libs/`).
+This is a custom PHP MVC framework using Composer PSR-4 autoloading (no manual `require_once`).
 
 **Request lifecycle:**
 
-1. `public/index.php` — front controller; bootstraps and dispatches
-2. `core/bootstrap.php` — loads env, DB, Flash, runs `AuthMiddleware` (redirects to `/login` if unauthenticated)
-3. `routes/web.php` — registers all routes on the `Router`; all routes resolve to methods on `WebController`
-4. `core/Router.php` — matches URI to handler; also serves static files from `public/`
+1. `public/index.php` — front controller; loads `vendor/autoload.php`, sets `View::setBasePath()`, dispatches
+2. `routes/web.php` — instantiates the 5 HTTP controllers and maps all routes
+3. `core/Router.php` — matches URI to handler; also serves static files from `public/`
 
 **Layer responsibilities:**
 
-- `app/Controllers/WebController.php` — the single HTTP-facing controller; delegates to domain controllers
-- `app/Controllers/{Auth,Employee,Position,User}Controller.php` — domain controllers (no HTTP awareness; return result arrays)
-- `app/Services/` — business logic; called by domain controllers
-- `app/Repositories/` — PDO queries; called by services
+- `app/Http/Controllers/Controller.php` — abstract base; provides `renderWithLayout()`, `redirect()`, `requireLogin()`, `requireAdmin()`, CSRF helpers, and breadcrumb builders; injects `public_base`, `nombreUsuario`, and `flash` into every layout render
+- `app/Http/Controllers/{Home,Auth,Employees,Positions,Users}Controller.php` — HTTP controllers; one per module
+- `app/UseCases/{Auth,Employee,Position,User}UseCase.php` — domain logic; no HTTP awareness; return result arrays
+- `app/Services/` — business logic; called by UseCases
+- `app/Repositories/` — PDO queries; called by Services
 - `app/Infrastructure/EmployeeFileStorage.php` — file upload handling (photos, CVs)
-- `config/database.php` — PDO singleton (`Config\Database::getConnection()`)
+- `config/Database.php` — PDO singleton (`Config\Database::getConnection()`)
 
 **Rendering:**
-`WebController::renderWithLayout()` wraps views with `app/Views/layout/{header,module_header,footer}.php`. Page metadata (title, breadcrumbs, icon) is passed via `pageHeaderData()` and `moduleBreadcrumbs()` helpers on `WebController`.
+`Controller::renderWithLayout()` delegates to `Core\View::renderWithLayout()`, which wraps views with `resources/views/layout/{header,module_header,footer}.php`. Page metadata (title, breadcrumbs, icon) is built via `pageHeaderData()` and `moduleBreadcrumbs()` on the base `Controller`.
+
+**Intelephense false positives:** Variables like `$public_base`, `$nombreUsuario`, `$flash`, `$csrfToken` in layout views will show as "undefined" in the IDE because they come from `extract($data)` inside `View::render()`. These are not real errors.
 
 ## CSRF Protection
 
