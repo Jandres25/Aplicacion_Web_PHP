@@ -1,4 +1,3 @@
-<?php require_once dirname(__DIR__, 3) . '/core/bootstrap.php'; ?>
 <!doctype html>
 <html lang="es">
 
@@ -18,7 +17,7 @@
   <!-- DataTables con Bootstrap 5 + Responsive -->
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" />
   <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css" />
-  
+
   <!-- Font Awesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
@@ -76,8 +75,8 @@
 
   <main class="container">
     <?php if ($flash !== null) : ?>
-      <div id="flash-data" 
-           data-icon="<?= htmlspecialchars($flash['icon']); ?>" 
-           data-message="<?= htmlspecialchars($flash['message']); ?>">
+      <div id="flash-data"
+        data-icon="<?= htmlspecialchars($flash['icon']); ?>"
+        data-message="<?= htmlspecialchars($flash['message']); ?>">
       </div>
     <?php endif; ?>

@@ -6,6 +6,7 @@ use App\Middleware\AuthMiddleware;
 use Core\Flash;
 use Core\Security;
 use Core\View;
+use Core\Env;
 
 abstract class Controller
 {
@@ -22,6 +23,9 @@ abstract class Controller
 
     protected function renderWithLayout(string $viewFile, array $data = []): void
     {
+        $data['public_base']    = $this->publicBaseUrl;
+        $data['nombreUsuario']  = $this->currentUser();
+        $data['flash']          = Flash::consume();
         View::renderWithLayout($viewFile, $data);
     }
 

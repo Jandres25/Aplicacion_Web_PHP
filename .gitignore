@@ -12,6 +12,7 @@ public/storage/uploads/*
 !public/storage/uploads/cv_default.pdf
 !public/storage/uploads/user-default.jpg
 config/app.php
+.claude
 
 # IDEs and editors
 .idea/
