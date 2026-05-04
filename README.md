@@ -39,6 +39,7 @@ resources/views/          → Vistas PHP organizadas por módulo
 ## Características
 
 - Autenticación con `password_hash` / `password_verify` y sesiones PHP
+- "Recuérdame" con token rotante almacenado hasheado en DB y cookie `HttpOnly`/`SameSite=Lax`
 - Protección CSRF en formularios y peticiones AJAX (meta tag + header)
 - Eliminación asíncrona con AJAX + SweetAlert2 sin recargar la página
 - Notificaciones Flash integradas con SweetAlert2
@@ -74,6 +75,7 @@ Apuntar el servidor web a `public/` o acceder vía `http://localhost/Aplicacion_
 ## Base de datos
 
 Tablas: `tbl-empleados`, `tbl-puestos`, `tbl-usuarios` (los guiones requieren comillas en SQL).  
+`tbl-usuarios` incluye columnas `remember_token` y `remember_token_expires` para la función "Recuérdame".  
 Archivos subidos en `public/storage/uploads/`.
 
 ---

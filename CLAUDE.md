@@ -45,11 +45,22 @@ This is a custom PHP MVC framework using Composer PSR-4 autoloading (no manual `
 - `app/Repositories/` — PDO queries; called by Services
 - `app/Infrastructure/EmployeeFileStorage.php` — file upload handling (photos, CVs)
 - `config/Database.php` — PDO singleton (`Config\Database::getConnection()`)
+- `app/Middleware/AuthMiddleware.php` — checks `$_SESSION['logueado']`, then falls back to `AuthUseCase::handleRememberLogin()` before redirecting
 
 **Rendering:**
 `Controller::renderWithLayout()` delegates to `Core\View::renderWithLayout()`, which wraps views with `resources/views/layout/{header,module_header,footer}.php`. Page metadata (title, breadcrumbs, icon) is built via `pageHeaderData()` and `moduleBreadcrumbs()` on the base `Controller`.
 
 **Intelephense false positives:** Variables like `$public_base`, `$nombreUsuario`, `$flash`, `$csrfToken` in layout views will show as "undefined" in the IDE because they come from `extract($data)` inside `View::render()`. These are not real errors.
+
+## Remember Me (cookie persistence)
+
+- Enabled by default; controlled by `REMEMBER_ME_ENABLED=true` in `.env`
+- Cookie lifetime: `REMEMBER_ME_LIFETIME=30` (days)
+- **Cookie format**: `{userId}:{plainToken}` — the plain token is never stored; only its `sha256` hash goes into the DB column `remember_token` on `tbl-usuarios`
+- **Rotation**: every successful cookie-based login issues a new token and overwrites the old one (token rotation)
+- **Logout**: `AuthUseCase::handleLogout()` revokes the DB token and expires the cookie; `AuthController` must call this instead of destroying the session directly
+- `Security::setRememberCookie()` / `clearRememberCookie()` / `getRememberCookie()` in `core/Security.php` manage the raw cookie with `HttpOnly`, `SameSite=Lax`, and `Secure` (auto-detected)
+- Schema columns added to `tbl-usuarios`: `remember_token VARCHAR(64) NULL`, `remember_token_expires DATETIME NULL`
 
 ## CSRF Protection
 
@@ -66,6 +77,6 @@ This is a custom PHP MVC framework using Composer PSR-4 autoloading (no manual `
 
 ## Database
 
-Tables: `tbl-puestos`, `tbl-empleados`, `tbl-usuarios` (note hyphen in table names — always quote them in SQL).
+Tables: `tbl-puestos`, `tbl-empleados`, `tbl-usuarios` (note hyphen in table names — always quote them in SQL). `tbl-usuarios` has two extra nullable columns for remember-me: `remember_token` and `remember_token_expires`.
 
 File uploads land in `public/storage/uploads/`. Default assets (`user-default.jpg`, `cv_default.pdf`) live there too.
