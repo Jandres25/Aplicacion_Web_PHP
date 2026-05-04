@@ -105,4 +105,43 @@ class UserRepository
             ':ID' => (int)$id
         ]);
     }
+
+    public function findByIdWithRememberToken(int $id): ?array
+    {
+        $statement = $this->connection->prepare(
+            "SELECT ID, Nombreusuario, remember_token, remember_token_expires
+             FROM `tbl-usuarios`
+             WHERE ID = :ID
+             LIMIT 1"
+        );
+        $statement->bindParam(':ID', $id, PDO::PARAM_INT);
+        $statement->execute();
+        $user = $statement->fetch(PDO::FETCH_ASSOC);
+        return $user === false ? null : $user;
+    }
+
+    public function setRememberToken(int $id, string $tokenHash, string $expiresAt): bool
+    {
+        $statement = $this->connection->prepare(
+            "UPDATE `tbl-usuarios`
+             SET remember_token = :hash, remember_token_expires = :expires
+             WHERE ID = :ID"
+        );
+        return $statement->execute([
+            ':hash'    => $tokenHash,
+            ':expires' => $expiresAt,
+            ':ID'      => $id,
+        ]);
+    }
+
+    public function clearRememberToken(int $id): bool
+    {
+        $statement = $this->connection->prepare(
+            "UPDATE `tbl-usuarios`
+             SET remember_token = NULL, remember_token_expires = NULL
+             WHERE ID = :ID"
+        );
+        $statement->bindParam(':ID', $id, PDO::PARAM_INT);
+        return $statement->execute();
+    }
 }

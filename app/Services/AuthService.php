@@ -60,4 +60,51 @@ class AuthService
         unset($user['Password']);
         return $user;
     }
+
+    public function issueRememberToken(int $userId): string
+    {
+        $token   = bin2hex(random_bytes(32));
+        $hash    = hash('sha256', $token);
+        $days    = (int)\Core\Env::get('REMEMBER_ME_LIFETIME', 30);
+        $expires = date('Y-m-d H:i:s', time() + $days * 86400);
+
+        $this->userRepository->setRememberToken($userId, $hash, $expires);
+
+        return $token;
+    }
+
+    public function validateRememberToken(string $cookieValue): ?array
+    {
+        $parts = explode(':', $cookieValue, 2);
+        if (count($parts) !== 2) {
+            return null;
+        }
+
+        [$rawId, $token] = $parts;
+        $id = filter_var($rawId, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if ($id === false) {
+            return null;
+        }
+
+        $user = $this->userRepository->findByIdWithRememberToken($id);
+        if ($user === null || $user['remember_token'] === null) {
+            return null;
+        }
+
+        if (strtotime((string)$user['remember_token_expires']) < time()) {
+            $this->userRepository->clearRememberToken($id);
+            return null;
+        }
+
+        if (!hash_equals($user['remember_token'], hash('sha256', $token))) {
+            return null;
+        }
+
+        return ['ID' => (int)$user['ID'], 'Nombreusuario' => $user['Nombreusuario']];
+    }
+
+    public function revokeRememberToken(int $userId): void
+    {
+        $this->userRepository->clearRememberToken($userId);
+    }
 }

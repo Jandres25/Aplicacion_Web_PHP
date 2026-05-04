@@ -38,9 +38,58 @@ class AuthUseCase
         Security::startSession();
         session_regenerate_id(true);
 
-        $_SESSION['usuario'] = $user['Nombreusuario'];
+        $_SESSION['usuario']  = $user['Nombreusuario'];
         $_SESSION['logueado'] = true;
+        $_SESSION['user_id']  = (int)$user['ID'];
+
+        if (!empty($post['remember']) && Env::get('REMEMBER_ME_ENABLED', 'true') === 'true') {
+            $plainToken = $this->authService->issueRememberToken((int)$user['ID']);
+            Security::setRememberCookie($user['ID'] . ':' . $plainToken);
+        }
 
         return ['success' => true];
+    }
+
+    public function handleRememberLogin(): bool
+    {
+        if (Env::get('REMEMBER_ME_ENABLED', 'true') !== 'true') {
+            return false;
+        }
+
+        $cookie = Security::getRememberCookie();
+        if ($cookie === null) {
+            return false;
+        }
+
+        $user = $this->authService->validateRememberToken($cookie);
+        if ($user === null) {
+            Security::clearRememberCookie();
+            return false;
+        }
+
+        Security::startSession();
+        session_regenerate_id(true);
+
+        $_SESSION['usuario']  = $user['Nombreusuario'];
+        $_SESSION['logueado'] = true;
+        $_SESSION['user_id']  = $user['ID'];
+
+        $plainToken = $this->authService->issueRememberToken($user['ID']);
+        Security::setRememberCookie($user['ID'] . ':' . $plainToken);
+
+        return true;
+    }
+
+    public function handleLogout(): void
+    {
+        Security::startSession();
+
+        if (isset($_SESSION['user_id'])) {
+            $this->authService->revokeRememberToken((int)$_SESSION['user_id']);
+        }
+
+        session_unset();
+        session_destroy();
+        Security::clearRememberCookie();
     }
 }

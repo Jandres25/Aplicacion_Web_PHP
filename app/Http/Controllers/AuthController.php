@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\UseCases\AuthUseCase;
+use Core\Env;
 use Core\Security;
 use Core\View;
 
@@ -17,21 +18,25 @@ class AuthController extends Controller
         }
 
         View::render('auth/login.php', [
-            'public_base' => $this->publicBaseUrl,
-            'formAction'  => 'login',
-            'mensaje'     => '',
-            'csrfToken'   => Security::getCsrfToken(),
+            'public_base'     => $this->publicBaseUrl,
+            'formAction'      => 'login',
+            'mensaje'         => '',
+            'csrfToken'       => Security::getCsrfToken(),
+            'rememberEnabled' => Env::get('REMEMBER_ME_ENABLED', 'true'),
         ]);
     }
 
     public function login(): void
     {
+        $rememberEnabled = Env::get('REMEMBER_ME_ENABLED', 'true');
+
         if (!$this->hasValidCsrfToken($_POST)) {
             View::render('auth/login.php', [
-                'public_base' => $this->publicBaseUrl,
-                'formAction'  => 'login',
-                'mensaje'     => 'Solicitud inválida, recargue la página e intente nuevamente.',
-                'csrfToken'   => Security::getCsrfToken(),
+                'public_base'     => $this->publicBaseUrl,
+                'formAction'      => 'login',
+                'mensaje'         => 'Solicitud inválida, recargue la página e intente nuevamente.',
+                'csrfToken'       => Security::getCsrfToken(),
+                'rememberEnabled' => $rememberEnabled,
             ]);
             return;
         }
@@ -45,10 +50,11 @@ class AuthController extends Controller
         }
 
         View::render('auth/login.php', [
-            'public_base' => $this->publicBaseUrl,
-            'formAction'  => 'login',
-            'mensaje'     => (string)$result['mensaje'],
-            'csrfToken'   => Security::getCsrfToken(),
+            'public_base'     => $this->publicBaseUrl,
+            'formAction'      => 'login',
+            'mensaje'         => (string)$result['mensaje'],
+            'csrfToken'       => Security::getCsrfToken(),
+            'rememberEnabled' => $rememberEnabled,
         ]);
     }
 
@@ -59,9 +65,7 @@ class AuthController extends Controller
             $this->redirect('');
         }
 
-        Security::startSession();
-        session_unset();
-        session_destroy();
+        AuthUseCase::fromEnvironment()->handleLogout();
         $this->redirect('login');
     }
 }

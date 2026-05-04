@@ -27,6 +27,9 @@ CREATE TABLE IF NOT EXISTS `tbl-usuarios` (
   `Nombreusuario` varchar(255) NOT NULL,
   `Password` varchar(255) NOT NULL,
   `Correo` varchar(255) NOT NULL,
+  `remember_token` CHAR(64) DEFAULT NULL,
+  `remember_token_expires` DATETIME DEFAULT NULL,
   PRIMARY KEY (`ID`),
-  UNIQUE KEY `Correo` (`Correo`)
+  UNIQUE KEY `Correo` (`Correo`),
+  INDEX `idx_remember_token` (`remember_token`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

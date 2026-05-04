@@ -45,6 +45,13 @@
             </div>
           </div>
 
+          <?php if (($rememberEnabled ?? 'true') === 'true') : ?>
+            <div class="mb-3 form-check">
+              <input type="checkbox" class="form-check-input" id="remember" name="remember" value="1">
+              <label class="form-check-label small" for="remember">Recuérdame</label>
+            </div>
+          <?php endif; ?>
+
           <div class="d-grid">
             <button type="submit" class="btn btn-primary py-2 fw-bold shadow-sm">INICIAR SESIÓN</button>
           </div>
@@ -53,9 +60,15 @@
     </div>
 
     <!-- Animaciones -->
-    <div class="square"></div><div class="square"></div><div class="square"></div>
-    <div class="circle"></div><div class="circle"></div><div class="circle"></div>
-    <div class="triangle"></div><div class="triangle"></div><div class="triangle"></div>
+    <div class="square"></div>
+    <div class="square"></div>
+    <div class="square"></div>
+    <div class="circle"></div>
+    <div class="circle"></div>
+    <div class="circle"></div>
+    <div class="triangle"></div>
+    <div class="triangle"></div>
+    <div class="triangle"></div>
   </main>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>

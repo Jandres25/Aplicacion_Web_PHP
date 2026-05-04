@@ -60,4 +60,39 @@ class Security
         header('Referrer-Policy: strict-origin-when-cross-origin');
         header('Permissions-Policy: geolocation=(), microphone=(), camera=()');
     }
+
+    public static function setRememberCookie(string $value): void
+    {
+        $isHttps  = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+        $lifetime = (int)\Core\Env::get('REMEMBER_ME_LIFETIME', 30) * 86400;
+
+        setcookie('remember_token', $value, [
+            'expires'  => time() + $lifetime,
+            'path'     => '/',
+            'httponly' => true,
+            'secure'   => $isHttps,
+            'samesite' => 'Lax',
+        ]);
+    }
+
+    public static function clearRememberCookie(): void
+    {
+        $isHttps = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+
+        setcookie('remember_token', '', [
+            'expires'  => time() - 3600,
+            'path'     => '/',
+            'httponly' => true,
+            'secure'   => $isHttps,
+            'samesite' => 'Lax',
+        ]);
+
+        unset($_COOKIE['remember_token']);
+    }
+
+    public static function getRememberCookie(): ?string
+    {
+        $value = $_COOKIE['remember_token'] ?? null;
+        return (is_string($value) && $value !== '') ? $value : null;
+    }
 }

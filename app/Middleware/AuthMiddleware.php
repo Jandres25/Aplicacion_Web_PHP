@@ -2,6 +2,7 @@
 
 namespace App\Middleware;
 
+use App\UseCases\AuthUseCase;
 use Core\Security;
 
 class AuthMiddleware
@@ -10,10 +11,16 @@ class AuthMiddleware
     {
         Security::startSession();
 
-        if (!isset($_SESSION['logueado'])) {
-            header('Location:' . $loginUrl);
-            exit();
+        if (isset($_SESSION['logueado'])) {
+            return;
         }
+
+        if (AuthUseCase::fromEnvironment()->handleRememberLogin()) {
+            return;
+        }
+
+        header('Location:' . $loginUrl);
+        exit();
     }
 
     public function currentUser()
