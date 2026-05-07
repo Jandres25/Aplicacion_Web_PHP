@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Auth\LoginRequest;
 use App\Middleware\AuthMiddleware;
 use App\UseCases\AuthUseCase;
 use Core\Env;
@@ -50,9 +51,22 @@ class AuthController extends Controller
             return;
         }
 
-        $result = $this->authUseCase->handleLogin($_POST);
+        $request = LoginRequest::fromArray($_POST);
+        $errors  = $request->validate();
+        if ($errors !== []) {
+            View::render('auth/login.php', [
+                'public_base'     => $this->publicBaseUrl,
+                'formAction'      => 'login',
+                'mensaje'         => reset($errors),
+                'csrfToken'       => Security::getCsrfToken(),
+                'rememberEnabled' => $rememberEnabled,
+            ]);
+            return;
+        }
 
-        if ($result['success']) {
+        $result = $this->authUseCase->handleLogin($request);
+
+        if ($result->success) {
             $this->redirect('');
             return;
         }
@@ -60,7 +74,7 @@ class AuthController extends Controller
         View::render('auth/login.php', [
             'public_base'     => $this->publicBaseUrl,
             'formAction'      => 'login',
-            'mensaje'         => (string)$result['mensaje'],
+            'mensaje'         => $result->message ?? '',
             'csrfToken'       => Security::getCsrfToken(),
             'rememberEnabled' => $rememberEnabled,
         ]);

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Users\StoreUserRequest;
+use App\Http\Requests\Users\UpdateUserRequest;
 use App\Middleware\AuthMiddleware;
 use App\UseCases\UserUseCase;
 use Core\Flash;
@@ -62,14 +64,21 @@ class UsersController extends Controller
             $this->redirect('usuarios-crear');
         }
 
-        $result = $this->userUseCase->createUser($_POST);
-        if (($result['success'] ?? false) === true) {
-            Flash::set((string)($result['message'] ?? 'Registro agregado'));
+        $req    = StoreUserRequest::fromArray($_POST);
+        $errors = $req->validate();
+        if ($errors !== []) {
+            Flash::set((string)reset($errors), 'error');
+            $this->redirect('usuarios-crear');
+        }
+
+        $result = $this->userUseCase->createUser($req);
+        if ($result->success) {
+            Flash::set($result->message ?? 'Registro agregado');
             $this->redirect('usuarios');
         }
 
         $formAction = 'usuarios-crear';
-        $mensaje = (string)($result['message'] ?? 'No se pudo agregar el registro.');
+        $mensaje    = $result->message ?? 'No se pudo agregar el registro.';
         $this->renderWithLayout(
             'users/create.php',
             array_merge(
@@ -87,7 +96,7 @@ class UsersController extends Controller
     {
         $this->requireLogin();
         $this->requireAdmin();
-        $txtID = (int)($_GET['txtID'] ?? 0);
+        $txtID       = (int)($_GET['txtID'] ?? 0);
         $usuarioData = $this->userUseCase->getUser($txtID);
         if ($usuarioData === null) {
             Flash::set('No se encontró el usuario a editar.', 'error');
@@ -120,17 +129,24 @@ class UsersController extends Controller
             $this->redirect('usuarios');
         }
 
-        $txtID = (int)($_POST['txtID'] ?? 0);
-        $result = $this->userUseCase->updateUser($txtID, $_POST);
-        if (($result['success'] ?? false) === true) {
-            Flash::set((string)($result['message'] ?? 'Registro actualizado'));
+        $req    = UpdateUserRequest::fromArray($_POST);
+        $errors = $req->validate();
+        if ($errors !== []) {
+            Flash::set((string)reset($errors), 'error');
             $this->redirect('usuarios');
         }
 
+        $result = $this->userUseCase->updateUser($req);
+        if ($result->success) {
+            Flash::set($result->message ?? 'Registro actualizado');
+            $this->redirect('usuarios');
+        }
+
+        $txtID      = $req->id;
         $formAction = 'usuarios-editar';
-        $mensaje    = (string)($result['message'] ?? 'No se pudo actualizar el registro.');
-        $usuario    = trim((string)($_POST['usuario'] ?? ''));
-        $correo     = trim((string)($_POST['correo'] ?? ''));
+        $mensaje    = $result->message ?? 'No se pudo actualizar el registro.';
+        $usuario    = $req->usuario;
+        $correo     = $req->correo;
         $this->renderWithLayout(
             'users/edit.php',
             array_merge(

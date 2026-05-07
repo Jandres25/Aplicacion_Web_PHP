@@ -2,7 +2,9 @@
 
 namespace App\UseCases;
 
+use App\Http\Requests\Auth\LoginRequest;
 use App\Services\AuthService;
+use App\UseCases\DTOs\OperationResult;
 use Core\Env;
 use Core\Security;
 
@@ -15,15 +17,11 @@ class AuthUseCase
         $this->authService = $authService;
     }
 
-    public function handleLogin(array $post): array
+    public function handleLogin(LoginRequest $request): OperationResult
     {
-        if (empty($post['usuario']) || empty($post['password'])) {
-            return ['success' => false, 'mensaje' => 'Por favor, complete todos los campos.'];
-        }
-
-        $user = $this->authService->authenticate($post['usuario'], $post['password']);
+        $user = $this->authService->authenticate($request->usuario, $request->password);
         if ($user === null) {
-            return ['success' => false, 'mensaje' => 'El usuario o la contraseña son incorrectos'];
+            return OperationResult::fail('El usuario o la contraseña son incorrectos');
         }
 
         Security::startSession();
@@ -33,12 +31,12 @@ class AuthUseCase
         $_SESSION['logueado'] = true;
         $_SESSION['user_id']  = $user->id;
 
-        if (!empty($post['remember']) && Env::get('REMEMBER_ME_ENABLED', 'true') === 'true') {
+        if ($request->remember && Env::get('REMEMBER_ME_ENABLED', 'true') === 'true') {
             $plainToken = $this->authService->issueRememberToken($user->id);
             Security::setRememberCookie($user->id . ':' . $plainToken);
         }
 
-        return ['success' => true];
+        return OperationResult::ok();
     }
 
     public function handleRememberLogin(): bool

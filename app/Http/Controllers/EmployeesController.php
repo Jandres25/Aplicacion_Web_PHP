@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Employees\StoreEmployeeRequest;
+use App\Http\Requests\Employees\UpdateEmployeeRequest;
 use App\Middleware\AuthMiddleware;
 use App\UseCases\EmployeeUseCase;
 use Core\Flash;
@@ -61,15 +63,22 @@ class EmployeesController extends Controller
             $this->redirect('empleados-crear');
         }
 
-        $result = $this->employeeUseCase->createEmployee($_POST, $_FILES, $this->uploadsDirectory);
-        if (($result['success'] ?? false) === true) {
-            Flash::set((string)($result['message'] ?? 'Registro agregado'));
+        $req    = StoreEmployeeRequest::fromArray($_POST);
+        $errors = $req->validate();
+        if ($errors !== []) {
+            Flash::set((string)reset($errors), 'error');
+            $this->redirect('empleados-crear');
+        }
+
+        $result = $this->employeeUseCase->createEmployee($req, $_FILES, $this->uploadsDirectory);
+        if ($result->success) {
+            Flash::set($result->message ?? 'Registro agregado');
             $this->redirect('empleados');
         }
 
         $lista_tbl_puestos = $this->employeeUseCase->listPositions();
         $formAction = 'empleados-crear';
-        $mensaje = (string)($result['message'] ?? 'No se pudo agregar el registro.');
+        $mensaje    = $result->message ?? 'No se pudo agregar el registro.';
         $this->renderWithLayout(
             'employees/create.php',
             array_merge(
@@ -86,7 +95,7 @@ class EmployeesController extends Controller
     public function editForm(): void
     {
         $this->requireLogin();
-        $txtID = (int)($_GET['txtID'] ?? 0);
+        $txtID    = (int)($_GET['txtID'] ?? 0);
         $empleado = $this->employeeUseCase->getEmployee($txtID);
         if ($empleado === null) {
             Flash::set('No se encontró el empleado a editar.', 'error');
@@ -130,30 +139,37 @@ class EmployeesController extends Controller
             $this->redirect('empleados');
         }
 
-        $txtID = (int)($_POST['txtID'] ?? 0);
-        $result = $this->employeeUseCase->updateEmployee($txtID, $_POST, $_FILES, $this->uploadsDirectory);
-        if (($result['success'] ?? false) === true) {
-            Flash::set((string)($result['message'] ?? 'Registro actualizado'));
+        $req    = UpdateEmployeeRequest::fromArray($_POST);
+        $errors = $req->validate();
+        if ($errors !== []) {
+            Flash::set((string)reset($errors), 'error');
             $this->redirect('empleados');
         }
 
-        $empleado = $this->employeeUseCase->getEmployee($txtID);
+        $result = $this->employeeUseCase->updateEmployee($req, $_FILES, $this->uploadsDirectory);
+        if ($result->success) {
+            Flash::set($result->message ?? 'Registro actualizado');
+            $this->redirect('empleados');
+        }
+
+        $empleado = $this->employeeUseCase->getEmployee($req->id);
         if ($empleado === null) {
             Flash::set('No se encontró el empleado a editar.', 'error');
             $this->redirect('empleados');
         }
 
         $lista_tbl_puestos = $this->employeeUseCase->listPositions();
+        $txtID             = $req->id;
         $formAction        = 'empleados-editar';
-        $mensaje           = (string)($result['message'] ?? 'No se pudo actualizar el registro.');
-        $primernombre      = trim((string)($_POST['primernombre'] ?? $empleado['Primernombre'] ?? ''));
-        $segundonombre     = trim((string)($_POST['segundonombre'] ?? $empleado['Segundonombre'] ?? ''));
-        $primerapellido    = trim((string)($_POST['primerapellido'] ?? $empleado['Primerapellido'] ?? ''));
-        $segundoapellido   = trim((string)($_POST['segundoapellido'] ?? $empleado['Segundoapellido'] ?? ''));
+        $mensaje           = $result->message ?? 'No se pudo actualizar el registro.';
+        $primernombre      = $req->primerNombre;
+        $segundonombre     = $req->segundoNombre ?? '';
+        $primerapellido    = $req->primerApellido;
+        $segundoapellido   = $req->segundoApellido;
         $foto              = (string)($empleado['Foto'] ?? '');
         $cv                = (string)($empleado['CV'] ?? '');
-        $idpuesto          = (string)($_POST['idpuesto'] ?? $empleado['Idpuesto'] ?? '');
-        $fechadeingreso    = (string)($_POST['fechadeingreso'] ?? $empleado['Fecha'] ?? '');
+        $idpuesto          = (string)$req->idPuesto;
+        $fechadeingreso    = $req->fechaIngreso;
 
         $this->renderWithLayout(
             'employees/edit.php',
@@ -175,7 +191,7 @@ class EmployeesController extends Controller
     public function recommendation(): void
     {
         $this->requireLogin();
-        $txtID = (int)($_GET['txtID'] ?? 0);
+        $txtID    = (int)($_GET['txtID'] ?? 0);
         $empleado = $this->employeeUseCase->getEmployeeWithPosition($txtID);
         if ($empleado === null) {
             Flash::set('No se encontró el empleado para la carta de recomendación.', 'error');
@@ -188,11 +204,11 @@ class EmployeesController extends Controller
             (string)($empleado['Primerapellido'] ?? ''),
             (string)($empleado['Segundoapellido'] ?? ''),
         ])));
-        $puesto      = (string)($empleado['puesto'] ?? '');
+        $puesto       = (string)($empleado['puesto'] ?? '');
         $fechaIngreso = \DateTime::createFromFormat('Y-m-d', (string)($empleado['Fecha'] ?? ''));
         $fechaIngreso = $fechaIngreso ?: new \DateTime();
-        $diferencia  = $fechaIngreso->diff(new \DateTime());
-        $fechaActual = (new \DateTime())->format('d/m/Y');
+        $diferencia   = $fechaIngreso->diff(new \DateTime());
+        $fechaActual  = (new \DateTime())->format('d/m/Y');
 
         View::render('employees/recommendation_letter.php', compact(
             'nombreCompleto', 'puesto', 'fechaIngreso', 'diferencia', 'fechaActual'

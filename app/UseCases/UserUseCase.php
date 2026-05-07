@@ -3,7 +3,10 @@
 namespace App\UseCases;
 
 use App\Domain\Models\User;
+use App\Http\Requests\Users\StoreUserRequest;
+use App\Http\Requests\Users\UpdateUserRequest;
 use App\Services\UserService;
+use App\UseCases\DTOs\OperationResult;
 
 class UserUseCase
 {
@@ -19,23 +22,39 @@ class UserUseCase
         return array_map(fn(User $u) => $u->toArray(), $this->userService->listUsers());
     }
 
-    public function getUser($id): ?array
+    public function getUser(int $id): ?array
     {
         $user = $this->userService->getUser($id);
         return $user?->toArray();
     }
 
-    public function createUser($data)
+    public function createUser(StoreUserRequest $req): OperationResult
     {
-        return $this->userService->createUser($data);
+        $result = $this->userService->createUser([
+            'usuario'  => $req->usuario,
+            'password' => $req->password,
+            'correo'   => $req->correo,
+        ]);
+        return new OperationResult(
+            (bool)($result['success'] ?? false),
+            (string)($result['message'] ?? '')
+        );
     }
 
-    public function updateUser($id, $data)
+    public function updateUser(UpdateUserRequest $req): OperationResult
     {
-        return $this->userService->updateUser($id, $data);
+        $result = $this->userService->updateUser($req->id, [
+            'usuario'  => $req->usuario,
+            'password' => $req->password,
+            'correo'   => $req->correo,
+        ]);
+        return new OperationResult(
+            (bool)($result['success'] ?? false),
+            (string)($result['message'] ?? '')
+        );
     }
 
-    public function deleteUser($id)
+    public function deleteUser(int $id): bool
     {
         return $this->userService->deleteUser($id);
     }

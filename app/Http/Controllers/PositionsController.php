@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Positions\StorePositionRequest;
+use App\Http\Requests\Positions\UpdatePositionRequest;
 use App\Middleware\AuthMiddleware;
 use App\UseCases\PositionUseCase;
 use Core\Flash;
@@ -59,14 +61,21 @@ class PositionsController extends Controller
             $this->redirect('puestos-crear');
         }
 
-        $result = $this->positionUseCase->createPosition($_POST);
-        if (($result['success'] ?? false) === true) {
-            Flash::set((string)($result['message'] ?? 'Registro agregado'));
+        $req    = StorePositionRequest::fromArray($_POST);
+        $errors = $req->validate();
+        if ($errors !== []) {
+            Flash::set((string)reset($errors), 'error');
+            $this->redirect('puestos-crear');
+        }
+
+        $result = $this->positionUseCase->createPosition($req);
+        if ($result->success) {
+            Flash::set($result->message ?? 'Registro agregado');
             $this->redirect('puestos');
         }
 
         $formAction = 'puestos-crear';
-        $mensaje = (string)($result['message'] ?? 'No se pudo agregar el registro.');
+        $mensaje    = $result->message ?? 'No se pudo agregar el registro.';
         $this->renderWithLayout(
             'positions/create.php',
             array_merge(
@@ -83,16 +92,16 @@ class PositionsController extends Controller
     public function editForm(): void
     {
         $this->requireLogin();
-        $txtID = (int)($_GET['txtID'] ?? 0);
+        $txtID  = (int)($_GET['txtID'] ?? 0);
         $puesto = $this->positionUseCase->getPosition($txtID);
         if ($puesto === null) {
             Flash::set('No se encontró el puesto a editar.', 'error');
             $this->redirect('puestos');
         }
 
-        $formAction       = 'puestos-editar';
-        $mensaje          = '';
-        $nombredelpuesto  = (string)($puesto['Nombredelpuesto'] ?? '');
+        $formAction      = 'puestos-editar';
+        $mensaje         = '';
+        $nombredelpuesto = (string)($puesto['Nombredelpuesto'] ?? '');
         $this->renderWithLayout(
             'positions/edit.php',
             array_merge(
@@ -114,16 +123,23 @@ class PositionsController extends Controller
             $this->redirect('puestos');
         }
 
-        $txtID = (int)($_POST['txtID'] ?? 0);
-        $result = $this->positionUseCase->updatePosition($txtID, $_POST);
-        if (($result['success'] ?? false) === true) {
-            Flash::set((string)($result['message'] ?? 'Registro actualizado'));
+        $req    = UpdatePositionRequest::fromArray($_POST);
+        $errors = $req->validate();
+        if ($errors !== []) {
+            Flash::set((string)reset($errors), 'error');
             $this->redirect('puestos');
         }
 
+        $result = $this->positionUseCase->updatePosition($req);
+        if ($result->success) {
+            Flash::set($result->message ?? 'Registro actualizado');
+            $this->redirect('puestos');
+        }
+
+        $txtID           = $req->id;
         $formAction      = 'puestos-editar';
-        $mensaje         = (string)($result['message'] ?? 'No se pudo actualizar el registro.');
-        $nombredelpuesto = trim((string)($_POST['nombredelpuesto'] ?? ''));
+        $mensaje         = $result->message ?? 'No se pudo actualizar el registro.';
+        $nombredelpuesto = $req->nombre;
         $this->renderWithLayout(
             'positions/edit.php',
             array_merge(
