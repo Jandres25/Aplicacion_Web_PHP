@@ -2,18 +2,18 @@
 
 namespace App\Services;
 
+use App\Domain\Contracts\EmployeeRepositoryInterface;
 use App\Domain\Models\Employee;
 use App\Domain\Models\Position;
 use App\Infrastructure\EmployeeFileStorage;
-use App\Repositories\EmployeeRepository;
 use PDOException;
 
 class EmployeeService
 {
-    private $employeeRepository;
-    private $fileStorage;
+    private EmployeeRepositoryInterface $employeeRepository;
+    private EmployeeFileStorage $fileStorage;
 
-    public function __construct(EmployeeRepository $employeeRepository, EmployeeFileStorage $fileStorage)
+    public function __construct(EmployeeRepositoryInterface $employeeRepository, EmployeeFileStorage $fileStorage)
     {
         $this->employeeRepository = $employeeRepository;
         $this->fileStorage = $fileStorage;
@@ -31,17 +31,17 @@ class EmployeeService
         return $this->employeeRepository->listPositions();
     }
 
-    public function getEmployee($id): ?Employee
+    public function getEmployee(int $id): ?Employee
     {
-        return $this->employeeRepository->findById((int)$id);
+        return $this->employeeRepository->findById($id);
     }
 
-    public function getEmployeeWithPosition($id): ?Employee
+    public function getEmployeeWithPosition(int $id): ?Employee
     {
-        return $this->employeeRepository->findByIdWithPosition((int)$id);
+        return $this->employeeRepository->findByIdWithPosition($id);
     }
 
-    public function createEmployee($data, $files, $baseDirectory)
+    public function createEmployee(array $data, array $files, string $baseDirectory)
     {
         $validationError = $this->validateEmployeeData($data);
         if ($validationError !== null) {
@@ -68,8 +68,8 @@ class EmployeeService
                 'Segundonombre' => $this->nullIfEmpty($data['segundonombre'] ?? null),
                 'Primerapellido' => trim((string)($data['primerapellido'] ?? '')),
                 'Segundoapellido' => trim((string)($data['segundoapellido'] ?? '')),
-                'Foto' => $this->nullIfEmpty($photoName),
-                'CV' => $this->nullIfEmpty($cvName),
+                'Foto' => $this->nullIfEmpty($photoName) ?? 'user-default.jpg',
+                'CV' => $this->nullIfEmpty($cvName) ?? 'cv_default.pdf',
                 'Idpuesto' => (int)($data['idpuesto'] ?? 0),
                 'Fecha' => (string)($data['fechadeingreso'] ?? '')
             ]);
@@ -96,14 +96,14 @@ class EmployeeService
         return ['success' => true, 'message' => 'Registro agregado'];
     }
 
-    public function updateEmployee($id, $data, $files, $baseDirectory)
+    public function updateEmployee(int $id, array $data, array $files, string $baseDirectory)
     {
         $validationError = $this->validateEmployeeData($data);
         if ($validationError !== null) {
             return ['success' => false, 'message' => $validationError];
         }
 
-        $employeeId = (int)$id;
+        $employeeId = $id;
         if ($employeeId <= 0) {
             return ['success' => false, 'message' => 'El ID del empleado no es válido.'];
         }
@@ -113,8 +113,8 @@ class EmployeeService
             return ['success' => false, 'message' => 'No se encontró el empleado a editar.'];
         }
 
-        $currentPhoto = $existingEmployee->foto ?? '';
-        $currentCv    = $existingEmployee->cv ?? '';
+        $currentPhoto = $existingEmployee->foto ?? 'user-default.jpg';
+        $currentCv    = $existingEmployee->cv ?? 'cv_default.pdf';
 
         $photoError = null;
         $cvError = null;
@@ -168,9 +168,9 @@ class EmployeeService
         return ['success' => true, 'message' => 'Registro actualizado'];
     }
 
-    public function deleteEmployee($id, $baseDirectory)
+    public function deleteEmployee(int $id, string $baseDirectory)
     {
-        $employeeId = (int)$id;
+        $employeeId = $id;
         if ($employeeId <= 0) {
             return false;
         }
@@ -184,7 +184,7 @@ class EmployeeService
         return $this->employeeRepository->deleteById($employeeId);
     }
 
-    private function validateEmployeeData($data)
+    private function validateEmployeeData(array $data)
     {
         $primernombre = trim((string)($data['primernombre'] ?? ''));
         $primerapellido = trim((string)($data['primerapellido'] ?? ''));
@@ -207,25 +207,25 @@ class EmployeeService
         return null;
     }
 
-    private function isValidDate($date)
+    private function isValidDate(string $date): bool
     {
         $parsed = \DateTime::createFromFormat('Y-m-d', $date);
         return $parsed !== false && $parsed->format('Y-m-d') === $date;
     }
 
-    private function mergeUploadErrors($photoError, $cvError)
+    private function mergeUploadErrors(?string $photoError, ?string $cvError): string
     {
         $errors = [];
-        if (is_string($photoError) && trim($photoError) !== '') {
+        if ($photoError !== null && trim($photoError) !== '') {
             $errors[] = 'Foto: ' . trim($photoError);
         }
-        if (is_string($cvError) && trim($cvError) !== '') {
+        if ($cvError !== null && trim($cvError) !== '') {
             $errors[] = 'CV: ' . trim($cvError);
         }
         return $errors === [] ? 'No se pudo procesar la subida de archivos.' : implode(' ', $errors);
     }
 
-    private function nullIfEmpty($value)
+    private function nullIfEmpty(?string $value): ?string
     {
         if ($value === null) {
             return null;
