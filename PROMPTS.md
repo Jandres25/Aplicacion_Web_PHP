@@ -46,6 +46,7 @@ Stack: Bootstrap 5, FontAwesome 6, DataTables, SweetAlert2, MySQL (PDO), JavaScr
 Arquitectura: Controller → UseCase → Service → Repository. Framework interno en core/.
 DI Container: core/Container.php — resuelve dependencias por reflexión; bindings en config/container.php.
 Request DTOs: app/Http/Requests/ — construidos en Controllers desde $_POST; $_POST nunca cruza esta capa.
+PDF: dompdf/dompdf ^3.1 vía Composer. Usar View::capture($view, $data) para obtener el HTML y pasarlo a $dompdf->loadHtml(). CSS embebido con file_get_contents() dentro de <style> — no usar <link> (dompdf no lo resuelve). stream($filename, ['Attachment' => false]) para abrir inline.
 URL base: http://localhost/Aplicacion_Web_PHP/public/
 Módulo activo: _______________
 
@@ -90,6 +91,7 @@ Arquitectura: Controller → UseCase → Service → Repository. Framework inter
 DI Container en core/Container.php; bindings en config/container.php.
 Request DTOs en app/Http/Requests/{Modulo}/; Domain Models en app/Domain/Models/.
 Repository Interfaces en app/Domain/Contracts/; OperationResult en app/UseCases/DTOs/.
+PDF: dompdf/dompdf ^3.1 disponible. View::capture($view, $data) → string HTML → $dompdf->loadHtml(). CSS vía file_get_contents() embebido en <style> (no <link>). stream($file, ['Attachment' => false]) para inline.
 Módulo activo: [nombre del módulo — ej: empleados, puestos, usuarios]
 
 Archivos relevantes del módulo:
@@ -347,5 +349,5 @@ Devuelve en este orden:
 
 ---
 
-_Última actualización: 2026-05-06_
+_Última actualización: 2026-05-07_
 _Mantener sincronizado con CLAUDE.md al inicio de cada sesión._

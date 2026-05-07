@@ -38,26 +38,27 @@ This is a custom PHP MVC framework using Composer PSR-4 autoloading (no manual `
 
 **Layer responsibilities:**
 
-| Layer | Path | Role |
-|---|---|---|
-| HTTP | `app/Http/Controllers/` | One controller per module; validates CSRF, builds Request DTOs, calls UseCases, renders views |
-| HTTP | `app/Http/Requests/` | Typed DTOs built from `$_POST`; `fromArray()` + `validate()` — `$_POST` never crosses this boundary |
-| Application | `app/UseCases/` | Orchestrates domain logic; receives typed Requests, returns `OperationResult`; no HTTP awareness |
-| Application | `app/UseCases/DTOs/` | `OperationResult` — typed result replacing `['success' => bool, 'message' => string]` arrays |
-| Domain | `app/Domain/Models/` | POPOs (`Employee`, `Position`, `User`); `fromRow(array): self` + `toArray(): array` |
-| Domain | `app/Domain/Contracts/` | Repository interfaces (`EmployeeRepositoryInterface`, etc.) |
-| Domain | `app/Services/` | Business logic; depends on repository interfaces, not concrete classes |
-| Infrastructure | `app/Repositories/` | PDO queries; implement the repository contracts |
-| Infrastructure | `app/Infrastructure/` | `EmployeeFileStorage` — file upload and deletion |
-| Infrastructure | `config/Database.php` | PDO singleton (`Config\Database::getConnection()`) |
-| Cross-cutting | `core/Container.php` | Lightweight DI container; resolves dependencies via `ReflectionClass`; used only in bootstrap |
-| Cross-cutting | `core/` | `Router`, `View`, `Flash`, `Security`, `Env`, `ErrorPage` |
-| Cross-cutting | `app/Middleware/AuthMiddleware.php` | Checks `$_SESSION['logueado']`, falls back to `AuthUseCase::handleRememberLogin()` |
+| Layer          | Path                                | Role                                                                                                |
+| -------------- | ----------------------------------- | --------------------------------------------------------------------------------------------------- |
+| HTTP           | `app/Http/Controllers/`             | One controller per module; validates CSRF, builds Request DTOs, calls UseCases, renders views       |
+| HTTP           | `app/Http/Requests/`                | Typed DTOs built from `$_POST`; `fromArray()` + `validate()` — `$_POST` never crosses this boundary |
+| Application    | `app/UseCases/`                     | Orchestrates domain logic; receives typed Requests, returns `OperationResult`; no HTTP awareness    |
+| Application    | `app/UseCases/DTOs/`                | `OperationResult` — typed result replacing `['success' => bool, 'message' => string]` arrays        |
+| Domain         | `app/Domain/Models/`                | POPOs (`Employee`, `Position`, `User`); `fromRow(array): self` + `toArray(): array`                 |
+| Domain         | `app/Domain/Contracts/`             | Repository interfaces (`EmployeeRepositoryInterface`, etc.)                                         |
+| Domain         | `app/Services/`                     | Business logic; depends on repository interfaces, not concrete classes                              |
+| Infrastructure | `app/Repositories/`                 | PDO queries; implement the repository contracts                                                     |
+| Infrastructure | `app/Infrastructure/`               | `EmployeeFileStorage` — file upload and deletion                                                    |
+| Infrastructure | `config/Database.php`               | PDO singleton (`Config\Database::getConnection()`)                                                  |
+| Cross-cutting  | `core/Container.php`                | Lightweight DI container; resolves dependencies via `ReflectionClass`; used only in bootstrap       |
+| Cross-cutting  | `core/`                             | `Router`, `View`, `Flash`, `Security`, `Env`, `ErrorPage`                                           |
+| Cross-cutting  | `app/Middleware/AuthMiddleware.php` | Checks `$_SESSION['logueado']`, falls back to `AuthUseCase::handleRememberLogin()`                  |
 
 **DI Container:**
 `config/container.php` registers bindings: `PDO` as singleton via closure, and the three repository interface → concrete class mappings. The Container is only used in bootstrap (`public/index.php` and `routes/web.php`) — never injected into domain or application classes.
 
 **Request DTOs pattern:**
+
 ```
 Controller POST method:
   1. hasValidCsrfToken($_POST)        — CSRF check
@@ -70,7 +71,7 @@ Controller POST method:
 **Rendering:**
 `Controller::renderWithLayout()` delegates to `Core\View::renderWithLayout()`, which wraps views with `resources/views/layout/{header,module_header,footer}.php`. Page metadata (title, breadcrumbs, icon) is built via `pageHeaderData()` and `moduleBreadcrumbs()` on the base `Controller`.
 
-**Intelephense false positives:** Variables like `$public_base`, `$nombreUsuario`, `$flash`, `$csrfToken` in layout views will show as "undefined" in the IDE because they come from `extract($data)` inside `View::render()`. These are not real errors.
+**Intelephense false positives:** Variables like `$public_base`, `$nombreUsuario`, `$flash`, `$csrfToken` in layout views, and `$nombreCompleto`, `$puesto`, `$fechaIngreso`, `$diferencia`, `$fechaActual` in `recommendation_letter.php`, will show as "undefined" in the IDE because they come from `extract($data)` inside `View::render()`. These are not real errors.
 
 ## Remember Me (cookie persistence)
 
@@ -87,6 +88,14 @@ Controller POST method:
 - **Forms**: include a hidden `csrf_token` field; use `Security::getCsrfToken()` to generate it
 - **AJAX**: read the token from the `<meta name="csrf-token">` tag in the layout and send it as `X-CSRF-Token` header; validate server-side with `Security::isValidCsrfToken()`
 - All mutating routes validate CSRF before processing
+
+## PDF Generation
+
+- **Library**: `dompdf/dompdf` ^3.1 (installed via Composer — no `libs/` directory).
+- **Usage**: `View::capture($view, $data)` renders a view to a string; pass it to `$dompdf->loadHtml($html, 'UTF-8')`.
+- **External CSS**: dompdf cannot resolve `<link>` tags reliably. Embed styles with `<style><?= file_get_contents(__DIR__ . '/path/to/file.css'); ?></style>` — the CSS file lives in `public/css/` and is injected at render time.
+- **Inline vs download**: `$dompdf->stream($filename, ['Attachment' => false])` opens the PDF in the browser viewer; `true` forces download.
+- **Current use**: `EmployeesController::recommendation()` generates a one-page formal recommendation letter (`resources/views/employees/recommendation_letter.php`) styled by `public/css/recommendation_letter.css`.
 
 ## Frontend
 

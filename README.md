@@ -66,8 +66,16 @@ La aplicación usa un framework PHP propio con Composer PSR-4 y separación estr
 - Eliminación asíncrona con AJAX + SweetAlert2 sin recargar la página
 - Notificaciones Flash integradas con SweetAlert2
 - DataTables con búsqueda, paginación y diseño responsivo
-- Generación de cartas de recomendación en PDF (DomPDF)
+- Generación de cartas de recomendación en PDF con dompdf (abre inline en el visor del navegador)
 - Prevención de SQL injection con sentencias preparadas PDO
+
+## Dependencias
+
+| Paquete         | Versión | Uso                                        |
+| --------------- | ------- | ------------------------------------------ |
+| `dompdf/dompdf` | ^3.1    | Generación de PDF (carta de recomendación) |
+
+Todas las dependencias se instalan con `composer install`.
 
 ## Instalación
 
