@@ -1,0 +1,156 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "DejaVu Sans", Arial, sans-serif;
+    font-size: 10.5pt;
+    color: #222;
+    background: #fff;
+    padding-bottom: 40px;
+}
+
+/* ── Membrete ── */
+.letterhead {
+    border-bottom: 3px solid #0f3460;
+    padding: 24px 48px 16px;
+    display: table;
+    width: 100%;
+}
+
+.lh-left {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.lh-company {
+    font-size: 14pt;
+    font-weight: 700;
+    color: #0f3460;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.lh-tagline {
+    font-size: 8.5pt;
+    color: #666;
+    margin-top: 3px;
+}
+
+.lh-right {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: right;
+    font-size: 8pt;
+    color: #666;
+    line-height: 1.7;
+}
+
+.lh-accent {
+    display: block;
+    width: 40px;
+    height: 3px;
+    background: #e94560;
+    margin-top: 5px;
+}
+
+/* ── Cuerpo ── */
+.body {
+    padding: 24px 48px;
+}
+
+/* Referencia */
+.ref-line {
+    font-size: 8.5pt;
+    color: #888;
+    margin-bottom: 24px;
+    text-align: right;
+}
+
+/* Fecha y destinatario */
+.date-line {
+    margin-bottom: 20px;
+    font-size: 10.5pt;
+    color: #222;
+}
+
+.salutation {
+    font-size: 10.5pt;
+    margin-bottom: 20px;
+    color: #222;
+}
+
+/* Asunto */
+.subject {
+    margin-bottom: 20px;
+    padding: 8px 14px;
+    border-left: 3px solid #0f3460;
+    background: #f5f7fb;
+}
+
+.subject-label {
+    font-size: 8pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #0f3460;
+}
+
+.subject-text {
+    font-size: 10.5pt;
+    font-weight: 700;
+    color: #222;
+    margin-top: 2px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Párrafos */
+.letter-body {
+    font-size: 10.5pt;
+    line-height: 1.7;
+    color: #333;
+    text-align: justify;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.letter-body p {
+    margin-bottom: 12px;
+}
+
+.letter-body strong {
+    color: #0f3460;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Cierre y firma */
+.closing {
+    margin-top: 20px;
+}
+
+.closing-text {
+    font-size: 10.5pt;
+    color: #333;
+    margin-bottom: 32px;
+}
+
+.signature-name {
+    font-size: 10.5pt;
+    font-weight: 700;
+    color: #222;
+    border-top: 1px solid #555;
+    padding-top: 6px;
+    display: inline-block;
+    min-width: 200px;
+}
+
+.signature-title {
+    font-size: 9pt;
+    color: #666;
+    margin-top: 2px;
+}
+

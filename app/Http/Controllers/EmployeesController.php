@@ -8,6 +8,8 @@ use App\Middleware\AuthMiddleware;
 use App\UseCases\EmployeeUseCase;
 use Core\Flash;
 use Core\View;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class EmployeesController extends Controller
 {
@@ -210,9 +212,21 @@ class EmployeesController extends Controller
         $diferencia   = $fechaIngreso->diff(new \DateTime());
         $fechaActual  = (new \DateTime())->format('d/m/Y');
 
-        View::render('employees/recommendation_letter.php', compact(
+        $html = View::capture('employees/recommendation_letter.php', compact(
             'nombreCompleto', 'puesto', 'fechaIngreso', 'diferencia', 'fechaActual'
         ));
+
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', false);
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html, 'UTF-8');
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $filename = 'carta_recomendacion_' . preg_replace('/\s+/', '_', strtolower($nombreCompleto)) . '.pdf';
+        $dompdf->stream($filename, ['Attachment' => false]);
     }
 
     public function delete(): void

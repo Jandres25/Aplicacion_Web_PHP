@@ -17,6 +17,13 @@ class View
         require self::$basePath . '/' . ltrim($view, '/');
     }
 
+    public static function capture(string $view, array $data = []): string
+    {
+        ob_start();
+        self::render($view, $data);
+        return (string) ob_get_clean();
+    }
+
     public static function renderWithLayout(string $view, array $data = []): void
     {
         $data = array_merge([
