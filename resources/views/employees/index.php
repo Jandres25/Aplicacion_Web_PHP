@@ -74,7 +74,8 @@
                                         <a class="btn btn-outline-info btn-sm"
                                             href="empleados-carta-recomendacion?txtID=<?= urlencode($registro['ID']); ?>"
                                             data-bs-toggle="tooltip"
-                                            title="Carta de Recomendación">
+                                            title="Carta de Recomendación"
+                                            target="_blank">
                                             <i class="fas fa-file-signature"></i>
                                         </a>
                                         <a class="btn btn-outline-success btn-sm"
