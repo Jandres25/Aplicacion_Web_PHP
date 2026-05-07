@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Domain\Models\User;
 use PDO;
 
 class UserRepository
@@ -13,7 +14,7 @@ class UserRepository
         $this->connection = $connection;
     }
 
-    public function findByUsername($username)
+    public function findByUsername($username): ?User
     {
         $statement = $this->connection->prepare(
             "SELECT ID, Nombreusuario, Password, Correo
@@ -26,10 +27,11 @@ class UserRepository
         $statement->execute();
 
         $user = $statement->fetch(PDO::FETCH_ASSOC);
-        return $user === false ? null : $user;
+        return $user === false ? null : User::fromRow($user);
     }
 
-    public function listAll()
+    /** @return array<User> */
+    public function listAll(): array
     {
         $statement = $this->connection->prepare(
             "SELECT ID, Nombreusuario, Correo
@@ -37,10 +39,13 @@ class UserRepository
              ORDER BY ID DESC"
         );
         $statement->execute();
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
+        return array_map(
+            fn(array $row) => User::fromRow($row),
+            $statement->fetchAll(PDO::FETCH_ASSOC)
+        );
     }
 
-    public function findById($id)
+    public function findById($id): ?User
     {
         $statement = $this->connection->prepare(
             "SELECT ID, Nombreusuario, Password, Correo
@@ -51,7 +56,7 @@ class UserRepository
         $statement->bindParam(':ID', $id, PDO::PARAM_INT);
         $statement->execute();
         $user = $statement->fetch(PDO::FETCH_ASSOC);
-        return $user === false ? null : $user;
+        return $user === false ? null : User::fromRow($user);
     }
 
     public function create($data)
@@ -106,7 +111,7 @@ class UserRepository
         ]);
     }
 
-    public function findByIdWithRememberToken(int $id): ?array
+    public function findByIdWithRememberToken(int $id): ?User
     {
         $statement = $this->connection->prepare(
             "SELECT ID, Nombreusuario, remember_token, remember_token_expires
@@ -117,7 +122,7 @@ class UserRepository
         $statement->bindParam(':ID', $id, PDO::PARAM_INT);
         $statement->execute();
         $user = $statement->fetch(PDO::FETCH_ASSOC);
-        return $user === false ? null : $user;
+        return $user === false ? null : User::fromRow($user);
     }
 
     public function setRememberToken(int $id, string $tokenHash, string $expiresAt): bool

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Domain\Models\User;
 use App\Repositories\UserRepository;
 
 class AuthService
@@ -13,7 +14,7 @@ class AuthService
         $this->userRepository = $userRepository;
     }
 
-    public function authenticate($username, $password)
+    public function authenticate($username, $password): ?User
     {
         $username = trim((string)$username);
         $password = trim((string)$password);
@@ -27,7 +28,7 @@ class AuthService
             return null;
         }
 
-        $storedPassword = (string)($user['Password'] ?? '');
+        $storedPassword = $user->password ?? '';
         if ($storedPassword === '') {
             return null;
         }
@@ -43,7 +44,7 @@ class AuthService
             if (password_needs_rehash($storedPassword, PASSWORD_DEFAULT)) {
                 $newHash = password_hash($password, PASSWORD_DEFAULT);
                 if (is_string($newHash) && $newHash !== '') {
-                    $this->userRepository->updatePasswordHash((int)$user['ID'], $newHash);
+                    $this->userRepository->updatePasswordHash($user->id, $newHash);
                 }
             }
         } else {
@@ -53,11 +54,10 @@ class AuthService
 
             $newHash = password_hash($password, PASSWORD_DEFAULT);
             if (is_string($newHash) && $newHash !== '') {
-                $this->userRepository->updatePasswordHash((int)$user['ID'], $newHash);
+                $this->userRepository->updatePasswordHash($user->id, $newHash);
             }
         }
 
-        unset($user['Password']);
         return $user;
     }
 
@@ -73,7 +73,7 @@ class AuthService
         return $token;
     }
 
-    public function validateRememberToken(string $cookieValue): ?array
+    public function validateRememberToken(string $cookieValue): ?User
     {
         $parts = explode(':', $cookieValue, 2);
         if (count($parts) !== 2) {
@@ -87,20 +87,20 @@ class AuthService
         }
 
         $user = $this->userRepository->findByIdWithRememberToken($id);
-        if ($user === null || $user['remember_token'] === null) {
+        if ($user === null || $user->rememberToken === null) {
             return null;
         }
 
-        if (strtotime((string)$user['remember_token_expires']) < time()) {
+        if (strtotime((string)$user->rememberTokenExpires) < time()) {
             $this->userRepository->clearRememberToken($id);
             return null;
         }
 
-        if (!hash_equals($user['remember_token'], hash('sha256', $token))) {
+        if (!hash_equals($user->rememberToken, hash('sha256', $token))) {
             return null;
         }
 
-        return ['ID' => (int)$user['ID'], 'Nombreusuario' => $user['Nombreusuario']];
+        return $user;
     }
 
     public function revokeRememberToken(int $userId): void

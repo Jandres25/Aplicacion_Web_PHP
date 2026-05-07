@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Domain\Models\Position;
 use App\Repositories\PositionRepository;
 use PDOException;
 
@@ -14,12 +15,13 @@ class PositionService
         $this->positionRepository = $positionRepository;
     }
 
-    public function listPositions()
+    /** @return array<Position> */
+    public function listPositions(): array
     {
         return $this->positionRepository->listAll();
     }
 
-    public function getPosition($id)
+    public function getPosition($id): ?Position
     {
         $positionId = (int)$id;
         if ($positionId <= 0) {

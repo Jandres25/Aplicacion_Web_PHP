@@ -10,7 +10,7 @@ use Core\Security;
 
 class AuthUseCase
 {
-    private $authService;
+    private AuthService $authService;
 
     public function __construct(AuthService $authService)
     {
@@ -38,13 +38,13 @@ class AuthUseCase
         Security::startSession();
         session_regenerate_id(true);
 
-        $_SESSION['usuario']  = $user['Nombreusuario'];
+        $_SESSION['usuario']  = $user->usuario;
         $_SESSION['logueado'] = true;
-        $_SESSION['user_id']  = (int)$user['ID'];
+        $_SESSION['user_id']  = $user->id;
 
         if (!empty($post['remember']) && Env::get('REMEMBER_ME_ENABLED', 'true') === 'true') {
-            $plainToken = $this->authService->issueRememberToken((int)$user['ID']);
-            Security::setRememberCookie($user['ID'] . ':' . $plainToken);
+            $plainToken = $this->authService->issueRememberToken($user->id);
+            Security::setRememberCookie($user->id . ':' . $plainToken);
         }
 
         return ['success' => true];
@@ -70,12 +70,12 @@ class AuthUseCase
         Security::startSession();
         session_regenerate_id(true);
 
-        $_SESSION['usuario']  = $user['Nombreusuario'];
+        $_SESSION['usuario']  = $user->usuario;
         $_SESSION['logueado'] = true;
-        $_SESSION['user_id']  = $user['ID'];
+        $_SESSION['user_id']  = $user->id;
 
-        $plainToken = $this->authService->issueRememberToken($user['ID']);
-        Security::setRememberCookie($user['ID'] . ':' . $plainToken);
+        $plainToken = $this->authService->issueRememberToken($user->id);
+        Security::setRememberCookie($user->id . ':' . $plainToken);
 
         return true;
     }

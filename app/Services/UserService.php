@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Domain\Models\User;
 use App\Repositories\UserRepository;
 use PDOException;
 
@@ -14,12 +15,13 @@ class UserService
         $this->userRepository = $userRepository;
     }
 
-    public function listUsers()
+    /** @return array<User> */
+    public function listUsers(): array
     {
         return $this->userRepository->listAll();
     }
 
-    public function getUser($id)
+    public function getUser($id): ?User
     {
         $userId = (int)$id;
         if ($userId <= 0) {
@@ -76,7 +78,7 @@ class UserService
         }
 
         $rawPassword = trim((string)($data['password'] ?? ''));
-        $passwordToPersist = (string)($existingUser['Password'] ?? '');
+        $passwordToPersist = $existingUser->password ?? '';
         if ($rawPassword !== '') {
             $passwordHash = password_hash($rawPassword, PASSWORD_DEFAULT);
             if (!is_string($passwordHash) || $passwordHash === '') {

@@ -2,6 +2,7 @@
 
 namespace App\UseCases;
 
+use App\Domain\Models\User;
 use App\Repositories\UserRepository;
 use App\Services\UserService;
 use Config\Database;
@@ -22,14 +23,15 @@ class UserUseCase
         return new self($service);
     }
 
-    public function listUsers()
+    public function listUsers(): array
     {
-        return $this->userService->listUsers();
+        return array_map(fn(User $u) => $u->toArray(), $this->userService->listUsers());
     }
 
-    public function getUser($id)
+    public function getUser($id): ?array
     {
-        return $this->userService->getUser($id);
+        $user = $this->userService->getUser($id);
+        return $user?->toArray();
     }
 
     public function createUser($data)

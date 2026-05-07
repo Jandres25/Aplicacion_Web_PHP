@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Domain\Models\Position;
 use PDO;
 
 class PositionRepository
@@ -13,7 +14,8 @@ class PositionRepository
         $this->connection = $connection;
     }
 
-    public function listAll()
+    /** @return array<Position> */
+    public function listAll(): array
     {
         $statement = $this->connection->prepare(
             "SELECT ID, Nombredelpuesto
@@ -21,10 +23,13 @@ class PositionRepository
              ORDER BY ID DESC"
         );
         $statement->execute();
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
+        return array_map(
+            fn(array $row) => Position::fromRow($row),
+            $statement->fetchAll(PDO::FETCH_ASSOC)
+        );
     }
 
-    public function findById($id)
+    public function findById($id): ?Position
     {
         $statement = $this->connection->prepare(
             "SELECT ID, Nombredelpuesto
@@ -35,7 +40,7 @@ class PositionRepository
         $statement->bindParam(':ID', $id, PDO::PARAM_INT);
         $statement->execute();
         $row = $statement->fetch(PDO::FETCH_ASSOC);
-        return $row === false ? null : $row;
+        return $row === false ? null : Position::fromRow($row);
     }
 
     public function create($name)

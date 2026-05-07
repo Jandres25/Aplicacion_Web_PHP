@@ -2,18 +2,21 @@
 
 namespace App\Repositories;
 
+use App\Domain\Models\Employee;
+use App\Domain\Models\Position;
 use PDO;
 
 class EmployeeRepository
 {
-    private $connection;
+    private PDO $connection;
 
     public function __construct(PDO $connection)
     {
         $this->connection = $connection;
     }
 
-    public function listAllWithPosition()
+    /** @return array<Employee> */
+    public function listAllWithPosition(): array
     {
         $statement = $this->connection->prepare(
             "SELECT e.*, p.Nombredelpuesto as puesto
@@ -22,10 +25,14 @@ class EmployeeRepository
              ORDER BY e.ID DESC"
         );
         $statement->execute();
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
+        return array_map(
+            fn(array $row) => Employee::fromRow($row),
+            $statement->fetchAll(PDO::FETCH_ASSOC)
+        );
     }
 
-    public function listPositions()
+    /** @return array<Position> */
+    public function listPositions(): array
     {
         $statement = $this->connection->prepare(
             "SELECT ID, Nombredelpuesto
@@ -33,10 +40,13 @@ class EmployeeRepository
              ORDER BY Nombredelpuesto ASC"
         );
         $statement->execute();
-        return $statement->fetchAll(PDO::FETCH_ASSOC);
+        return array_map(
+            fn(array $row) => Position::fromRow($row),
+            $statement->fetchAll(PDO::FETCH_ASSOC)
+        );
     }
 
-    public function findById($id)
+    public function findById(int $id): ?Employee
     {
         $statement = $this->connection->prepare(
             "SELECT * FROM `tbl-empleados` WHERE ID = :ID LIMIT 1"
@@ -44,10 +54,10 @@ class EmployeeRepository
         $statement->bindParam(':ID', $id, PDO::PARAM_INT);
         $statement->execute();
         $row = $statement->fetch(PDO::FETCH_ASSOC);
-        return $row === false ? null : $row;
+        return $row === false ? null : Employee::fromRow($row);
     }
 
-    public function findByIdWithPosition($id)
+    public function findByIdWithPosition(int $id): ?Employee
     {
         $statement = $this->connection->prepare(
             "SELECT e.*, p.Nombredelpuesto as puesto
@@ -59,10 +69,10 @@ class EmployeeRepository
         $statement->bindParam(':ID', $id, PDO::PARAM_INT);
         $statement->execute();
         $row = $statement->fetch(PDO::FETCH_ASSOC);
-        return $row === false ? null : $row;
+        return $row === false ? null : Employee::fromRow($row);
     }
 
-    public function findFilesById($id)
+    public function findFilesById(int $id)
     {
         $statement = $this->connection->prepare(
             "SELECT Foto, CV FROM `tbl-empleados` WHERE ID = :ID LIMIT 1"
@@ -73,7 +83,7 @@ class EmployeeRepository
         return $row === false ? null : $row;
     }
 
-    public function create($data)
+    public function create(array $data): bool
     {
         $statement = $this->connection->prepare(
             "INSERT INTO `tbl-empleados` (
@@ -95,7 +105,7 @@ class EmployeeRepository
         ]);
     }
 
-    public function update($id, $data)
+    public function update(int $id, array $data): bool
     {
         $statement = $this->connection->prepare(
             "UPDATE `tbl-empleados`
@@ -123,7 +133,7 @@ class EmployeeRepository
         ]);
     }
 
-    public function deleteById($id)
+    public function deleteById(int $id)
     {
         $statement = $this->connection->prepare(
             "DELETE FROM `tbl-empleados` WHERE ID = :ID"

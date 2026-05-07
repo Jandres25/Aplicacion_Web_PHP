@@ -2,6 +2,7 @@
 
 namespace App\UseCases;
 
+use App\Domain\Models\Position;
 use App\Repositories\PositionRepository;
 use App\Services\PositionService;
 use Config\Database;
@@ -22,14 +23,15 @@ class PositionUseCase
         return new self($service);
     }
 
-    public function listPositions()
+    public function listPositions(): array
     {
-        return $this->positionService->listPositions();
+        return array_map(fn(Position $p) => $p->toArray(), $this->positionService->listPositions());
     }
 
-    public function getPosition($id)
+    public function getPosition($id): ?array
     {
-        return $this->positionService->getPosition($id);
+        $position = $this->positionService->getPosition($id);
+        return $position?->toArray();
     }
 
     public function createPosition($data)

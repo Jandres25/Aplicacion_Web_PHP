@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Domain\Models\Employee;
+use App\Domain\Models\Position;
 use App\Infrastructure\EmployeeFileStorage;
 use App\Repositories\EmployeeRepository;
 use PDOException;
@@ -17,22 +19,24 @@ class EmployeeService
         $this->fileStorage = $fileStorage;
     }
 
-    public function listEmployees()
+    /** @return array<Employee> */
+    public function listEmployees(): array
     {
         return $this->employeeRepository->listAllWithPosition();
     }
 
-    public function listPositions()
+    /** @return array<Position> */
+    public function listPositions(): array
     {
         return $this->employeeRepository->listPositions();
     }
 
-    public function getEmployee($id)
+    public function getEmployee($id): ?Employee
     {
         return $this->employeeRepository->findById((int)$id);
     }
 
-    public function getEmployeeWithPosition($id)
+    public function getEmployeeWithPosition($id): ?Employee
     {
         return $this->employeeRepository->findByIdWithPosition((int)$id);
     }
@@ -109,8 +113,8 @@ class EmployeeService
             return ['success' => false, 'message' => 'No se encontró el empleado a editar.'];
         }
 
-        $currentPhoto = isset($existingEmployee['Foto']) ? (string)$existingEmployee['Foto'] : '';
-        $currentCv = isset($existingEmployee['CV']) ? (string)$existingEmployee['CV'] : '';
+        $currentPhoto = $existingEmployee->foto ?? '';
+        $currentCv    = $existingEmployee->cv ?? '';
 
         $photoError = null;
         $cvError = null;
