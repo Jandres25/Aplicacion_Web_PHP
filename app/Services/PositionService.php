@@ -2,15 +2,15 @@
 
 namespace App\Services;
 
+use App\Domain\Contracts\PositionRepositoryInterface;
 use App\Domain\Models\Position;
-use App\Repositories\PositionRepository;
 use PDOException;
 
 class PositionService
 {
-    private $positionRepository;
+    private PositionRepositoryInterface $positionRepository;
 
-    public function __construct(PositionRepository $positionRepository)
+    public function __construct(PositionRepositoryInterface $positionRepository)
     {
         $this->positionRepository = $positionRepository;
     }

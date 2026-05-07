@@ -2,19 +2,19 @@
 
 namespace App\Services;
 
+use App\Domain\Contracts\UserRepositoryInterface;
 use App\Domain\Models\User;
-use App\Repositories\UserRepository;
 
 class AuthService
 {
-    private $userRepository;
+    private UserRepositoryInterface $userRepository;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserRepositoryInterface $userRepository)
     {
         $this->userRepository = $userRepository;
     }
 
-    public function authenticate($username, $password): ?User
+    public function authenticate(string $username, string $password): ?User
     {
         $username = trim((string)$username);
         $password = trim((string)$password);

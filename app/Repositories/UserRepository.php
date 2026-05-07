@@ -2,10 +2,11 @@
 
 namespace App\Repositories;
 
+use App\Domain\Contracts\UserRepositoryInterface;
 use App\Domain\Models\User;
 use PDO;
 
-class UserRepository
+class UserRepository implements UserRepositoryInterface
 {
     private $connection;
 
@@ -14,7 +15,7 @@ class UserRepository
         $this->connection = $connection;
     }
 
-    public function findByUsername($username): ?User
+    public function findByUsername(string $username): ?User
     {
         $statement = $this->connection->prepare(
             "SELECT ID, Nombreusuario, Password, Correo
@@ -45,7 +46,7 @@ class UserRepository
         );
     }
 
-    public function findById($id): ?User
+    public function findById(int $id): ?User
     {
         $statement = $this->connection->prepare(
             "SELECT ID, Nombreusuario, Password, Correo
@@ -59,7 +60,7 @@ class UserRepository
         return $user === false ? null : User::fromRow($user);
     }
 
-    public function create($data)
+    public function create(array $data): bool
     {
         $statement = $this->connection->prepare(
             "INSERT INTO `tbl-usuarios` (ID, Nombreusuario, Password, Correo)
@@ -72,7 +73,7 @@ class UserRepository
         ]);
     }
 
-    public function update($id, $data)
+    public function update(int $id, array $data): bool
     {
         $statement = $this->connection->prepare(
             "UPDATE `tbl-usuarios`
@@ -89,7 +90,7 @@ class UserRepository
         ]);
     }
 
-    public function deleteById($id)
+    public function deleteById(int $id): bool
     {
         $statement = $this->connection->prepare(
             "DELETE FROM `tbl-usuarios` WHERE ID = :ID"
@@ -98,7 +99,7 @@ class UserRepository
         return $statement->execute();
     }
 
-    public function updatePasswordHash($id, $passwordHash)
+    public function updatePasswordHash(int $id, string $passwordHash): bool
     {
         $statement = $this->connection->prepare(
             "UPDATE `tbl-usuarios`

@@ -2,15 +2,15 @@
 
 namespace App\Services;
 
+use App\Domain\Contracts\UserRepositoryInterface;
 use App\Domain\Models\User;
-use App\Repositories\UserRepository;
 use PDOException;
 
 class UserService
 {
-    private $userRepository;
+    private UserRepositoryInterface $userRepository;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserRepositoryInterface $userRepository)
     {
         $this->userRepository = $userRepository;
     }

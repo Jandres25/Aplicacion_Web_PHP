@@ -2,10 +2,11 @@
 
 namespace App\Repositories;
 
+use App\Domain\Contracts\PositionRepositoryInterface;
 use App\Domain\Models\Position;
 use PDO;
 
-class PositionRepository
+class PositionRepository implements PositionRepositoryInterface
 {
     private $connection;
 
@@ -29,7 +30,7 @@ class PositionRepository
         );
     }
 
-    public function findById($id): ?Position
+    public function findById(int $id): ?Position
     {
         $statement = $this->connection->prepare(
             "SELECT ID, Nombredelpuesto
@@ -43,7 +44,7 @@ class PositionRepository
         return $row === false ? null : Position::fromRow($row);
     }
 
-    public function create($name)
+    public function create(string $name): bool
     {
         $statement = $this->connection->prepare(
             "INSERT INTO `tbl-puestos` (ID, Nombredelpuesto)
@@ -54,7 +55,7 @@ class PositionRepository
         ]);
     }
 
-    public function update($id, $name)
+    public function update(int $id, string $name): bool
     {
         $statement = $this->connection->prepare(
             "UPDATE `tbl-puestos`
@@ -67,7 +68,7 @@ class PositionRepository
         ]);
     }
 
-    public function deleteById($id)
+    public function deleteById(int $id): bool
     {
         $statement = $this->connection->prepare(
             "DELETE FROM `tbl-puestos` WHERE ID = :ID"

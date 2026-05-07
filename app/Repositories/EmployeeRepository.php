@@ -2,11 +2,12 @@
 
 namespace App\Repositories;
 
+use App\Domain\Contracts\EmployeeRepositoryInterface;
 use App\Domain\Models\Employee;
 use App\Domain\Models\Position;
 use PDO;
 
-class EmployeeRepository
+class EmployeeRepository implements EmployeeRepositoryInterface
 {
     private PDO $connection;
 
@@ -72,7 +73,7 @@ class EmployeeRepository
         return $row === false ? null : Employee::fromRow($row);
     }
 
-    public function findFilesById(int $id)
+    public function findFilesById(int $id): ?array
     {
         $statement = $this->connection->prepare(
             "SELECT Foto, CV FROM `tbl-empleados` WHERE ID = :ID LIMIT 1"
@@ -133,7 +134,7 @@ class EmployeeRepository
         ]);
     }
 
-    public function deleteById(int $id)
+    public function deleteById(int $id): bool
     {
         $statement = $this->connection->prepare(
             "DELETE FROM `tbl-empleados` WHERE ID = :ID"
