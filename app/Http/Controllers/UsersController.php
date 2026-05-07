@@ -2,17 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Middleware\AuthMiddleware;
 use App\UseCases\UserUseCase;
 use Core\Flash;
 
 class UsersController extends Controller
 {
+    private UserUseCase $userUseCase;
+
+    public function __construct(AuthMiddleware $authMiddleware, UserUseCase $userUseCase)
+    {
+        parent::__construct($authMiddleware);
+        $this->userUseCase = $userUseCase;
+    }
+
     public function index(): void
     {
         $this->requireLogin();
         $this->requireAdmin();
-        $userUseCase = UserUseCase::fromEnvironment();
-        $lista_tbl_usuarios = $userUseCase->listUsers();
+        $lista_tbl_usuarios = $this->userUseCase->listUsers();
         $this->renderWithLayout(
             'users/index.php',
             array_merge(
@@ -54,8 +62,7 @@ class UsersController extends Controller
             $this->redirect('usuarios-crear');
         }
 
-        $userUseCase = UserUseCase::fromEnvironment();
-        $result = $userUseCase->createUser($_POST);
+        $result = $this->userUseCase->createUser($_POST);
         if (($result['success'] ?? false) === true) {
             Flash::set((string)($result['message'] ?? 'Registro agregado'));
             $this->redirect('usuarios');
@@ -80,9 +87,8 @@ class UsersController extends Controller
     {
         $this->requireLogin();
         $this->requireAdmin();
-        $userUseCase = UserUseCase::fromEnvironment();
         $txtID = (int)($_GET['txtID'] ?? 0);
-        $usuarioData = $userUseCase->getUser($txtID);
+        $usuarioData = $this->userUseCase->getUser($txtID);
         if ($usuarioData === null) {
             Flash::set('No se encontró el usuario a editar.', 'error');
             $this->redirect('usuarios');
@@ -114,9 +120,8 @@ class UsersController extends Controller
             $this->redirect('usuarios');
         }
 
-        $userUseCase = UserUseCase::fromEnvironment();
         $txtID = (int)($_POST['txtID'] ?? 0);
-        $result = $userUseCase->updateUser($txtID, $_POST);
+        $result = $this->userUseCase->updateUser($txtID, $_POST);
         if (($result['success'] ?? false) === true) {
             Flash::set((string)($result['message'] ?? 'Registro actualizado'));
             $this->redirect('usuarios');
@@ -156,11 +161,10 @@ class UsersController extends Controller
             $this->redirect('usuarios');
         }
 
-        $userUseCase = UserUseCase::fromEnvironment();
         $txtID = (int)($_POST['txtID'] ?? 0);
 
         if ($txtID > 0) {
-            $deleted = $userUseCase->deleteUser($txtID);
+            $deleted = $this->userUseCase->deleteUser($txtID);
             $success = $deleted;
             $message = $deleted ? 'Registro borrado' : 'No se pudo borrar el registro';
         } else {

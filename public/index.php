@@ -34,10 +34,16 @@ register_shutdown_function(static function () use ($projectRoot, $publicBaseUrl)
 });
 
 try {
+    $container = new \Core\Container();
+    $containerLoader = require __DIR__ . '/../config/container.php';
+    if (is_callable($containerLoader)) {
+        $containerLoader($container);
+    }
+
     $router = new Router($projectRoot, 'public', $publicBaseUrl);
     $routesRegistrar = require __DIR__ . '/../routes/web.php';
     if (is_callable($routesRegistrar)) {
-        $routesRegistrar($router, $projectRoot);
+        $routesRegistrar($router, $container);
     }
 
     $requestUri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';

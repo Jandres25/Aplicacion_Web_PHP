@@ -4,26 +4,15 @@ namespace App\UseCases;
 
 use App\Domain\Models\Employee;
 use App\Domain\Models\Position;
-use App\Infrastructure\EmployeeFileStorage;
-use App\Repositories\EmployeeRepository;
 use App\Services\EmployeeService;
-use Config\Database;
 
 class EmployeeUseCase
 {
-    private $employeeService;
+    private EmployeeService $employeeService;
 
     public function __construct(EmployeeService $employeeService)
     {
         $this->employeeService = $employeeService;
-    }
-
-    public static function fromEnvironment(): self
-    {
-        $repository = new EmployeeRepository(Database::getConnection());
-        $fileStorage = new EmployeeFileStorage();
-        $service = new EmployeeService($repository, $fileStorage);
-        return new self($service);
     }
 
     public function listEmployees(): array

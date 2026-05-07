@@ -2,9 +2,7 @@
 
 namespace App\UseCases;
 
-use App\Repositories\UserRepository;
 use App\Services\AuthService;
-use Config\Database;
 use Core\Env;
 use Core\Security;
 
@@ -15,13 +13,6 @@ class AuthUseCase
     public function __construct(AuthService $authService)
     {
         $this->authService = $authService;
-    }
-
-    public static function fromEnvironment(): self
-    {
-        $repository = new UserRepository(Database::getConnection());
-        $service = new AuthService($repository);
-        return new self($service);
     }
 
     public function handleLogin(array $post): array

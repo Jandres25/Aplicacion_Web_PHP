@@ -2,16 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Middleware\AuthMiddleware;
 use App\UseCases\PositionUseCase;
 use Core\Flash;
 
 class PositionsController extends Controller
 {
+    private PositionUseCase $positionUseCase;
+
+    public function __construct(AuthMiddleware $authMiddleware, PositionUseCase $positionUseCase)
+    {
+        parent::__construct($authMiddleware);
+        $this->positionUseCase = $positionUseCase;
+    }
+
     public function index(): void
     {
         $this->requireLogin();
-        $positionUseCase = PositionUseCase::fromEnvironment();
-        $lista_tbl_puestos = $positionUseCase->listPositions();
+        $lista_tbl_puestos = $this->positionUseCase->listPositions();
         $this->renderWithLayout(
             'positions/index.php',
             array_merge(
@@ -51,8 +59,7 @@ class PositionsController extends Controller
             $this->redirect('puestos-crear');
         }
 
-        $positionUseCase = PositionUseCase::fromEnvironment();
-        $result = $positionUseCase->createPosition($_POST);
+        $result = $this->positionUseCase->createPosition($_POST);
         if (($result['success'] ?? false) === true) {
             Flash::set((string)($result['message'] ?? 'Registro agregado'));
             $this->redirect('puestos');
@@ -76,9 +83,8 @@ class PositionsController extends Controller
     public function editForm(): void
     {
         $this->requireLogin();
-        $positionUseCase = PositionUseCase::fromEnvironment();
         $txtID = (int)($_GET['txtID'] ?? 0);
-        $puesto = $positionUseCase->getPosition($txtID);
+        $puesto = $this->positionUseCase->getPosition($txtID);
         if ($puesto === null) {
             Flash::set('No se encontró el puesto a editar.', 'error');
             $this->redirect('puestos');
@@ -108,9 +114,8 @@ class PositionsController extends Controller
             $this->redirect('puestos');
         }
 
-        $positionUseCase = PositionUseCase::fromEnvironment();
         $txtID = (int)($_POST['txtID'] ?? 0);
-        $result = $positionUseCase->updatePosition($txtID, $_POST);
+        $result = $this->positionUseCase->updatePosition($txtID, $_POST);
         if (($result['success'] ?? false) === true) {
             Flash::set((string)($result['message'] ?? 'Registro actualizado'));
             $this->redirect('puestos');
@@ -148,11 +153,10 @@ class PositionsController extends Controller
             $this->redirect('puestos');
         }
 
-        $positionUseCase = PositionUseCase::fromEnvironment();
         $txtID = (int)($_POST['txtID'] ?? 0);
 
         if ($txtID > 0) {
-            $deleted = $positionUseCase->deletePosition($txtID);
+            $deleted = $this->positionUseCase->deletePosition($txtID);
             $success = $deleted;
             $message = $deleted ? 'Registro borrado' : 'No se pudo borrar el registro';
         } else {

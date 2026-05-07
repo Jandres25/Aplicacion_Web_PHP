@@ -3,24 +3,15 @@
 namespace App\UseCases;
 
 use App\Domain\Models\Position;
-use App\Repositories\PositionRepository;
 use App\Services\PositionService;
-use Config\Database;
 
 class PositionUseCase
 {
-    private $positionService;
+    private PositionService $positionService;
 
     public function __construct(PositionService $positionService)
     {
         $this->positionService = $positionService;
-    }
-
-    public static function fromEnvironment(): self
-    {
-        $repository = new PositionRepository(Database::getConnection());
-        $service = new PositionService($repository);
-        return new self($service);
     }
 
     public function listPositions(): array

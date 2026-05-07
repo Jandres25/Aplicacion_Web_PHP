@@ -2,17 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Middleware\AuthMiddleware;
 use App\UseCases\EmployeeUseCase;
 use Core\Flash;
 use Core\View;
 
 class EmployeesController extends Controller
 {
+    private EmployeeUseCase $employeeUseCase;
+
+    public function __construct(AuthMiddleware $authMiddleware, EmployeeUseCase $employeeUseCase)
+    {
+        parent::__construct($authMiddleware);
+        $this->employeeUseCase = $employeeUseCase;
+    }
+
     public function index(): void
     {
         $this->requireLogin();
-        $employeeUseCase = EmployeeUseCase::fromEnvironment();
-        $lista_tbl_empleados = $employeeUseCase->listEmployees();
+        $lista_tbl_empleados = $this->employeeUseCase->listEmployees();
         $this->renderWithLayout(
             'employees/index.php',
             array_merge(
@@ -29,8 +37,7 @@ class EmployeesController extends Controller
     public function createForm(): void
     {
         $this->requireLogin();
-        $employeeUseCase = EmployeeUseCase::fromEnvironment();
-        $lista_tbl_puestos = $employeeUseCase->listPositions();
+        $lista_tbl_puestos = $this->employeeUseCase->listPositions();
         $formAction = 'empleados-crear';
         $mensaje = '';
         $this->renderWithLayout(
@@ -54,14 +61,13 @@ class EmployeesController extends Controller
             $this->redirect('empleados-crear');
         }
 
-        $employeeUseCase = EmployeeUseCase::fromEnvironment();
-        $result = $employeeUseCase->createEmployee($_POST, $_FILES, $this->uploadsDirectory);
+        $result = $this->employeeUseCase->createEmployee($_POST, $_FILES, $this->uploadsDirectory);
         if (($result['success'] ?? false) === true) {
             Flash::set((string)($result['message'] ?? 'Registro agregado'));
             $this->redirect('empleados');
         }
 
-        $lista_tbl_puestos = $employeeUseCase->listPositions();
+        $lista_tbl_puestos = $this->employeeUseCase->listPositions();
         $formAction = 'empleados-crear';
         $mensaje = (string)($result['message'] ?? 'No se pudo agregar el registro.');
         $this->renderWithLayout(
@@ -80,15 +86,14 @@ class EmployeesController extends Controller
     public function editForm(): void
     {
         $this->requireLogin();
-        $employeeUseCase = EmployeeUseCase::fromEnvironment();
         $txtID = (int)($_GET['txtID'] ?? 0);
-        $empleado = $employeeUseCase->getEmployee($txtID);
+        $empleado = $this->employeeUseCase->getEmployee($txtID);
         if ($empleado === null) {
             Flash::set('No se encontró el empleado a editar.', 'error');
             $this->redirect('empleados');
         }
 
-        $lista_tbl_puestos = $employeeUseCase->listPositions();
+        $lista_tbl_puestos = $this->employeeUseCase->listPositions();
         $formAction        = 'empleados-editar';
         $mensaje           = '';
         $primernombre      = (string)($empleado['Primernombre'] ?? '');
@@ -125,21 +130,20 @@ class EmployeesController extends Controller
             $this->redirect('empleados');
         }
 
-        $employeeUseCase = EmployeeUseCase::fromEnvironment();
         $txtID = (int)($_POST['txtID'] ?? 0);
-        $result = $employeeUseCase->updateEmployee($txtID, $_POST, $_FILES, $this->uploadsDirectory);
+        $result = $this->employeeUseCase->updateEmployee($txtID, $_POST, $_FILES, $this->uploadsDirectory);
         if (($result['success'] ?? false) === true) {
             Flash::set((string)($result['message'] ?? 'Registro actualizado'));
             $this->redirect('empleados');
         }
 
-        $empleado = $employeeUseCase->getEmployee($txtID);
+        $empleado = $this->employeeUseCase->getEmployee($txtID);
         if ($empleado === null) {
             Flash::set('No se encontró el empleado a editar.', 'error');
             $this->redirect('empleados');
         }
 
-        $lista_tbl_puestos = $employeeUseCase->listPositions();
+        $lista_tbl_puestos = $this->employeeUseCase->listPositions();
         $formAction        = 'empleados-editar';
         $mensaje           = (string)($result['message'] ?? 'No se pudo actualizar el registro.');
         $primernombre      = trim((string)($_POST['primernombre'] ?? $empleado['Primernombre'] ?? ''));
@@ -171,9 +175,8 @@ class EmployeesController extends Controller
     public function recommendation(): void
     {
         $this->requireLogin();
-        $employeeUseCase = EmployeeUseCase::fromEnvironment();
         $txtID = (int)($_GET['txtID'] ?? 0);
-        $empleado = $employeeUseCase->getEmployeeWithPosition($txtID);
+        $empleado = $this->employeeUseCase->getEmployeeWithPosition($txtID);
         if ($empleado === null) {
             Flash::set('No se encontró el empleado para la carta de recomendación.', 'error');
             $this->redirect('empleados');
@@ -212,11 +215,10 @@ class EmployeesController extends Controller
             $this->redirect('empleados');
         }
 
-        $employeeUseCase = EmployeeUseCase::fromEnvironment();
         $txtID = (int)($_POST['txtID'] ?? 0);
 
         if ($txtID > 0) {
-            $deleted = $employeeUseCase->deleteEmployee($txtID, $this->uploadsDirectory);
+            $deleted = $this->employeeUseCase->deleteEmployee($txtID, $this->uploadsDirectory);
             $success = $deleted;
             $message = $deleted ? 'Registro borrado' : 'No se pudo borrar el registro';
         } else {

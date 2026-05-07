@@ -7,6 +7,13 @@ use Core\Security;
 
 class AuthMiddleware
 {
+    private AuthUseCase $authUseCase;
+
+    public function __construct(AuthUseCase $authUseCase)
+    {
+        $this->authUseCase = $authUseCase;
+    }
+
     public function requireLogin($loginUrl)
     {
         Security::startSession();
@@ -15,7 +22,7 @@ class AuthMiddleware
             return;
         }
 
-        if (AuthUseCase::fromEnvironment()->handleRememberLogin()) {
+        if ($this->authUseCase->handleRememberLogin()) {
             return;
         }
 

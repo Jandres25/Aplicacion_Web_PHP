@@ -13,11 +13,13 @@ abstract class Controller
     protected string $projectRoot;
     protected string $publicBaseUrl;
     protected string $uploadsDirectory;
+    protected AuthMiddleware $authMiddleware;
 
-    public function __construct(string $projectRoot, string $publicBaseUrl)
+    public function __construct(AuthMiddleware $authMiddleware)
     {
-        $this->projectRoot      = rtrim($projectRoot, '/');
-        $this->publicBaseUrl    = rtrim($publicBaseUrl, '/') . '/';
+        $this->authMiddleware   = $authMiddleware;
+        $this->projectRoot      = dirname(__DIR__, 3);
+        $this->publicBaseUrl    = rtrim((string)Env::get('APP_URL', 'http://localhost/Aplicacion_Web_PHP/'), '/') . '/public/';
         $this->uploadsDirectory = $this->projectRoot . '/public/storage/uploads';
     }
 
@@ -68,12 +70,12 @@ abstract class Controller
 
     protected function requireLogin(): void
     {
-        (new AuthMiddleware())->requireLogin($this->publicBaseUrl . 'login');
+        $this->authMiddleware->requireLogin($this->publicBaseUrl . 'login');
     }
 
     protected function currentUser(): string
     {
-        return (string)(new AuthMiddleware())->currentUser();
+        return (string)$this->authMiddleware->currentUser();
     }
 
     protected function requireAdmin(): void

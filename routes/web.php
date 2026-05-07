@@ -5,17 +5,15 @@ use App\Http\Controllers\EmployeesController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PositionsController;
 use App\Http\Controllers\UsersController;
-use Core\Env;
+use Core\Container;
 use Core\Router;
 
-return static function (Router $router, $projectRoot): void {
-    $publicBaseUrl = rtrim((string)Env::get('APP_URL', 'http://localhost/Aplicacion_Web_PHP/'), '/') . '/public/';
-
-    $home      = new HomeController($projectRoot, $publicBaseUrl);
-    $auth      = new AuthController($projectRoot, $publicBaseUrl);
-    $employees = new EmployeesController($projectRoot, $publicBaseUrl);
-    $positions = new PositionsController($projectRoot, $publicBaseUrl);
-    $users     = new UsersController($projectRoot, $publicBaseUrl);
+return static function (Router $router, Container $container): void {
+    $home      = $container->resolve(HomeController::class);
+    $auth      = $container->resolve(AuthController::class);
+    $employees = $container->resolve(EmployeesController::class);
+    $positions = $container->resolve(PositionsController::class);
+    $users     = $container->resolve(UsersController::class);
 
     $router->get('/',      [$home, 'index']);
     $router->get('/index', [$home, 'alias']);

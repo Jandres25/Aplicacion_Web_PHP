@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Middleware\AuthMiddleware;
 use App\UseCases\AuthUseCase;
 use Core\Env;
 use Core\Security;
@@ -9,6 +10,14 @@ use Core\View;
 
 class AuthController extends Controller
 {
+    private AuthUseCase $authUseCase;
+
+    public function __construct(AuthMiddleware $authMiddleware, AuthUseCase $authUseCase)
+    {
+        parent::__construct($authMiddleware);
+        $this->authUseCase = $authUseCase;
+    }
+
     public function showLogin(): void
     {
         Security::startSession();
@@ -41,8 +50,7 @@ class AuthController extends Controller
             return;
         }
 
-        $authUseCase = AuthUseCase::fromEnvironment();
-        $result = $authUseCase->handleLogin($_POST);
+        $result = $this->authUseCase->handleLogin($_POST);
 
         if ($result['success']) {
             $this->redirect('');
@@ -65,7 +73,7 @@ class AuthController extends Controller
             $this->redirect('');
         }
 
-        AuthUseCase::fromEnvironment()->handleLogout();
+        $this->authUseCase->handleLogout();
         $this->redirect('login');
     }
 }
