@@ -17,27 +17,49 @@ Sistema integral para la gestión de recursos humanos: control de **empleados**,
 
 ## Arquitectura
 
-La aplicación usa un framework PHP propio con Composer PSR-4 y separación estricta de responsabilidades:
+La aplicación usa un framework PHP propio con Composer PSR-4 y separación estricta de responsabilidades por capas:
 
 ```
-public/index.php          → Front controller (único punto de entrada)
-routes/web.php            → Mapeo de rutas a HTTP controllers
-app/Http/Controllers/     → Controllers HTTP por módulo (Home, Auth, Employees, Positions, Users)
-app/UseCases/             → Lógica de dominio sin dependencias HTTP
-app/Services/             → Lógica de negocio
-app/Repositories/         → Acceso a datos (PDO)
-app/Infrastructure/       → Almacenamiento de archivos (fotos, CVs)
-app/Middleware/           → Autenticación
-core/                     → Framework: Router, View, Flash, Security, Env, ErrorPage
-config/                   → Conexión PDO singleton (Config\Database)
-resources/views/          → Vistas PHP organizadas por módulo
+┌─────────────────────────────────────────────────────────────┐
+│  HTTP Layer                                                  │
+│  routes/web.php              ← Container->resolve(Ctrl)     │
+│  app/Http/Controllers/       ← un controller por módulo     │
+│  app/Http/Requests/          ← DTOs tipados desde $_POST    │
+│  app/Middleware/AuthMiddleware                               │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ OperationResult / typed Requests
+┌──────────────────────────▼──────────────────────────────────┐
+│  Application Layer                                           │
+│  app/UseCases/               ← orquesta sin awareness HTTP  │
+│  app/UseCases/DTOs/          ← OperationResult              │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ Domain Models / Contracts
+┌──────────────────────────▼──────────────────────────────────┐
+│  Domain Layer                                                │
+│  app/Domain/Models/          ← POPOs (Employee, Position…)  │
+│  app/Domain/Contracts/       ← interfaces de repositorio    │
+│  app/Services/               ← lógica de negocio            │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ PDO / archivos
+┌──────────────────────────▼──────────────────────────────────┐
+│  Infrastructure Layer                                        │
+│  app/Repositories/           ← implementan los contratos    │
+│  app/Infrastructure/         ← EmployeeFileStorage          │
+│  config/Database.php         ← PDO singleton                │
+└─────────────────────────────────────────────────────────────┘
+  Cross-cutting: core/Container · Router · View · Flash · Security · Env
 ```
 
-**Flujo de una petición:**
-`index.php` → `Router` → `Http\Controller` → `UseCase` → `Service` → `Repository` → DB
+**Flujo de una petición POST:**
+`index.php` → `Router` → `Controller` → `XxxRequest::fromArray($_POST)` → `validate()` → `UseCase` → `Service` → `Repository` → DB → `OperationResult`
 
 ## Características
 
+- Arquitectura por capas clásica: HTTP → Application → Domain → Infrastructure
+- DI Container liviano con resolución por reflexión (`core/Container.php`)
+- Request DTOs tipados — `$_POST` nunca cruza la frontera HTTP
+- Domain Models como POPOs con `fromRow()` / `toArray()`
+- Interfaces de repositorio para inversión de dependencias
 - Autenticación con `password_hash` / `password_verify` y sesiones PHP
 - "Recuérdame" con token rotante almacenado hasheado en DB y cookie `HttpOnly`/`SameSite=Lax`
 - Protección CSRF en formularios y peticiones AJAX (meta tag + header)
