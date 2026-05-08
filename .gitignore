@@ -25,3 +25,7 @@ config/app.php
 *.sql
 !database/schema.sql
 !database/seeders.sql
+
+# PHPUnit
+/.phpunit.cache
+/build/coverage
