@@ -2,6 +2,9 @@
 *.log
 *.tmp
 
+# Keep log directory but ignore log files
+!storage/logs/.gitkeep
+
 # System files
 /vendor/
 .DS_Store
