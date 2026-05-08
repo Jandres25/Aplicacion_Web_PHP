@@ -282,6 +282,51 @@ Opciones que estoy considerando:
 
 ---
 
+## Plantilla 5 — Escribir tests PHPUnit
+
+Usar cuando: agregar tests a una capa existente o a un módulo nuevo.
+
+```
+[Rol]
+Actúa como desarrollador PHP Senior especializado en testing con PHPUnit 10.x,
+mocks de interfaces y arquitectura por capas.
+
+[Contexto]
+Proyecto: Sistema de Gestión de Empleados — PHP 8.x custom, sin framework.
+Testing: PHPUnit 10.5 — suite Unit en tests/Unit/, namespace Tests\ mapeado por PSR-4.
+Arquitectura: Controller → Request DTO → UseCase (OperationResult) → Service → Repository.
+Estrategia por capa:
+- Domain Models (app/Domain/Models/): unit puro — fromRow() / toArray(), sin mocks.
+- Request DTOs (app/Http/Requests/): unit puro — fromArray() + validate(), sin mocks.
+- Services (app/Services/): unit con createMock() de la interfaz de repositorio y de EmployeeFileStorage.
+- UseCases (app/UseCases/): unit con createMock() del Service correspondiente.
+- Controllers y AuthUseCase: NO se testean (acoplados a $_SESSION y Security).
+
+Módulo / capa a testear: [nombre]
+Archivo fuente: [ruta]
+
+[Tarea]
+Escribe los tests PHPUnit para [clase/método específico].
+
+[Restricciones]
+- Namespace: Tests\Unit\[subcarpeta según capa]
+- Usar $this->createMock(Interface::class) — nunca instanciar repositorios reales
+- setUp() inicializa mocks y el SUT (System Under Test)
+- Nombrar métodos: test_[método]_[escenario]_[resultado esperado]()
+- Un assert principal por test; asserts adicionales solo si son parte del mismo contrato
+- Usar $this->callback(fn($arg) => ...) para verificar contenido de arrays pasados al mock
+- No mockear lo que no se puede aislar (Security, $_SESSION, funciones globales de PHP)
+- No usar @covers ni anotaciones — PHPUnit 10 las deprecó
+- Correr vendor/bin/phpunit --testsuite Unit para verificar antes de entregar
+
+[Formato de salida]
+1. Ruta del archivo de test
+2. Código completo del test class
+3. Resultado esperado de vendor/bin/phpunit (tests, assertions, tiempo)
+```
+
+---
+
 ## Ejemplo real — Nuevo módulo completo (Puestos)
 
 > Ejemplo de cómo se ve un prompt de feature bien estructurado para este proyecto.
@@ -349,5 +394,5 @@ Devuelve en este orden:
 
 ---
 
-_Última actualización: 2026-05-07_
+_Última actualización: 2026-05-08_
 _Mantener sincronizado con CLAUDE.md al inicio de cada sesión._

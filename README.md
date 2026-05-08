@@ -6,6 +6,7 @@
 [![PHP Version](https://img.shields.io/badge/php-%5E8.0-blue.svg)](https://www.php.net/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Architecture](https://img.shields.io/badge/architecture-Layered-orange.svg)](#arquitectura)
+[![Tests](https://github.com/Jandres25/Aplicacion_Web_PHP/actions/workflows/tests.yml/badge.svg)](https://github.com/Jandres25/Aplicacion_Web_PHP/actions/workflows/tests.yml)
 
 </div>
 
@@ -68,6 +69,28 @@ La aplicación usa un framework PHP propio con Composer PSR-4 y separación estr
 - DataTables con búsqueda, paginación y diseño responsivo
 - Generación de cartas de recomendación en PDF con dompdf (abre inline en el visor del navegador)
 - Prevención de SQL injection con sentencias preparadas PDO
+
+## Testing
+
+Suite de tests unitarios con **PHPUnit 10.5** — sin base de datos, sin I/O real.
+
+```bash
+# Correr todos los tests
+composer test
+
+# Solo la suite Unit
+composer test:unit
+```
+
+| Capa            | Estrategia                     | Archivos                    |
+| --------------- | ------------------------------ | --------------------------- |
+| Domain Models   | Unit puro                      | `tests/Unit/Domain/Models/` |
+| Request DTOs    | Unit puro                      | `tests/Unit/Http/Requests/` |
+| OperationResult | Unit puro                      | `tests/Unit/UseCases/DTOs/` |
+| Services        | Unit con mocks de repositorios | `tests/Unit/Services/`      |
+| UseCases        | Unit con mock del Service      | `tests/Unit/UseCases/`      |
+
+El workflow de GitHub Actions corre la suite en PHP 8.1 y 8.2 en cada push y pull request a `master`.
 
 ## Dependencias
 

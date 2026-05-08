@@ -97,6 +97,20 @@ Controller POST method:
 - **Inline vs download**: `$dompdf->stream($filename, ['Attachment' => false])` opens the PDF in the browser viewer; `true` forces download.
 - **Current use**: `EmployeesController::recommendation()` generates a one-page formal recommendation letter (`resources/views/employees/recommendation_letter.php`) styled by `public/css/recommendation_letter.css`.
 
+## Testing
+
+- **Framework**: `phpunit/phpunit` ^10.5 (devDependency vía Composer).
+- **Correr tests**: `composer test` (todos) · `composer test:unit` (solo Unit).
+- **Estructura**: `tests/Unit/` con subdirectorios por capa — `Domain/Models/`, `Http/Requests/`, `Services/`, `UseCases/`, `UseCases/DTOs/`.
+- **Estrategia por capa**:
+  - Domain Models y Request DTOs → unit puro, sin mocks.
+  - Services → unit con `$this->createMock(XxxRepositoryInterface::class)` y `createMock(EmployeeFileStorage::class)`.
+  - UseCases → unit con mock del Service correspondiente.
+  - Controllers y `AuthUseCase` → **no se testean** (acoplamiento a `$_SESSION`, `Security`, HTTP).
+- **`AuthUseCase` excluido**: depende de `Security::startSession()`, `session_regenerate_id()` y `$_SESSION` directamente — no se puede aislar sin refactor.
+- **Namespace de tests**: `Tests\` mapeado a `tests/` en `autoload-dev` del `composer.json`.
+- **CI**: `.github/workflows/tests.yml` corre la suite en PHP 8.1 y 8.2 en cada push/PR a `master`.
+
 ## Frontend
 
 - Bootstrap 5 + FontAwesome 6 (CDN)
