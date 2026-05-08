@@ -70,12 +70,12 @@ class PositionsController extends Controller
 
         $result = $this->positionUseCase->createPosition($req);
         if ($result->success) {
-            Flash::set($result->message ?? 'Registro agregado');
+            Flash::set($result->message ?? 'Puesto creado exitosamente.');
             $this->redirect('puestos');
         }
 
         $formAction = 'puestos-crear';
-        $mensaje    = $result->message ?? 'No se pudo agregar el registro.';
+        $mensaje    = $result->message ?? 'No se pudo crear el puesto.';
         $this->renderWithLayout(
             'positions/create.php',
             array_merge(
@@ -132,13 +132,13 @@ class PositionsController extends Controller
 
         $result = $this->positionUseCase->updatePosition($req);
         if ($result->success) {
-            Flash::set($result->message ?? 'Registro actualizado');
+            Flash::set($result->message ?? 'Puesto actualizado exitosamente.');
             $this->redirect('puestos');
         }
 
         $txtID           = $req->id;
         $formAction      = 'puestos-editar';
-        $mensaje         = $result->message ?? 'No se pudo actualizar el registro.';
+        $mensaje         = $result->message ?? 'No se pudo actualizar el puesto.';
         $nombredelpuesto = $req->nombre;
         $this->renderWithLayout(
             'positions/edit.php',
@@ -174,7 +174,7 @@ class PositionsController extends Controller
         if ($txtID > 0) {
             $deleted = $this->positionUseCase->deletePosition($txtID);
             $success = $deleted;
-            $message = $deleted ? 'Registro borrado' : 'No se pudo borrar el registro';
+            $message = $deleted ? 'Puesto eliminado exitosamente.' : 'No se pudo eliminar el puesto.';
         } else {
             $success = false;
             $message = 'El ID del puesto no es válido.';

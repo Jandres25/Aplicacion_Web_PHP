@@ -64,7 +64,7 @@ class Security
     public static function setRememberCookie(string $value): void
     {
         $isHttps  = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
-        $lifetime = (int)\Core\Env::get('REMEMBER_ME_LIFETIME', 30) * 86400;
+        $lifetime = (int)($_ENV['REMEMBER_ME_LIFETIME'] ?? 30) * 86400;
 
         setcookie('remember_token', $value, [
             'expires'  => time() + $lifetime,

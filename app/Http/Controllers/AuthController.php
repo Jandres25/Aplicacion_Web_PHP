@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Middleware\AuthMiddleware;
 use App\UseCases\AuthUseCase;
-use Core\Env;
 use Core\Security;
 use Core\View;
 
@@ -32,13 +31,13 @@ class AuthController extends Controller
             'formAction'      => 'login',
             'mensaje'         => '',
             'csrfToken'       => Security::getCsrfToken(),
-            'rememberEnabled' => Env::get('REMEMBER_ME_ENABLED', 'true'),
+            'rememberEnabled' => $_ENV['REMEMBER_ME_ENABLED'] ?? 'true',
         ]);
     }
 
     public function login(): void
     {
-        $rememberEnabled = Env::get('REMEMBER_ME_ENABLED', 'true');
+        $rememberEnabled = $_ENV['REMEMBER_ME_ENABLED'] ?? 'true';
 
         if (!$this->hasValidCsrfToken($_POST)) {
             View::render('auth/login.php', [

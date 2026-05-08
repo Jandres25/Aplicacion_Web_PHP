@@ -53,7 +53,7 @@ function eliminarEmpleado(id) {
                     }
                 },
                 error: function () {
-                    showToast('error', 'No se pudo procesar la solicitud');
+                    showToast('error', 'No se pudo eliminar el empleado. Intente nuevamente.');
                 }
             });
         }

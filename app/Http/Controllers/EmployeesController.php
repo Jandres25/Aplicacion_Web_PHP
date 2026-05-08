@@ -74,13 +74,13 @@ class EmployeesController extends Controller
 
         $result = $this->employeeUseCase->createEmployee($req, $_FILES, $this->uploadsDirectory);
         if ($result->success) {
-            Flash::set($result->message ?? 'Registro agregado');
+            Flash::set($result->message ?? 'Empleado creado exitosamente.');
             $this->redirect('empleados');
         }
 
         $lista_tbl_puestos = $this->employeeUseCase->listPositions();
         $formAction = 'empleados-crear';
-        $mensaje    = $result->message ?? 'No se pudo agregar el registro.';
+        $mensaje    = $result->message ?? 'No se pudo crear el empleado.';
         $this->renderWithLayout(
             'employees/create.php',
             array_merge(
@@ -150,7 +150,7 @@ class EmployeesController extends Controller
 
         $result = $this->employeeUseCase->updateEmployee($req, $_FILES, $this->uploadsDirectory);
         if ($result->success) {
-            Flash::set($result->message ?? 'Registro actualizado');
+            Flash::set($result->message ?? 'Empleado actualizado exitosamente.');
             $this->redirect('empleados');
         }
 
@@ -163,7 +163,7 @@ class EmployeesController extends Controller
         $lista_tbl_puestos = $this->employeeUseCase->listPositions();
         $txtID             = $req->id;
         $formAction        = 'empleados-editar';
-        $mensaje           = $result->message ?? 'No se pudo actualizar el registro.';
+        $mensaje           = $result->message ?? 'No se pudo actualizar el empleado.';
         $primernombre      = $req->primerNombre;
         $segundonombre     = $req->segundoNombre ?? '';
         $primerapellido    = $req->primerApellido;
@@ -250,7 +250,7 @@ class EmployeesController extends Controller
         if ($txtID > 0) {
             $deleted = $this->employeeUseCase->deleteEmployee($txtID, $this->uploadsDirectory);
             $success = $deleted;
-            $message = $deleted ? 'Registro borrado' : 'No se pudo borrar el registro';
+            $message = $deleted ? 'Empleado eliminado exitosamente.' : 'No se pudo eliminar el empleado.';
         } else {
             $success = false;
             $message = 'El ID del empleado no es válido.';

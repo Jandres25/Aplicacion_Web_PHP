@@ -135,7 +135,7 @@ class UserServiceTest extends TestCase
         $result = $this->service->createUser($this->validCreateData());
 
         $this->assertTrue($result['success']);
-        $this->assertSame('Registro agregado', $result['message']);
+        $this->assertSame('Usuario creado exitosamente.', $result['message']);
     }
 
     public function test_create_returns_failure_when_repository_returns_false(): void
@@ -154,7 +154,7 @@ class UserServiceTest extends TestCase
         $result = $this->service->createUser($this->validCreateData());
 
         $this->assertFalse($result['success']);
-        $this->assertSame('No se pudo agregar el registro.', $result['message']);
+        $this->assertSame('No se pudo crear el usuario.', $result['message']);
     }
 
     // --- updateUser ---
@@ -218,7 +218,7 @@ class UserServiceTest extends TestCase
         $result = $this->service->updateUser(2, $this->validUpdateData());
 
         $this->assertTrue($result['success']);
-        $this->assertSame('Registro actualizado', $result['message']);
+        $this->assertSame('Usuario actualizado exitosamente.', $result['message']);
     }
 
     public function test_update_returns_failure_when_repository_throws_PDOException(): void
@@ -229,7 +229,7 @@ class UserServiceTest extends TestCase
         $result = $this->service->updateUser(2, $this->validUpdateData());
 
         $this->assertFalse($result['success']);
-        $this->assertSame('No se pudo actualizar el registro.', $result['message']);
+        $this->assertSame('No se pudo actualizar el usuario.', $result['message']);
     }
 
     // --- deleteUser ---

@@ -40,14 +40,14 @@ class PositionService
         try {
             $created = $this->positionRepository->create($name);
         } catch (PDOException $exception) {
-            return ['success' => false, 'message' => 'No se pudo agregar el registro.'];
+            return ['success' => false, 'message' => 'No se pudo crear el puesto.'];
         }
 
         if (!$created) {
-            return ['success' => false, 'message' => 'No se pudo agregar el registro.'];
+            return ['success' => false, 'message' => 'No se pudo crear el puesto.'];
         }
 
-        return ['success' => true, 'message' => 'Registro agregado'];
+        return ['success' => true, 'message' => 'Puesto creado exitosamente.'];
     }
 
     public function updatePosition($id, $data)
@@ -70,14 +70,14 @@ class PositionService
         try {
             $updated = $this->positionRepository->update($positionId, $name);
         } catch (PDOException $exception) {
-            return ['success' => false, 'message' => 'No se pudo actualizar el registro.'];
+            return ['success' => false, 'message' => 'No se pudo actualizar el puesto.'];
         }
 
         if (!$updated) {
-            return ['success' => false, 'message' => 'No se pudo actualizar el registro.'];
+            return ['success' => false, 'message' => 'No se pudo actualizar el puesto.'];
         }
 
-        return ['success' => true, 'message' => 'Registro actualizado'];
+        return ['success' => true, 'message' => 'Puesto actualizado exitosamente.'];
     }
 
     public function deletePosition($id)

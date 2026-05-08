@@ -203,7 +203,7 @@ class EmployeeServiceTest extends TestCase
         $result = $this->service->createEmployee($this->validData(), [], '/tmp');
 
         $this->assertFalse($result['success']);
-        $this->assertSame('No se pudo agregar el registro.', $result['message']);
+        $this->assertSame('No se pudo crear el empleado.', $result['message']);
     }
 
     public function test_create_returns_failure_when_repository_returns_false(): void
@@ -224,7 +224,7 @@ class EmployeeServiceTest extends TestCase
         $result = $this->service->createEmployee($this->validData(), [], '/tmp');
 
         $this->assertTrue($result['success']);
-        $this->assertSame('Registro agregado', $result['message']);
+        $this->assertSame('Empleado creado exitosamente.', $result['message']);
     }
 
     public function test_create_trims_string_fields_before_persisting(): void
@@ -345,7 +345,7 @@ class EmployeeServiceTest extends TestCase
         $result = $this->service->updateEmployee(1, $this->validData(), [], '/tmp');
 
         $this->assertFalse($result['success']);
-        $this->assertSame('No se pudo actualizar el registro.', $result['message']);
+        $this->assertSame('No se pudo actualizar el empleado.', $result['message']);
     }
 
     public function test_update_returns_success(): void
@@ -358,7 +358,7 @@ class EmployeeServiceTest extends TestCase
         $result = $this->service->updateEmployee(1, $this->validData(), [], '/tmp');
 
         $this->assertTrue($result['success']);
-        $this->assertSame('Registro actualizado', $result['message']);
+        $this->assertSame('Empleado actualizado exitosamente.', $result['message']);
     }
 
     // --- deleteEmployee ---

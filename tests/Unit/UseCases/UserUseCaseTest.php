@@ -94,7 +94,7 @@ class UserUseCaseTest extends TestCase
                 $data['password'] === 'secret123' &&
                 $data['correo'] === 'jdoe@example.com'
             ))
-            ->willReturn(['success' => true, 'message' => 'Registro agregado']);
+            ->willReturn(['success' => true, 'message' => 'Usuario creado exitosamente.']);
 
         $result = $this->useCase->createUser($req);
 
@@ -108,12 +108,12 @@ class UserUseCaseTest extends TestCase
             'usuario' => 'jdoe', 'password' => 'secret123', 'correo' => 'jdoe@example.com',
         ]);
         $this->service->method('createUser')
-            ->willReturn(['success' => false, 'message' => 'No se pudo agregar el registro.']);
+            ->willReturn(['success' => false, 'message' => 'No se pudo crear el usuario.']);
 
         $result = $this->useCase->createUser($req);
 
         $this->assertFalse($result->success);
-        $this->assertSame('No se pudo agregar el registro.', $result->message);
+        $this->assertSame('No se pudo crear el usuario.', $result->message);
     }
 
     // --- updateUser ---
@@ -129,12 +129,12 @@ class UserUseCaseTest extends TestCase
             ->with(3, $this->callback(fn($data) =>
                 $data['usuario'] === 'jdoe' && $data['correo'] === 'jdoe@example.com'
             ))
-            ->willReturn(['success' => true, 'message' => 'Registro actualizado']);
+            ->willReturn(['success' => true, 'message' => 'Usuario actualizado exitosamente.']);
 
         $result = $this->useCase->updateUser($req);
 
         $this->assertTrue($result->success);
-        $this->assertSame('Registro actualizado', $result->message);
+        $this->assertSame('Usuario actualizado exitosamente.', $result->message);
     }
 
     public function test_updateUser_wraps_service_failure_in_OperationResult(): void

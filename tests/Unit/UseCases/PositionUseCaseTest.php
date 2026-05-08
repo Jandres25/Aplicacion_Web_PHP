@@ -77,7 +77,7 @@ class PositionUseCaseTest extends TestCase
         $this->service->expects($this->once())
             ->method('createPosition')
             ->with(['nombredelpuesto' => 'Director'])
-            ->willReturn(['success' => true, 'message' => 'Registro agregado']);
+            ->willReturn(['success' => true, 'message' => 'Puesto creado exitosamente.']);
 
         $result = $this->useCase->createPosition($req);
 
@@ -89,12 +89,12 @@ class PositionUseCaseTest extends TestCase
     {
         $req = StorePositionRequest::fromArray(['nombredelpuesto' => 'Director']);
         $this->service->method('createPosition')
-            ->willReturn(['success' => false, 'message' => 'No se pudo agregar el registro.']);
+            ->willReturn(['success' => false, 'message' => 'No se pudo crear el puesto.']);
 
         $result = $this->useCase->createPosition($req);
 
         $this->assertFalse($result->success);
-        $this->assertSame('No se pudo agregar el registro.', $result->message);
+        $this->assertSame('No se pudo crear el puesto.', $result->message);
     }
 
     // --- updatePosition ---
@@ -106,12 +106,12 @@ class PositionUseCaseTest extends TestCase
         $this->service->expects($this->once())
             ->method('updatePosition')
             ->with(4, ['nombredelpuesto' => 'Supervisor'])
-            ->willReturn(['success' => true, 'message' => 'Registro actualizado']);
+            ->willReturn(['success' => true, 'message' => 'Puesto actualizado exitosamente.']);
 
         $result = $this->useCase->updatePosition($req);
 
         $this->assertTrue($result->success);
-        $this->assertSame('Registro actualizado', $result->message);
+        $this->assertSame('Puesto actualizado exitosamente.', $result->message);
     }
 
     public function test_updatePosition_wraps_service_failure_in_OperationResult(): void

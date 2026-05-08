@@ -2,21 +2,29 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+use Config\AppLogger;
 use Core\ErrorPage;
 use Core\View;
+use Dotenv\Dotenv;
+
+$dotenv = Dotenv::createImmutable(__DIR__ . '/..');
+$dotenv->load();
+$dotenv->required(['APP_URL', 'DB_HOST', 'DB_PORT', 'DB_DATABASE', 'DB_USERNAME']);
+$dotenv->ifPresent('REMEMBER_ME_ENABLED')->isBoolean();
+$dotenv->ifPresent('REMEMBER_ME_LIFETIME')->isInteger();
 
 View::setBasePath(__DIR__ . '/../resources/views');
-use Core\Env;
+
 use Core\Router;
 use Core\Security;
 
-Env::load(__DIR__ . '/../.env');
 Security::sendSecurityHeaders();
 
-$projectRoot = __DIR__ . '/..';
-$publicBaseUrl = rtrim((string)Env::get('APP_URL', 'http://localhost/Aplicacion_Web_PHP/'), '/') . '/public/';
+$projectRoot   = __DIR__ . '/..';
+$publicBaseUrl = rtrim($_ENV['APP_URL'], '/') . '/public/';
+$logger        = AppLogger::getInstance();
 
-register_shutdown_function(static function () use ($projectRoot, $publicBaseUrl): void {
+register_shutdown_function(static function () use ($projectRoot, $publicBaseUrl, $logger): void {
     $lastError = error_get_last();
     if ($lastError === null) {
         return;
@@ -27,7 +35,11 @@ register_shutdown_function(static function () use ($projectRoot, $publicBaseUrl)
         return;
     }
 
-    error_log('Fatal error: ' . (string)$lastError['message'] . ' in ' . (string)$lastError['file'] . ':' . (string)$lastError['line']);
+    $logger->critical('Fatal error', [
+        'message' => $lastError['message'],
+        'file'    => $lastError['file'],
+        'line'    => $lastError['line'],
+    ]);
     if (!headers_sent()) {
         ErrorPage::render($projectRoot, $publicBaseUrl, 500);
     }
@@ -52,6 +64,11 @@ try {
 
     $router->dispatch($requestUri, $scriptName, $requestMethod);
 } catch (\Throwable $exception) {
-    error_log('Unhandled exception: ' . $exception->getMessage() . ' in ' . $exception->getFile() . ':' . $exception->getLine());
+    $logger->error('Unhandled exception', [
+        'message' => $exception->getMessage(),
+        'file'    => $exception->getFile(),
+        'line'    => $exception->getLine(),
+        'trace'   => $exception->getTraceAsString(),
+    ]);
     ErrorPage::render($projectRoot, $publicBaseUrl, 500);
 }

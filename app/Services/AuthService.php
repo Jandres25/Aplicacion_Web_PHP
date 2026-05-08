@@ -65,7 +65,7 @@ class AuthService
     {
         $token   = bin2hex(random_bytes(32));
         $hash    = hash('sha256', $token);
-        $days    = (int)\Core\Env::get('REMEMBER_ME_LIFETIME', 30);
+        $days    = (int)($_ENV['REMEMBER_ME_LIFETIME'] ?? 30);
         $expires = date('Y-m-d H:i:s', time() + $days * 86400);
 
         $this->userRepository->setRememberToken($userId, $hash, $expires);

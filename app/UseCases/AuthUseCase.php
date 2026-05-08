@@ -5,7 +5,6 @@ namespace App\UseCases;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Services\AuthService;
 use App\UseCases\DTOs\OperationResult;
-use Core\Env;
 use Core\Security;
 
 class AuthUseCase
@@ -31,7 +30,7 @@ class AuthUseCase
         $_SESSION['logueado'] = true;
         $_SESSION['user_id']  = $user->id;
 
-        if ($request->remember && Env::get('REMEMBER_ME_ENABLED', 'true') === 'true') {
+        if ($request->remember && $_ENV['REMEMBER_ME_ENABLED'] ?? 'true' === 'true') {
             $plainToken = $this->authService->issueRememberToken($user->id);
             Security::setRememberCookie($user->id . ':' . $plainToken);
         }
@@ -41,7 +40,7 @@ class AuthUseCase
 
     public function handleRememberLogin(): bool
     {
-        if (Env::get('REMEMBER_ME_ENABLED', 'true') !== 'true') {
+        if ($_ENV['REMEMBER_ME_ENABLED'] ?? 'true' !== 'true') {
             return false;
         }
 

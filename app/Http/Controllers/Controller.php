@@ -6,8 +6,6 @@ use App\Middleware\AuthMiddleware;
 use Core\Flash;
 use Core\Security;
 use Core\View;
-use Core\Env;
-
 abstract class Controller
 {
     protected string $projectRoot;
@@ -19,7 +17,7 @@ abstract class Controller
     {
         $this->authMiddleware   = $authMiddleware;
         $this->projectRoot      = dirname(__DIR__, 3);
-        $this->publicBaseUrl    = rtrim((string)Env::get('APP_URL', 'http://localhost/Aplicacion_Web_PHP/'), '/') . '/public/';
+        $this->publicBaseUrl    = rtrim($_ENV['APP_URL'] ?? 'http://localhost/Aplicacion_Web_PHP/', '/') . '/public/';
         $this->uploadsDirectory = $this->projectRoot . '/public/storage/uploads';
     }
 

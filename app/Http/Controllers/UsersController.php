@@ -73,12 +73,12 @@ class UsersController extends Controller
 
         $result = $this->userUseCase->createUser($req);
         if ($result->success) {
-            Flash::set($result->message ?? 'Registro agregado');
+            Flash::set($result->message ?? 'Usuario creado exitosamente.');
             $this->redirect('usuarios');
         }
 
         $formAction = 'usuarios-crear';
-        $mensaje    = $result->message ?? 'No se pudo agregar el registro.';
+        $mensaje    = $result->message ?? 'No se pudo crear el usuario.';
         $this->renderWithLayout(
             'users/create.php',
             array_merge(
@@ -138,13 +138,13 @@ class UsersController extends Controller
 
         $result = $this->userUseCase->updateUser($req);
         if ($result->success) {
-            Flash::set($result->message ?? 'Registro actualizado');
+            Flash::set($result->message ?? 'Usuario actualizado exitosamente.');
             $this->redirect('usuarios');
         }
 
         $txtID      = $req->id;
         $formAction = 'usuarios-editar';
-        $mensaje    = $result->message ?? 'No se pudo actualizar el registro.';
+        $mensaje    = $result->message ?? 'No se pudo actualizar el usuario.';
         $usuario    = $req->usuario;
         $correo     = $req->correo;
         $this->renderWithLayout(
@@ -182,7 +182,7 @@ class UsersController extends Controller
         if ($txtID > 0) {
             $deleted = $this->userUseCase->deleteUser($txtID);
             $success = $deleted;
-            $message = $deleted ? 'Registro borrado' : 'No se pudo borrar el registro';
+            $message = $deleted ? 'Usuario eliminado exitosamente.' : 'No se pudo eliminar el usuario.';
         } else {
             $success = false;
             $message = 'El ID del usuario no es válido.';

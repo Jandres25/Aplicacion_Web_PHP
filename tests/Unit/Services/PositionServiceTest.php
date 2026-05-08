@@ -94,7 +94,7 @@ class PositionServiceTest extends TestCase
         $result = $this->service->createPosition(['nombredelpuesto' => 'Analista']);
 
         $this->assertTrue($result['success']);
-        $this->assertSame('Registro agregado', $result['message']);
+        $this->assertSame('Puesto creado exitosamente.', $result['message']);
     }
 
     public function test_create_returns_failure_when_repository_returns_false(): void
@@ -104,7 +104,7 @@ class PositionServiceTest extends TestCase
         $result = $this->service->createPosition(['nombredelpuesto' => 'Analista']);
 
         $this->assertFalse($result['success']);
-        $this->assertSame('No se pudo agregar el registro.', $result['message']);
+        $this->assertSame('No se pudo crear el puesto.', $result['message']);
     }
 
     public function test_create_returns_failure_when_repository_throws_PDOException(): void
@@ -114,7 +114,7 @@ class PositionServiceTest extends TestCase
         $result = $this->service->createPosition(['nombredelpuesto' => 'Analista']);
 
         $this->assertFalse($result['success']);
-        $this->assertSame('No se pudo agregar el registro.', $result['message']);
+        $this->assertSame('No se pudo crear el puesto.', $result['message']);
     }
 
     public function test_create_passes_trimmed_name_to_repository(): void
@@ -165,7 +165,7 @@ class PositionServiceTest extends TestCase
         $result = $this->service->updatePosition(1, ['nombredelpuesto' => 'Director']);
 
         $this->assertTrue($result['success']);
-        $this->assertSame('Registro actualizado', $result['message']);
+        $this->assertSame('Puesto actualizado exitosamente.', $result['message']);
     }
 
     public function test_update_returns_failure_when_repository_throws_PDOException(): void
@@ -176,7 +176,7 @@ class PositionServiceTest extends TestCase
         $result = $this->service->updatePosition(1, ['nombredelpuesto' => 'Director']);
 
         $this->assertFalse($result['success']);
-        $this->assertSame('No se pudo actualizar el registro.', $result['message']);
+        $this->assertSame('No se pudo actualizar el puesto.', $result['message']);
     }
 
     // --- deletePosition ---

@@ -50,14 +50,14 @@ class UserService
                 'Correo' => trim((string)($data['correo'] ?? ''))
             ]);
         } catch (PDOException $exception) {
-            return ['success' => false, 'message' => 'No se pudo agregar el registro.'];
+            return ['success' => false, 'message' => 'No se pudo crear el usuario.'];
         }
 
         if (!$created) {
-            return ['success' => false, 'message' => 'No se pudo agregar el registro.'];
+            return ['success' => false, 'message' => 'No se pudo crear el usuario.'];
         }
 
-        return ['success' => true, 'message' => 'Registro agregado'];
+        return ['success' => true, 'message' => 'Usuario creado exitosamente.'];
     }
 
     public function updateUser($id, $data)
@@ -94,14 +94,14 @@ class UserService
                 'Correo' => trim((string)($data['correo'] ?? ''))
             ]);
         } catch (PDOException $exception) {
-            return ['success' => false, 'message' => 'No se pudo actualizar el registro.'];
+            return ['success' => false, 'message' => 'No se pudo actualizar el usuario.'];
         }
 
         if (!$updated) {
-            return ['success' => false, 'message' => 'No se pudo actualizar el registro.'];
+            return ['success' => false, 'message' => 'No se pudo actualizar el usuario.'];
         }
 
-        return ['success' => true, 'message' => 'Registro actualizado'];
+        return ['success' => true, 'message' => 'Usuario actualizado exitosamente.'];
     }
 
     public function deleteUser($id)

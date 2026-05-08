@@ -112,7 +112,7 @@ class EmployeeUseCaseTest extends TestCase
                 [],
                 '/tmp'
             )
-            ->willReturn(['success' => true, 'message' => 'Registro agregado']);
+            ->willReturn(['success' => true, 'message' => 'Empleado creado exitosamente.']);
 
         $result = $this->useCase->createEmployee($req, [], '/tmp');
 
@@ -127,12 +127,12 @@ class EmployeeUseCaseTest extends TestCase
             'idpuesto' => '2', 'fechadeingreso' => '2024-05-01',
         ]);
         $this->service->method('createEmployee')
-            ->willReturn(['success' => true, 'message' => 'Registro agregado']);
+            ->willReturn(['success' => true, 'message' => 'Empleado creado exitosamente.']);
 
         $result = $this->useCase->createEmployee($req, [], '/tmp');
 
         $this->assertTrue($result->success);
-        $this->assertSame('Registro agregado', $result->message);
+        $this->assertSame('Empleado creado exitosamente.', $result->message);
     }
 
     public function test_createEmployee_wraps_service_failure_in_OperationResult(): void
@@ -142,12 +142,12 @@ class EmployeeUseCaseTest extends TestCase
             'idpuesto' => '2', 'fechadeingreso' => '2024-05-01',
         ]);
         $this->service->method('createEmployee')
-            ->willReturn(['success' => false, 'message' => 'No se pudo agregar el registro.']);
+            ->willReturn(['success' => false, 'message' => 'No se pudo crear el empleado.']);
 
         $result = $this->useCase->createEmployee($req, [], '/tmp');
 
         $this->assertFalse($result->success);
-        $this->assertSame('No se pudo agregar el registro.', $result->message);
+        $this->assertSame('No se pudo crear el empleado.', $result->message);
     }
 
     // --- updateEmployee ---
@@ -162,7 +162,7 @@ class EmployeeUseCaseTest extends TestCase
         $this->service->expects($this->once())
             ->method('updateEmployee')
             ->with(5, $this->isType('array'), [], '/tmp')
-            ->willReturn(['success' => true, 'message' => 'Registro actualizado']);
+            ->willReturn(['success' => true, 'message' => 'Empleado actualizado exitosamente.']);
 
         $result = $this->useCase->updateEmployee($req, [], '/tmp');
 
@@ -176,7 +176,7 @@ class EmployeeUseCaseTest extends TestCase
             'segundoapellido' => 'López', 'idpuesto' => '3', 'fechadeingreso' => '2024-01-15',
         ]);
         $this->service->method('updateEmployee')
-            ->willReturn(['success' => false, 'message' => 'No se pudo actualizar el registro.']);
+            ->willReturn(['success' => false, 'message' => 'No se pudo actualizar el empleado.']);
 
         $result = $this->useCase->updateEmployee($req, [], '/tmp');
 

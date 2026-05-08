@@ -80,7 +80,7 @@ class EmployeeService
             if ($cvName !== '') {
                 $this->fileStorage->deleteFileIfExists($baseDirectory, $cvName);
             }
-            return ['success' => false, 'message' => 'No se pudo agregar el registro.'];
+            return ['success' => false, 'message' => 'No se pudo crear el empleado.'];
         }
 
         if (!$created) {
@@ -90,10 +90,10 @@ class EmployeeService
             if ($cvName !== '') {
                 $this->fileStorage->deleteFileIfExists($baseDirectory, $cvName);
             }
-            return ['success' => false, 'message' => 'No se pudo agregar el registro.'];
+            return ['success' => false, 'message' => 'No se pudo crear el empleado.'];
         }
 
-        return ['success' => true, 'message' => 'Registro agregado'];
+        return ['success' => true, 'message' => 'Empleado creado exitosamente.'];
     }
 
     public function updateEmployee(int $id, array $data, array $files, string $baseDirectory)
@@ -145,7 +145,7 @@ class EmployeeService
             if ($newCv !== '') {
                 $this->fileStorage->deleteFileIfExists($baseDirectory, $newCv);
             }
-            return ['success' => false, 'message' => 'No se pudo actualizar el registro.'];
+            return ['success' => false, 'message' => 'No se pudo actualizar el empleado.'];
         }
 
         if (!$updated) {
@@ -155,7 +155,7 @@ class EmployeeService
             if ($newCv !== '') {
                 $this->fileStorage->deleteFileIfExists($baseDirectory, $newCv);
             }
-            return ['success' => false, 'message' => 'No se pudo actualizar el registro.'];
+            return ['success' => false, 'message' => 'No se pudo actualizar el empleado.'];
         }
 
         if ($newPhoto !== '') {
@@ -165,7 +165,7 @@ class EmployeeService
             $this->fileStorage->deleteFileIfExists($baseDirectory, $currentCv);
         }
 
-        return ['success' => true, 'message' => 'Registro actualizado'];
+        return ['success' => true, 'message' => 'Empleado actualizado exitosamente.'];
     }
 
     public function deleteEmployee(int $id, string $baseDirectory)
