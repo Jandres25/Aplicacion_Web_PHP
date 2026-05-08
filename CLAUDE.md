@@ -8,6 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Start XAMPP**: `sudo /opt/lampp/lampp start`
 - **Apache logs**: `/opt/lampp/logs/error_log`
 - **PHP errors**: Check Apache error log or enable `display_errors` in `/opt/lampp/etc/php.ini`
+- **App logs**: `storage/logs/app.log` (Monolog, daily rotation)
 
 ## Setup
 
@@ -32,7 +33,7 @@ This is a custom PHP MVC framework using Composer PSR-4 autoloading (no manual `
 
 **Request lifecycle:**
 
-1. `public/index.php` — front controller; loads `vendor/autoload.php`, builds `Core\Container`, registers bindings from `config/container.php`, dispatches
+1. `public/index.php` — front controller; loads `vendor/autoload.php`, initializes `vlucas/phpdotenv` (validates required env vars), builds `Config\AppLogger` (Monolog), builds `Core\Container`, registers bindings from `config/container.php`, dispatches
 2. `routes/web.php` — resolves all 5 HTTP controllers via `$container->resolve(XController::class)` and maps all routes
 3. `core/Router.php` — matches URI to handler; also serves static files from `public/`
 
@@ -49,13 +50,20 @@ This is a custom PHP MVC framework using Composer PSR-4 autoloading (no manual `
 | Domain         | `app/Services/`                     | Business logic; depends on repository interfaces, not concrete classes                              |
 | Infrastructure | `app/Repositories/`                 | PDO queries; implement the repository contracts                                                     |
 | Infrastructure | `app/Infrastructure/`               | `EmployeeFileStorage` — file upload and deletion                                                    |
-| Infrastructure | `config/Database.php`               | PDO singleton (`Config\Database::getConnection()`)                                                  |
+| Infrastructure | `config/Database.php`               | PDO singleton (`Config\Database::getConnection()`); reads from `$_ENV`                              |
+| Infrastructure | `config/AppLogger.php`              | Monolog singleton (`Config\AppLogger::getInstance()`); logs to `storage/logs/app.log`               |
 | Cross-cutting  | `core/Container.php`                | Lightweight DI container; resolves dependencies via `ReflectionClass`; used only in bootstrap       |
-| Cross-cutting  | `core/`                             | `Router`, `View`, `Flash`, `Security`, `Env`, `ErrorPage`                                           |
+| Cross-cutting  | `core/`                             | `Router`, `View`, `Flash`, `Security`, `ErrorPage`                                                  |
 | Cross-cutting  | `app/Middleware/AuthMiddleware.php` | Checks `$_SESSION['logueado']`, falls back to `AuthUseCase::handleRememberLogin()`                  |
+
+**Environment variables:**
+`vlucas/phpdotenv` loads `.env` in `public/index.php` before anything else. It validates that `APP_URL`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME` are present, and checks types for `REMEMBER_ME_ENABLED` (boolean) and `REMEMBER_ME_LIFETIME` (integer). All code reads env vars directly from `$_ENV['KEY']`.
 
 **DI Container:**
 `config/container.php` registers bindings: `PDO` as singleton via closure, and the three repository interface → concrete class mappings. The Container is only used in bootstrap (`public/index.php` and `routes/web.php`) — never injected into domain or application classes.
+
+**Logging:**
+`Config\AppLogger::getInstance()` returns a Monolog `Logger`. Logs rotate daily in `storage/logs/` and are kept for 14 days. In `APP_ENV=local` all levels from `Debug` up are logged; in production only `Warning` and above. Fatal errors and unhandled exceptions are automatically logged from the bootstrap shutdown handler and catch block.
 
 **Request DTOs pattern:**
 
@@ -109,7 +117,7 @@ Controller POST method:
   - Controllers y `AuthUseCase` → **no se testean** (acoplamiento a `$_SESSION`, `Security`, HTTP).
 - **`AuthUseCase` excluido**: depende de `Security::startSession()`, `session_regenerate_id()` y `$_SESSION` directamente — no se puede aislar sin refactor.
 - **Namespace de tests**: `Tests\` mapeado a `tests/` en `autoload-dev` del `composer.json`.
-- **CI**: `.github/workflows/tests.yml` corre la suite en PHP 8.1 y 8.2 en cada push/PR a `master`.
+- **CI**: `.github/workflows/tests.yml` corre la suite en PHP 8.2 y 8.3 en cada push/PR a `master`.
 
 ## Frontend
 
@@ -123,3 +131,7 @@ Controller POST method:
 Tables: `tbl-puestos`, `tbl-empleados`, `tbl-usuarios` (note hyphen in table names — always quote them in SQL). `tbl-usuarios` has two extra nullable columns for remember-me: `remember_token` and `remember_token_expires`.
 
 File uploads land in `public/storage/uploads/`. Default assets (`user-default.jpg`, `cv_default.pdf`) live there too.
+
+## Logs
+
+App logs are written to `storage/logs/app.log`. The directory is tracked in git via `.gitkeep`; log files are gitignored. Do not delete the `storage/logs/` directory.

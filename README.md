@@ -48,7 +48,8 @@ La aplicación usa un framework PHP propio con Composer PSR-4 y separación estr
 │  app/Infrastructure/         ← EmployeeFileStorage          │
 │  config/Database.php         ← PDO singleton                │
 └─────────────────────────────────────────────────────────────┘
-  Cross-cutting: core/Container · Router · View · Flash · Security · Env
+  Cross-cutting: core/Container · Router · View · Flash · Security
+  Config:        config/AppLogger.php (Monolog singleton)
 ```
 
 **Flujo de una petición POST:**
@@ -61,11 +62,13 @@ La aplicación usa un framework PHP propio con Composer PSR-4 y separación estr
 - Request DTOs tipados — `$_POST` nunca cruza la frontera HTTP
 - Domain Models como POPOs con `fromRow()` / `toArray()`
 - Interfaces de repositorio para inversión de dependencias
+- Variables de entorno cargadas con `vlucas/phpdotenv` (validación de requeridas en bootstrap)
+- Logging estructurado con Monolog — rotación diaria en `storage/logs/app.log`, 14 días de retención
 - Autenticación con `password_hash` / `password_verify` y sesiones PHP
 - "Recuérdame" con token rotante almacenado hasheado en DB y cookie `HttpOnly`/`SameSite=Lax`
 - Protección CSRF en formularios y peticiones AJAX (meta tag + header)
 - Eliminación asíncrona con AJAX + SweetAlert2 sin recargar la página
-- Notificaciones Flash integradas con SweetAlert2
+- Notificaciones Flash integradas con SweetAlert2 con mensajes específicos por módulo y acción
 - DataTables con búsqueda, paginación y diseño responsivo
 - Generación de cartas de recomendación en PDF con dompdf (abre inline en el visor del navegador)
 - Prevención de SQL injection con sentencias preparadas PDO
@@ -90,13 +93,16 @@ composer test:unit
 | Services        | Unit con mocks de repositorios | `tests/Unit/Services/`      |
 | UseCases        | Unit con mock del Service      | `tests/Unit/UseCases/`      |
 
-El workflow de GitHub Actions corre la suite en PHP 8.1 y 8.2 en cada push y pull request a `master`.
+El workflow de GitHub Actions corre la suite en PHP 8.2 y 8.3 en cada push y pull request a `master`.
 
 ## Dependencias
 
-| Paquete         | Versión | Uso                                        |
-| --------------- | ------- | ------------------------------------------ |
-| `dompdf/dompdf` | ^3.1    | Generación de PDF (carta de recomendación) |
+| Paquete                      | Versión | Uso                                        |
+| ---------------------------- | ------- | ------------------------------------------ |
+| `dompdf/dompdf`              | ^3.1    | Generación de PDF (carta de recomendación) |
+| `vlucas/phpdotenv`           | ^5.6    | Carga y validación de variables de entorno |
+| `monolog/monolog`            | ^3.10   | Logging estructurado con rotación de logs  |
+| `symfony/var-dumper`         | ^7.4    | Debug (`dump()` / `dd()`) — solo dev       |
 
 Todas las dependencias se instalan con `composer install`.
 
@@ -118,6 +124,13 @@ mysql -u root -p your_db < database/seeders.sql
 ```
 
 Apuntar el servidor web a `public/` o acceder vía `http://localhost/Aplicacion_Web_PHP/public/`.
+
+## Logs
+
+Los logs de la aplicación se escriben en `storage/logs/app.log` con rotación diaria (14 archivos).
+
+- En `APP_ENV=local` se registran desde nivel `Debug`; en producción solo `Warning` en adelante.
+- Los errores fatales y excepciones no atrapadas se registran automáticamente desde el bootstrap.
 
 ## Frontend
 

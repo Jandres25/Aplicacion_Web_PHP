@@ -46,6 +46,8 @@ Stack: Bootstrap 5, FontAwesome 6, DataTables, SweetAlert2, MySQL (PDO), JavaScr
 Arquitectura: Controller → UseCase → Service → Repository. Framework interno en core/.
 DI Container: core/Container.php — resuelve dependencias por reflexión; bindings en config/container.php.
 Request DTOs: app/Http/Requests/ — construidos en Controllers desde $_POST; $_POST nunca cruza esta capa.
+Variables de entorno: vlucas/phpdotenv carga el .env en el bootstrap; leer siempre con $_ENV['KEY'].
+Logging: Config\AppLogger::getInstance() devuelve el logger Monolog; logs en storage/logs/app.log.
 PDF: dompdf/dompdf ^3.1 vía Composer. Usar View::capture($view, $data) para obtener el HTML y pasarlo a $dompdf->loadHtml(). CSS embebido con file_get_contents() dentro de <style> — no usar <link> (dompdf no lo resuelve). stream($filename, ['Attachment' => false]) para abrir inline.
 URL base: http://localhost/Aplicacion_Web_PHP/public/
 Módulo activo: _______________
@@ -91,6 +93,8 @@ Arquitectura: Controller → UseCase → Service → Repository. Framework inter
 DI Container en core/Container.php; bindings en config/container.php.
 Request DTOs en app/Http/Requests/{Modulo}/; Domain Models en app/Domain/Models/.
 Repository Interfaces en app/Domain/Contracts/; OperationResult en app/UseCases/DTOs/.
+Variables de entorno: vlucas/phpdotenv — leer siempre con $_ENV['KEY'], nunca con Env::get().
+Logging: Config\AppLogger::getInstance() (Monolog) — logs en storage/logs/app.log.
 PDF: dompdf/dompdf ^3.1 disponible. View::capture($view, $data) → string HTML → $dompdf->loadHtml(). CSS vía file_get_contents() embebido en <style> (no <link>). stream($file, ['Attachment' => false]) para inline.
 Módulo activo: [nombre del módulo — ej: empleados, puestos, usuarios]
 
@@ -163,6 +167,7 @@ de aplicaciones PHP custom con PDO y arquitectura por capas.
 Proyecto: Sistema de Gestión de Empleados — PHP 8.x, MySQL, PDO.
 URL: http://localhost/Aplicacion_Web_PHP/public/
 Logs Apache: /opt/lampp/logs/error_log
+Logs de la app: storage/logs/app.log (Monolog, rotación diaria)
 Archivo donde ocurre el error: [ruta completa]
 Método/función afectada: [nombre]
 
@@ -254,7 +259,8 @@ Proyecto: Sistema de Gestión de Empleados — PHP 8.x custom, sin framework.
 Estado actual: módulos implementados — empleados, puestos, usuarios, auth.
 BD: tbl-empleados, tbl-puestos, tbl-usuarios (ver database/schema.sql).
 Arquitectura: Controller → Request DTO → UseCase (OperationResult) → Service → Repository.
-Framework interno en core/ (Router, View, Flash, Security, Env, ErrorPage, Container).
+Framework interno en core/ (Router, View, Flash, Security, ErrorPage, Container).
+Variables de entorno: vlucas/phpdotenv — leer con $_ENV['KEY']. Logging: Config\AppLogger::getInstance().
 DI Container: core/Container.php resuelve por reflexión; bindings en config/container.php.
 Domain Models (POPOs) en app/Domain/Models/; Contracts en app/Domain/Contracts/.
 Request DTOs en app/Http/Requests/; OperationResult en app/UseCases/DTOs/.
@@ -342,6 +348,7 @@ Proyecto: Sistema de Gestión de Empleados — PHP 8.x custom, sin framework.
 Stack: Bootstrap 5, FontAwesome 6, DataTables, SweetAlert2, MySQL (PDO), JavaScript ES6+.
 Arquitectura: Controller → Request DTO → UseCase → Service → Repository. Framework en core/.
 DI Container en core/Container.php; bindings en config/container.php.
+Variables de entorno: vlucas/phpdotenv — leer con $_ENV['KEY']. Logging: Config\AppLogger::getInstance().
 Módulo: puestos (ya implementado — úsalo como referencia si necesitas revisar el patrón).
 
 BD relevante:
@@ -394,5 +401,5 @@ Devuelve en este orden:
 
 ---
 
-_Última actualización: 2026-05-08_
+_Última actualización: 2026-05-08 — phpdotenv, Monolog y var-dumper integrados; Core\Env eliminado._
 _Mantener sincronizado con CLAUDE.md al inicio de cada sesión._
